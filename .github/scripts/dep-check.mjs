@@ -84,18 +84,19 @@ try {
   // pnpm licenses list unavailable — leave licenseMap empty
 }
 
-// --- 3. Download counts from npm registry (added packages only) ---
-async function fetchDownloads(name) {
+// --- 3. Bundle size via BundlePhobia API (added packages only) ---
+// Same API that bundle-phobia-cli uses internally: https://github.com/AdrieanKhisbe/bundle-phobia-cli
+async function fetchBundleSize(name, version) {
   try {
-    const encoded = encodeURIComponent(name)
-    const dl = await fetch(`https://api.npmjs.org/downloads/point/last-week/${encoded}`).then(r => r.json())
-    return dl.downloads ?? null
+    const pkg = encodeURIComponent(`${name}@${version}`)
+    const data = await fetch(`https://bundlephobia.com/api/size?package=${pkg}`).then(r => r.json())
+    return { size: data.size ?? null, gzip: data.gzip ?? null }
   } catch {
-    return null
+    return { size: null, gzip: null }
   }
 }
 
-const downloadResults = await Promise.all(added.map(p => fetchDownloads(p.name)))
+const sizeResults = await Promise.all(added.map(p => fetchBundleSize(p.name, p.version)))
 
 const addedWithMeta = added.map((p, i) => {
   const license = licenseMap.get(p.name) ?? 'unknown'
@@ -103,7 +104,7 @@ const addedWithMeta = added.map((p, i) => {
     ...p,
     license,
     licenseOk: !RISKY_LICENSES.has(license) && license !== 'unknown',
-    downloads: downloadResults[i],
+    ...sizeResults[i],
   }
 })
 
