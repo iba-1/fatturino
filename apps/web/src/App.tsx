@@ -11,6 +11,7 @@ import { Settings } from "@/pages/Settings";
 import { Login } from "@/pages/Login";
 import { Register } from "@/pages/Register";
 import { Toaster } from "@/components/ui/toaster";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,23 +25,25 @@ const queryClient = new QueryClient({
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <ErrorBoundary>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="invoices" element={<Invoices />} />
+              <Route path="invoices/new" element={<InvoiceEditor />} />
+              <Route path="invoices/:id" element={<InvoiceDetail />} />
+              <Route path="clients" element={<Clients />} />
+              <Route path="taxes" element={<Taxes />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </ErrorBoundary>
       <Toaster />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="invoices" element={<Invoices />} />
-            <Route path="invoices/new" element={<InvoiceEditor />} />
-            <Route path="invoices/:id" element={<InvoiceDetail />} />
-            <Route path="clients" element={<Clients />} />
-            <Route path="taxes" element={<Taxes />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
     </QueryClientProvider>
   );
 }
