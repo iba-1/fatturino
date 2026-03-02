@@ -65,7 +65,14 @@
     "description": "Descrizione",
     "quantity": "Quantità",
     "unitPrice": "Prezzo Unitario",
-    "lineTotal": "Totale Riga"
+    "lineTotal": "Totale Riga",
+    "validate": "Valida",
+    "downloadXml": "Scarica XML",
+    "downloadPdf": "Scarica PDF",
+    "missingProfile": "Completa il tuo profilo per generare fatture elettroniche.",
+    "goToSettings": "Vai alle impostazioni",
+    "validationErrors": "Errori di validazione",
+    "validationSuccess": "Fattura valida — pronta per il download XML."
   },
   "clients": {
     "title": "Clienti",

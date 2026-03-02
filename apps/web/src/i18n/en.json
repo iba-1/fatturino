@@ -65,7 +65,14 @@
     "description": "Description",
     "quantity": "Quantity",
     "unitPrice": "Unit Price",
-    "lineTotal": "Line Total"
+    "lineTotal": "Line Total",
+    "validate": "Validate",
+    "downloadXml": "Download XML",
+    "downloadPdf": "Download PDF",
+    "missingProfile": "Complete your profile to generate electronic invoices.",
+    "goToSettings": "Go to settings",
+    "validationErrors": "Validation errors",
+    "validationSuccess": "Invoice valid — ready for XML download."
   },
   "clients": {
     "title": "Clients",
