@@ -255,3 +255,49 @@ The tax calculator for regime forfettario. Input your annual revenue and ATECO c
 4. Select whether you are in your first 5 years of activity (5% rate) or not (15% rate).
 5. Choose your INPS regime (Gestione Separata or Artigiani/Commercianti).
 6. The app calculates imposta sostitutiva, INPS contributions, and the acconto/saldo split.
+
+### Forfettario Explained
+
+**Regime forfettario** is a simplified flat-tax regime for Italian freelancers and small businesses with annual revenue below €85,000. This app is built specifically for it.
+
+#### Coefficiente di redditività
+
+Not all revenue is taxed. The tax base is your revenue multiplied by a **coefficiente di redditività** (profitability coefficient) that depends on your ATECO code — the code that classifies your type of business activity. For example:
+
+- Professional services (most freelancers): **78%**
+- Retail trade: **40%**
+- Construction: **86%**
+
+If you earn €50,000 and your coefficient is 78%, your taxable income is €39,000.
+
+#### Imposta sostitutiva
+
+This replaces IRPEF, regional taxes, and municipal taxes with a single flat rate:
+
+- **5%** for the first 5 years of activity (agevolata rate)
+- **15%** thereafter
+
+On €39,000 taxable income at 15%: **€5,850 due**.
+
+#### INPS contributions
+
+Social security contributions are separate from the imposta sostitutiva. The regime depends on your category:
+
+- **Gestione Separata** — for most freelancers: **26.07%** of taxable income, with no minimum
+- **Artigiani/Commercianti** — fixed minimums plus a variable rate on income above the minimum threshold; forfettari get a **35% discount** on all contributions
+
+#### Bollo virtuale
+
+Italian law requires a **€2 stamp duty** (bollo virtuale) on invoices over €77.47 when no VAT is charged. Under regime forfettario all invoices are VAT-exempt (natura N2.2), so the bollo applies automatically when your invoice total exceeds that threshold. The app adds it automatically.
+
+#### Acconto and saldo
+
+Tax is paid in two rounds each year:
+
+| Payment | When | Amount |
+|---|---|---|
+| **Saldo** (balance) | June of the following year | Full amount due for prior year |
+| **Acconto I rata** | June | 40% of estimated current year tax |
+| **Acconto II rata** | November | 60% of estimated current year tax |
+
+The Taxes screen calculates all three amounts and shows the correct **codice tributo** to use on the F24 payment form.
