@@ -2,6 +2,21 @@
 
 Italian invoicing & tax SaaS for freelancers and small businesses operating under **Regime Forfettario**.
 
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Project Structure](#project-structure)
+- [Environment Variables](#environment-variables)
+- [Commands](#commands)
+- [API Endpoints](#api-endpoints)
+- [Tax Calculation](#tax-calculation-regime-forfettario)
+- [Architecture Notes](#architecture-notes)
+- [Implementation Status](#implementation-status)
+- [User Guide](#user-guide)
+
 ## Features
 
 - Electronic invoice (fattura elettronica) creation and management
@@ -100,7 +115,7 @@ The tax engine in `packages/shared/tax/` implements:
 ## Implementation Status
 
 - [x] Phase 1: Foundation (monorepo, auth, DB, i18n)
-- [ ] Phase 2: Core Invoicing
+- [x] Phase 2: Core Invoicing (clients, invoices, preview, e2e tests)
 - [ ] Phase 3: FatturaPA XML + SDI Integration
 - [ ] Phase 4: Tax Calculation Engine (UI)
 - [ ] Phase 5: F24 Form Generation
