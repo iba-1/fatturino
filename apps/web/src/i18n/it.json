@@ -109,6 +109,12 @@
     "atecoCode": "Codice ATECO",
     "address": "Indirizzo",
     "startYear": "Anno Inizio Attività",
-    "sdiConfig": "Configurazione SDI"
+    "sdiConfig": "Configurazione SDI",
+    "cap": "CAP",
+    "city": "Città",
+    "province": "Provincia",
+    "pec": "PEC",
+    "sdiCode": "Codice SDI",
+    "iban": "IBAN"
   }
 }

@@ -109,6 +109,12 @@
     "atecoCode": "ATECO Code",
     "address": "Address",
     "startYear": "Activity Start Year",
-    "sdiConfig": "SDI Configuration"
+    "sdiConfig": "SDI Configuration",
+    "cap": "ZIP Code",
+    "city": "City",
+    "province": "Province",
+    "pec": "PEC Email",
+    "sdiCode": "SDI Code",
+    "iban": "IBAN"
   }
 }
