@@ -1,0 +1,22 @@
+{
+  "name": "fatturino",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "type-check": "turbo type-check",
+    "db:generate": "turbo db:generate --filter=@fatturino/api",
+    "db:migrate": "turbo db:migrate --filter=@fatturino/api",
+    "db:push": "turbo db:push --filter=@fatturino/api",
+    "test": "turbo test"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.0",
+    "typescript": "^5.7.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
