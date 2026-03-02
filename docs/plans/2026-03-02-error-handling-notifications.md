@@ -1,7 +1,5 @@
 # Error Handling, Notifications & Logging Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
-
 **Goal:** Add toast notifications, server-side validation error display, structured logging, and a global error boundary so users always see feedback when operations succeed or fail.
 
 **Architecture:** Install shadcn/ui Toast component. Add a `parseApiFieldErrors` utility to map Zod-shaped API errors to form field errors. Add `onError`/`onSuccess` toast callbacks to all 6 mutation hooks. Create a thin structured logger. Wrap routes in an ErrorBoundary. Add E2E tests for error visibility.

@@ -1,7 +1,5 @@
 # README + User Docs Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
-
 **Goal:** Update the root `README.md` to fix stale content, add missing developer references, and append a full User Guide section covering feature reference, how-tos, and a forfettario explainer.
 
 **Architecture:** Single-file approach — all content lives in the root `README.md`. Developer sections first (quick-start, env vars, commands, API, architecture), then a User Guide section with its own subheadings. A Table of Contents at the top links to all sections.

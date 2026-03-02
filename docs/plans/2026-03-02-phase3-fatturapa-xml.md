@@ -1,7 +1,5 @@
 # Phase 3: FatturaPA XML + PDF Export — Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
-
 **Goal:** Generate compliant FatturaPA XML files (TD01/TD04) with validation and PDF export, plus CI/CD with GitHub Actions.
 
 **Architecture:** Hybrid approach — `packages/fattura-xml` handles pure XML building + validation (no I/O), API layer orchestrates data fetching and PDF generation via Playwright. GitHub Actions runs the full test suite on every PR.
