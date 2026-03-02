@@ -26,6 +26,9 @@ importers:
       '@fastify/rate-limit':
         specifier: ^10.2.0
         version: 10.3.0
+      '@fatturino/fattura-xml':
+        specifier: workspace:*
+        version: link:../../packages/fattura-xml
       '@fatturino/shared':
         specifier: workspace:*
         version: link:../../packages/shared
