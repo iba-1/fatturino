@@ -105,10 +105,27 @@ Copy `apps/api/.env.example` to `apps/api/.env` and fill in the required values.
 |---|---|
 | `pnpm dev` | Start all services in development mode |
 | `pnpm build` | Build all packages and apps |
-| `pnpm test` | Run all tests |
-| `pnpm db:push` | Push schema changes to database |
+| `pnpm test` | Run all unit + integration tests (Vitest) |
+| `pnpm test:e2e` | Run end-to-end tests (Playwright) |
+| `pnpm db:push` | Push schema changes to database (dev only) |
 | `pnpm db:generate` | Generate migration files |
 | `pnpm db:migrate` | Run pending migrations |
+
+### Running Tests
+
+The test suite has two layers:
+
+**Unit + integration tests** (`pnpm test`) — 119 tests across three packages:
+- `packages/shared` — tax calculation engine, Zod schemas
+- `apps/api` — route handlers (tested with Fastify's `inject`)
+- `apps/web` — TanStack Query hooks, invoice calculation logic
+
+**End-to-end tests** (`pnpm test:e2e`) — Playwright tests covering:
+- Auth flows: register, login, invalid credentials
+- Client CRUD: create, read, update, delete
+- Invoice CRUD: create, view, delete (draft only)
+
+E2E tests require both the API and web dev servers to be running (`pnpm dev`).
 
 ## API Endpoints
 
