@@ -43,7 +43,16 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - run: pnpm test
+
+      - name: Run unit tests
+        run: pnpm --filter @fatturino/web exec vitest run --reporter=verbose --reporter=json --outputFile=vitest-results.json
+
+      - name: Upload unit test results
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: apps/web/vitest-results.json
 
   e2e-tests:
     name: E2E Tests
@@ -91,9 +100,17 @@ jobs:
         run: pnpm db:push
 
       - name: Run E2E tests
-        run: pnpm test:e2e
+        run: pnpm exec playwright test --reporter=list,json
         env:
           CI: true
+          PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-results.json
+
+      - name: Upload E2E test results
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: playwright-results.json
 
   build:
     name: Build
@@ -110,3 +127,120 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+
+  pr-comment:
+    name: Comment on PR
+    runs-on: ubuntu-latest
+    needs: [unit-tests, e2e-tests]
+    if: github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Download unit test results
+        uses: actions/download-artifact@v4
+        with:
+          name: unit-test-results
+
+      - name: Download E2E test results
+        uses: actions/download-artifact@v4
+        with:
+          name: e2e-test-results
+
+      - name: Post test summary comment
+        uses: actions/github-script@v7
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RUN_NUMBER: ${{ github.run_number }}
+        with:
+          script: |
+            const fs = require('fs')
+
+            // --- Unit tests ---
+            let unitSummary = 'unavailable'
+            let unitDetails = ''
+            try {
+              const unit = JSON.parse(fs.readFileSync('vitest-results.json', 'utf8'))
+              const passed = unit.numPassedTests ?? 0
+              const failed = unit.numFailedTests ?? 0
+              const total  = unit.numTotalTests  ?? 0
+              const ms = (unit.testResults ?? [])
+                .reduce((sum, s) => sum + ((s.endTime ?? 0) - (s.startTime ?? 0)), 0)
+              unitSummary = `${passed}/${total} passed in ${(ms / 1000).toFixed(2)}s`
+              unitDetails = (unit.testResults ?? []).map(suite => {
+                const file = suite.testFilePath.replace(/.*__tests__\//, '')
+                const rows = (suite.testResults ?? []).map(t => {
+                  const icon = t.status === 'passed' ? '✅' : '❌'
+                  return `  ${icon} ${t.title} *(${t.duration}ms)*`
+                }).join('\n')
+                return `**${file}**\n${rows}`
+              }).join('\n\n')
+            } catch (_) {}
+
+            // --- E2E tests ---
+            let e2eSummary = 'unavailable'
+            let e2eDetails = ''
+            try {
+              const e2e = JSON.parse(fs.readFileSync('playwright-results.json', 'utf8'))
+              const stats   = e2e.stats ?? {}
+              const passed  = stats.expected   ?? 0
+              const failed  = stats.unexpected ?? 0
+              const skipped = stats.skipped    ?? 0
+              const total   = passed + failed + skipped
+              e2eSummary = `${passed}/${total} passed in ${((stats.duration ?? 0) / 1000).toFixed(2)}s`
+              const flatten = (suites) => suites.flatMap(s => [s, ...flatten(s.suites ?? [])])
+              e2eDetails = flatten(e2e.suites ?? [])
+                .filter(s => (s.specs ?? []).length > 0)
+                .map(suite => {
+                  const rows = (suite.specs ?? []).map(spec => {
+                    const result = spec.tests?.[0]?.results?.[0]
+                    const ok     = result?.status === 'passed'
+                    return `  ${ok ? '✅' : '❌'} ${spec.title}`
+                  }).join('\n')
+                  return `**${suite.title}**\n${rows}`
+                }).join('\n\n')
+            } catch (_) {}
+
+            const body = `## 🧪 Test Results
+
+| Suite | Result |
+|-------|--------|
+| Unit Tests | ${unitSummary} |
+| E2E Tests | ${e2eSummary} |
+
+<details>
+<summary>Unit test details</summary>
+
+${unitDetails || '_No details available_'}
+
+</details>
+
+<details>
+<summary>E2E test details</summary>
+
+${e2eDetails || '_No details available_'}
+
+</details>
+
+> Run [#${process.env.RUN_NUMBER}](${process.env.RUN_URL})`
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const existing = comments.find(c => c.user.type === 'Bot' && c.body.startsWith('## 🧪 Test Results'))
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner:      context.repo.owner,
+                repo:       context.repo.repo,
+                comment_id: existing.id,
+                body,
+              })
+            } else {
+              await github.rest.issues.createComment({
+                owner:        context.repo.owner,
+                repo:         context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              })
+            }
