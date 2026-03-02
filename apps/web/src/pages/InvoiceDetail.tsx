@@ -88,7 +88,7 @@ export function InvoiceDetail() {
 
       {/* Missing profile banner */}
       {!hasProfile && (
-        <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md flex items-center gap-2">
+        <div data-testid="missing-profile-banner" className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-yellow-600" />
           <span className="text-sm text-yellow-800">
             {t("invoices.missingProfile")}{" "}
