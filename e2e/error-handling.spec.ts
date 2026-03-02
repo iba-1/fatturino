@@ -23,7 +23,7 @@ test.describe("Error Handling & Notifications", () => {
 
     // Toast notification should appear on success
     await expect(
-      page.locator("[data-radix-toast-viewport] li")
+      page.locator('li[data-state="open"]')
     ).toBeVisible({ timeout: 5_000 });
   });
 
@@ -50,7 +50,7 @@ test.describe("Error Handling & Notifications", () => {
 
     // Destructive toast should appear
     await expect(
-      page.locator("[data-radix-toast-viewport] li")
+      page.locator('li[data-state="open"]')
     ).toBeVisible({ timeout: 5_000 });
 
     // Inline validation error should appear next to the invalid field
@@ -83,7 +83,7 @@ test.describe("Error Handling & Notifications", () => {
 
     // Toast notification should appear on success
     await expect(
-      page.locator("[data-radix-toast-viewport] li")
+      page.locator('li[data-state="open"]')
     ).toBeVisible({ timeout: 5_000 });
   });
 
@@ -143,7 +143,7 @@ test.describe("Error Handling & Notifications", () => {
 
     // Toast should appear with error
     await expect(
-      page.locator("[data-radix-toast-viewport] li")
+      page.locator('li[data-state="open"]')
     ).toBeVisible({ timeout: 5_000 });
   });
 });
