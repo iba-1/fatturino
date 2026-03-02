@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,8 +30,11 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
     new Date().getFullYear()
   );
 
+  const initializedRef = useRef(false);
+
   useEffect(() => {
-    if (profile) {
+    if (profile && !initializedRef.current) {
+      initializedRef.current = true;
       setRagioneSociale(profile.ragioneSociale);
       setPartitaIva(profile.partitaIva);
       setCodiceFiscale(profile.codiceFiscale);
