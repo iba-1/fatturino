@@ -78,6 +78,27 @@ fatturino/
 └── turbo.json           # Turborepo configuration
 ```
 
+## Environment Variables
+
+Copy `apps/api/.env.example` to `apps/api/.env` and fill in the required values.
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `DATABASE_URL` | Yes | — | PostgreSQL connection string |
+| `BETTER_AUTH_SECRET` | Yes | — | Secret for session signing — generate with `openssl rand -base64 32` |
+| `CORS_ORIGINS` | Yes | `http://localhost:5173` | Comma-separated allowed frontend origins |
+| `PORT` | No | `3000` | API server port |
+| `HOST` | No | `0.0.0.0` | API server host |
+| `NODE_ENV` | No | `development` | Set to `production` in production |
+| `GOOGLE_CLIENT_ID` | No | — | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | No | — | Google OAuth client secret |
+| `GITHUB_CLIENT_ID` | No | — | GitHub OAuth client ID |
+| `GITHUB_CLIENT_SECRET` | No | — | GitHub OAuth client secret |
+| `INVOICETRONIC_API_KEY` | No | — | Invoicetronic SDI API key (Phase 3) |
+| `INVOICETRONIC_BASE_URL` | No | — | Invoicetronic API base URL (Phase 3) |
+
+> OAuth providers are optional — the app works with email/password auth alone.
+
 ## Commands
 
 | Command | Description |
