@@ -17,14 +17,15 @@ export function Register() {
     setError("");
     setLoading(true);
 
-    try {
-      await signUp.email({ name, email, password });
-      navigate("/");
-    } catch {
-      setError(t("common.error"));
-    } finally {
-      setLoading(false);
+    const { error: authError } = await signUp.email({ name, email, password });
+    setLoading(false);
+
+    if (authError) {
+      setError(authError.message || t("common.error"));
+      return;
     }
+
+    navigate("/");
   }
 
   return (

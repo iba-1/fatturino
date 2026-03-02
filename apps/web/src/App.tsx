@@ -3,6 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
 import { Dashboard } from "@/pages/Dashboard";
 import { Invoices } from "@/pages/Invoices";
+import { InvoiceEditor } from "@/pages/InvoiceEditor";
+import { InvoiceDetail } from "@/pages/InvoiceDetail";
 import { Clients } from "@/pages/Clients";
 import { Taxes } from "@/pages/Taxes";
 import { Settings } from "@/pages/Settings";
@@ -28,6 +30,8 @@ export function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="invoices" element={<Invoices />} />
+            <Route path="invoices/new" element={<InvoiceEditor />} />
+            <Route path="invoices/:id" element={<InvoiceDetail />} />
             <Route path="clients" element={<Clients />} />
             <Route path="taxes" element={<Taxes />} />
             <Route path="settings" element={<Settings />} />

@@ -17,13 +17,19 @@ async function request<T>(
 ): Promise<T> {
   const url = `${API_BASE}${path}`;
 
+  const headers: Record<string, string> = {
+    ...options.headers as Record<string, string>,
+  };
+
+  // Only set Content-Type for requests with a body
+  if (options.body) {
+    headers["Content-Type"] = "application/json";
+  }
+
   const response = await fetch(url, {
     ...options,
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
+    headers,
   });
 
   if (!response.ok) {

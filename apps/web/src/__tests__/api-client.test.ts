@@ -19,9 +19,6 @@ describe("api client", () => {
       "/api/clients",
       expect.objectContaining({
         credentials: "include",
-        headers: expect.objectContaining({
-          "Content-Type": "application/json",
-        }),
       })
     );
     expect(result).toEqual(mockResponse);

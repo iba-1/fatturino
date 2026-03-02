@@ -16,14 +16,15 @@ export function Login() {
     setError("");
     setLoading(true);
 
-    try {
-      await signIn.email({ email, password });
-      navigate("/");
-    } catch {
-      setError(t("common.error"));
-    } finally {
-      setLoading(false);
+    const { error: authError } = await signIn.email({ email, password });
+    setLoading(false);
+
+    if (authError) {
+      setError(authError.message || t("common.error"));
+      return;
     }
+
+    navigate("/");
   }
 
   return (

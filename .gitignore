@@ -30,5 +30,9 @@ task_plan.md
 findings.md
 progress.md
 
+# Playwright
+test-results/
+playwright-report/
+
 # Claude
 .claude/

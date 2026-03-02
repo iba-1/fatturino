@@ -9,9 +9,11 @@
     "db:generate": "turbo db:generate --filter=@fatturino/api",
     "db:migrate": "turbo db:migrate --filter=@fatturino/api",
     "db:push": "turbo db:push --filter=@fatturino/api",
-    "test": "turbo test"
+    "test": "turbo test",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "turbo": "^2.4.0",
     "typescript": "^5.7.0"
   },
