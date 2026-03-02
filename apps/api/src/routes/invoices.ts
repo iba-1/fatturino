@@ -1,9 +1,11 @@
 import type { FastifyInstance } from "fastify";
 import { eq, and, sql } from "drizzle-orm";
 import { createInvoiceSchema, SOGLIA_BOLLO, IMPORTO_BOLLO } from "@fatturino/shared";
+import { buildFatturaXml, validateBusinessRules } from "@fatturino/fattura-xml";
 import { db } from "../db/index.js";
-import { invoices, invoiceLines } from "../db/schema.js";
+import { invoices, invoiceLines, userProfiles, clients } from "../db/schema.js";
 import { requireAuth, getUserId } from "../middleware/auth.js";
+import { mapToFatturaInput } from "../services/fattura-mapper.js";
 
 export async function invoiceRoutes(app: FastifyInstance) {
   app.addHook("preHandler", requireAuth);
@@ -124,5 +126,67 @@ export async function invoiceRoutes(app: FastifyInstance) {
 
     await db.delete(invoices).where(eq(invoices.id, request.params.id));
     return { success: true };
+  });
+
+  // Validate invoice for XML generation
+  app.get<{ Params: { id: string } }>("/api/invoices/:id/xml/validate", async (request, reply) => {
+    const userId = getUserId(request);
+
+    const profiles = await db.select().from(userProfiles).where(eq(userProfiles.userId, userId));
+    if (profiles.length === 0) {
+      return reply.status(400).send({ error: "Profilo utente non completato", code: "MISSING_PROFILE" });
+    }
+
+    const invoice = await db.select().from(invoices)
+      .where(and(eq(invoices.id, request.params.id), eq(invoices.userId, userId)));
+    if (invoice.length === 0) {
+      return reply.status(404).send({ error: "Invoice not found" });
+    }
+
+    const lines = await db.select().from(invoiceLines).where(eq(invoiceLines.invoiceId, request.params.id));
+    const clientRows = await db.select().from(clients).where(eq(clients.id, invoice[0].clientId));
+
+    const input = mapToFatturaInput(profiles[0], clientRows[0], invoice[0], lines);
+    const errors = validateBusinessRules(input);
+
+    return { valid: errors.length === 0, errors };
+  });
+
+  // Generate and download XML
+  app.get<{ Params: { id: string } }>("/api/invoices/:id/xml", async (request, reply) => {
+    const userId = getUserId(request);
+
+    const profiles = await db.select().from(userProfiles).where(eq(userProfiles.userId, userId));
+    if (profiles.length === 0) {
+      return reply.status(400).send({ error: "Profilo utente non completato", code: "MISSING_PROFILE" });
+    }
+
+    const invoice = await db.select().from(invoices)
+      .where(and(eq(invoices.id, request.params.id), eq(invoices.userId, userId)));
+    if (invoice.length === 0) {
+      return reply.status(404).send({ error: "Invoice not found" });
+    }
+
+    const lines = await db.select().from(invoiceLines).where(eq(invoiceLines.invoiceId, request.params.id));
+    const clientRows = await db.select().from(clients).where(eq(clients.id, invoice[0].clientId));
+
+    const input = mapToFatturaInput(profiles[0], clientRows[0], invoice[0], lines);
+
+    const errors = validateBusinessRules(input);
+    if (errors.length > 0) {
+      return reply.status(422).send({ error: "Validation failed", errors });
+    }
+
+    const xml = buildFatturaXml(input);
+
+    // Store XML in DB
+    await db.update(invoices).set({ xmlContent: xml }).where(eq(invoices.id, request.params.id));
+
+    const filename = `IT${profiles[0].partitaIva}_${invoice[0].numeroFattura.toString().padStart(5, "0")}.xml`;
+
+    return reply
+      .header("Content-Type", "application/xml")
+      .header("Content-Disposition", `attachment; filename="${filename}"`)
+      .send(xml);
   });
 }

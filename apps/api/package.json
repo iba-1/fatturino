@@ -15,6 +15,7 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@fatturino/fattura-xml": "workspace:*",
     "@fatturino/shared": "workspace:*",
     "fastify": "^5.2.0",
     "@fastify/cors": "^11.0.0",
