@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { InvoiceForm } from "@/components/InvoiceForm";
 import { InvoicePreview } from "@/components/InvoicePreview";
 import { useClients } from "@/hooks/use-clients";
 import { useCreateInvoice, type CreateInvoiceData } from "@/hooks/use-invoices";
+import { parseApiFieldErrors } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -13,11 +15,16 @@ export function InvoiceEditor() {
   const navigate = useNavigate();
   const { data: clients, isLoading: clientsLoading } = useClients();
   const createInvoice = useCreateInvoice();
+  const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
 
   function handleSubmit(data: CreateInvoiceData) {
+    setServerErrors({});
     createInvoice.mutate(data, {
       onSuccess: () => {
         navigate("/invoices");
+      },
+      onError: (error) => {
+        setServerErrors(parseApiFieldErrors(error));
       },
     });
   }
@@ -58,6 +65,7 @@ export function InvoiceEditor() {
             onSubmit={handleSubmit}
             onCancel={() => navigate("/invoices")}
             isLoading={createInvoice.isPending}
+            serverErrors={serverErrors}
           />
         </CardContent>
       </Card>

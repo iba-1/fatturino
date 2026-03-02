@@ -82,4 +82,22 @@ export const api = {
   download: downloadFile,
 };
 
+export function parseApiFieldErrors(error: unknown): Record<string, string> {
+  if (!(error instanceof ApiError) || !Array.isArray(error.details)) {
+    return {};
+  }
+  const fieldErrors: Record<string, string> = {};
+  for (const detail of error.details) {
+    if (
+      detail &&
+      Array.isArray(detail.path) &&
+      detail.path.length > 0 &&
+      typeof detail.message === "string"
+    ) {
+      fieldErrors[detail.path[0]] = detail.message;
+    }
+  }
+  return fieldErrors;
+}
+
 export { ApiError };

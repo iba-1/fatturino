@@ -1,7 +1,25 @@
-# Fatturino
+# README + User Docs Implementation Plan
 
-Italian invoicing & tax SaaS for freelancers and small businesses operating under **Regime Forfettario**.
+> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
+**Goal:** Update the root `README.md` to fix stale content, add missing developer references, and append a full User Guide section covering feature reference, how-tos, and a forfettario explainer.
+
+**Architecture:** Single-file approach — all content lives in the root `README.md`. Developer sections first (quick-start, env vars, commands, API, architecture), then a User Guide section with its own subheadings. A Table of Contents at the top links to all sections.
+
+**Tech Stack:** Markdown only. No tooling changes.
+
+---
+
+## Task 1: Add Table of Contents + fix implementation status
+
+**Files:**
+- Modify: `README.md`
+
+**Step 1: Add ToC after the opening tagline**
+
+Replace the content between `## Features` heading start and the line before `## Features` (i.e., insert ToC before Features) with:
+
+```markdown
 ## Table of Contents
 
 - [Features](#features)
@@ -17,67 +35,40 @@ Italian invoicing & tax SaaS for freelancers and small businesses operating unde
 - [Implementation Status](#implementation-status)
 - [User Guide](#user-guide)
 
-## Features
+```
 
-- Electronic invoice (fattura elettronica) creation and management
-- Tax calculation engine for Regime Forfettario (imposta sostitutiva + INPS)
-- SDI integration via Invoicetronic API (Phase 3)
-- Pre-filled F24 form generation (Phase 5)
-- Multi-tenant SaaS with email/password and OAuth authentication
-- Italian + English interface
+**Step 2: Fix Implementation Status section**
 
-## Tech Stack
+Replace the current `## Implementation Status` section with:
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 18, Vite, TypeScript, Tailwind CSS, Shadcn/ui |
-| State | TanStack Query, Zustand |
-| Backend | Fastify, TypeScript |
-| Database | PostgreSQL, Drizzle ORM |
-| Auth | Better Auth |
-| Monorepo | Turborepo, pnpm workspaces |
+```markdown
+## Implementation Status
 
-## Prerequisites
+- [x] Phase 1: Foundation (monorepo, auth, DB, i18n)
+- [x] Phase 2: Core Invoicing (clients, invoices, preview, e2e tests)
+- [ ] Phase 3: FatturaPA XML + SDI Integration
+- [ ] Phase 4: Tax Calculation Engine (UI)
+- [ ] Phase 5: F24 Form Generation
+- [ ] Phase 6: Polish & Production Readiness
+```
 
-- Node.js >= 20
-- pnpm >= 9
-- Docker (for PostgreSQL)
-
-## Quick Start
+**Step 3: Commit**
 
 ```bash
-# 1. Clone and install dependencies
-pnpm install
-
-# 2. Start PostgreSQL
-docker compose up -d
-
-# 3. Copy environment file and configure
-cp apps/api/.env.example apps/api/.env
-
-# 4. Push database schema
-pnpm db:push
-
-# 5. Start development servers
-pnpm dev
+git add README.md
+git commit -m "docs: add table of contents and fix implementation status"
 ```
 
-The API runs at `http://localhost:3000` and the web app at `http://localhost:5173`.
+---
 
-## Project Structure
+## Task 2: Add Environment Variables section
 
-```
-fatturino/
-├── packages/
-│   ├── shared/          # Zod schemas, types, tax calculation engine
-│   └── fattura-xml/     # FatturaPA XML builder/parser (Phase 3)
-├── apps/
-│   ├── api/             # Fastify backend
-│   └── web/             # React SPA
-├── docker-compose.yml   # PostgreSQL for local dev
-└── turbo.json           # Turborepo configuration
-```
+**Files:**
+- Modify: `README.md`
 
+**Step 1: Insert new section after `## Project Structure` and before `## Commands`**
+
+```markdown
 ## Environment Variables
 
 Copy `apps/api/.env.example` to `apps/api/.env` and fill in the required values.
@@ -95,10 +86,28 @@ Copy `apps/api/.env.example` to `apps/api/.env` and fill in the required values.
 | `GITHUB_CLIENT_ID` | No | — | GitHub OAuth client ID |
 | `GITHUB_CLIENT_SECRET` | No | — | GitHub OAuth client secret |
 | `INVOICETRONIC_API_KEY` | No | — | Invoicetronic SDI API key (Phase 3) |
-| `INVOICETRONIC_BASE_URL` | No | `https://api.invoicetronic.com` | Invoicetronic API base URL (Phase 3) |
+| `INVOICETRONIC_BASE_URL` | No | — | Invoicetronic API base URL (Phase 3) |
 
 > OAuth providers are optional — the app works with email/password auth alone.
+```
 
+**Step 2: Commit**
+
+```bash
+git add README.md
+git commit -m "docs: add environment variables reference"
+```
+
+---
+
+## Task 3: Expand Commands section with test commands
+
+**Files:**
+- Modify: `README.md`
+
+**Step 1: Replace existing `## Commands` table with expanded version**
+
+```markdown
 ## Commands
 
 | Command | Description |
@@ -115,9 +124,8 @@ Copy `apps/api/.env.example` to `apps/api/.env` and fill in the required values.
 
 The test suite has two layers:
 
-**Unit + integration tests** (`pnpm test`) — 168 tests across four packages:
+**Unit + integration tests** (`pnpm test`) — 119 tests across three packages:
 - `packages/shared` — tax calculation engine, Zod schemas
-- `packages/fattura-xml` — FatturaPA XML builder and validators
 - `apps/api` — route handlers (tested with Fastify's `inject`)
 - `apps/web` — TanStack Query hooks, invoice calculation logic
 
@@ -127,35 +135,25 @@ The test suite has two layers:
 - Invoice CRUD: create, view, delete (draft only)
 
 E2E tests require both the API and web dev servers to be running (`pnpm dev`).
+```
 
-## API Endpoints
+**Step 2: Commit**
 
-| Method | Path | Description |
-|---|---|---|
-| GET | `/health` | Health check |
-| ALL | `/api/auth/*` | Authentication (Better Auth) |
-| GET | `/api/profile` | Get authenticated user profile |
-| PUT | `/api/profile` | Update user profile |
-| GET/POST | `/api/clients` | List / Create clients |
-| GET/PUT/DELETE | `/api/clients/:id` | Get / Update / Delete client |
-| GET/POST | `/api/invoices` | List / Create invoices |
-| GET/DELETE | `/api/invoices/:id` | Get / Delete invoice |
-| GET | `/api/invoices/:id/xml/validate` | Validate invoice for FatturaPA XML generation |
-| GET | `/api/invoices/:id/xml` | Generate and download FatturaPA XML file |
-| GET | `/api/invoices/:id/pdf` | Generate and download invoice PDF |
-| POST | `/api/taxes/imposta` | Calculate imposta sostitutiva |
-| POST | `/api/taxes/inps` | Calculate INPS contributions |
-| POST | `/api/taxes/acconto-saldo` | Calculate acconto/saldo breakdown |
+```bash
+git add README.md
+git commit -m "docs: expand commands section with test details"
+```
 
-## Tax Calculation (Regime Forfettario)
+---
 
-The tax engine in `packages/shared/tax/` implements:
+## Task 4: Add Architecture Notes section
 
-1. **Coefficienti di redditività** — Maps ATECO codes to profitability coefficients (40%–86%)
-2. **Imposta sostitutiva** — 5% for first 5 years, 15% thereafter
-3. **INPS contributions** — Gestione Separata (26.07%) or Artigiani/Commercianti (fixed + variable, with 35% forfettari discount)
-4. **Acconto/saldo** — Payment installment calculation with correct codici tributo
+**Files:**
+- Modify: `README.md`
 
+**Step 1: Insert new section after `## Tax Calculation` and before `## Implementation Status`**
+
+```markdown
 ## Architecture Notes
 
 ### Authentication
@@ -176,18 +174,25 @@ Two important quirks:
 ### Monorepo
 
 Turborepo orchestrates builds and tests. Shared code lives in `packages/shared` (tax engine, Zod schemas, TypeScript types) and is consumed by both `apps/api` and `apps/web` without duplication.
+```
 
-## Implementation Status
+**Step 2: Commit**
 
-- [x] Phase 1: Foundation (monorepo, auth, DB, i18n)
-- [x] Phase 2: Core Invoicing (clients, invoices, preview, e2e tests)
-- [x] Phase 2.5: Error Handling & Notifications (toast system, form validation errors, error boundary, structured logging)
-- [x] Phase 3: FatturaPA XML + PDF export (XML builder, business rules validator, PDF generation, profile management)
-- [ ] Phase 3.5: SDI Integration (Invoicetronic API)
-- [ ] Phase 4: Tax Calculation Engine (UI)
-- [ ] Phase 5: F24 Form Generation
-- [ ] Phase 6: Polish & Production Readiness
+```bash
+git add README.md
+git commit -m "docs: add architecture notes section"
+```
 
+---
+
+## Task 5: Add User Guide — Feature Reference
+
+**Files:**
+- Modify: `README.md`
+
+**Step 1: Append User Guide section after `## Implementation Status`**
+
+```markdown
 ---
 
 ## User Guide
@@ -229,7 +234,25 @@ The tax calculator for regime forfettario. Input your annual revenue and ATECO c
 - Imposta sostitutiva due
 - INPS contributions
 - Acconto and saldo breakdown with codici tributo
+```
 
+**Step 2: Commit**
+
+```bash
+git add README.md
+git commit -m "docs: add user guide feature reference"
+```
+
+---
+
+## Task 6: Add User Guide — How-to Guides
+
+**Files:**
+- Modify: `README.md`
+
+**Step 1: Append How-to Guides subsection inside User Guide**
+
+```markdown
 ### How-to Guides
 
 #### Create a client
@@ -263,7 +286,25 @@ The tax calculator for regime forfettario. Input your annual revenue and ATECO c
 4. Select whether you are in your first 5 years of activity (5% rate) or not (15% rate).
 5. Choose your INPS regime (Gestione Separata or Artigiani/Commercianti).
 6. The app calculates imposta sostitutiva, INPS contributions, and the acconto/saldo split.
+```
 
+**Step 2: Commit**
+
+```bash
+git add README.md
+git commit -m "docs: add user guide how-to section"
+```
+
+---
+
+## Task 7: Add User Guide — Forfettario Explained
+
+**Files:**
+- Modify: `README.md`
+
+**Step 1: Append Forfettario Explained subsection inside User Guide**
+
+```markdown
 ### Forfettario Explained
 
 **Regime forfettario** is a simplified flat-tax regime for Italian freelancers and small businesses with annual revenue below €85,000. This app is built specifically for it.
@@ -309,3 +350,24 @@ Tax is paid in two rounds each year:
 | **Acconto II rata** | November | 60% of estimated current year tax |
 
 The Taxes screen calculates all three amounts and shows the correct **codice tributo** to use on the F24 payment form.
+```
+
+**Step 2: Commit**
+
+```bash
+git add README.md
+git commit -m "docs: add forfettario explainer to user guide"
+```
+
+---
+
+## Verification
+
+After all tasks:
+
+```bash
+# Verify the README renders cleanly — check for broken anchor links
+# Open in GitHub or any Markdown previewer and click all ToC links
+# Confirm all 7 sections are present: ToC, Env Vars, Commands (with tests),
+# Architecture Notes, updated Status, Feature Reference, How-tos, Forfettario Explained
+```
