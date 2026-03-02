@@ -179,3 +179,45 @@ Turborepo orchestrates builds and tests. Shared code lives in `packages/shared` 
 - [ ] Phase 4: Tax Calculation Engine (UI)
 - [ ] Phase 5: F24 Form Generation
 - [ ] Phase 6: Polish & Production Readiness
+
+---
+
+## User Guide
+
+### Feature Reference
+
+#### Dashboard
+
+Shows a summary of your recent activity: latest invoices and a quick view of open (draft) invoices. Use this as your starting point each session.
+
+#### Clients
+
+Your customer registry. Each client record stores:
+- Business name or full name
+- Tax code (Codice Fiscale) or VAT number (Partita IVA)
+- Address, email, and contact details
+
+You must create a client before you can issue an invoice to them.
+
+#### Invoices
+
+The core of the app. Invoices have two statuses:
+
+| Status | Meaning |
+|---|---|
+| **Draft** | Created but not yet issued. Can be edited or deleted. |
+| **Issued** | Finalized. Cannot be deleted. |
+
+Each invoice includes:
+- One or more line items (description, quantity, unit price)
+- Automatic subtotal and total calculation
+- **Bollo virtuale** — €2 stamp duty, auto-applied when the invoice total exceeds €77.47 (required under regime forfettario, which is VAT-exempt under N2.2)
+- Invoice preview rendered in the browser (PDF-ready layout)
+
+#### Taxes
+
+The tax calculator for regime forfettario. Input your annual revenue and ATECO code to get:
+- Taxable income (after applying the coefficiente di redditività)
+- Imposta sostitutiva due
+- INPS contributions
+- Acconto and saldo breakdown with codici tributo
