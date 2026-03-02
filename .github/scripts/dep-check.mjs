@@ -32,15 +32,33 @@ try {
 const basePkgs = baseLock.packages ?? {}
 const headPkgs = headLock.packages ?? {}
 
+// Collect direct dep names from importers (each workspace's dependencies/devDependencies/optionalDependencies)
+// This filters out transitive and platform-specific packages (e.g. @esbuild/linux-arm64)
+function directDepNames(lock) {
+  const names = new Set()
+  for (const workspace of Object.values(lock.importers ?? {})) {
+    for (const depType of ['dependencies', 'devDependencies', 'optionalDependencies']) {
+      for (const name of Object.keys(workspace[depType] ?? {})) {
+        names.add(name)
+      }
+    }
+  }
+  return names
+}
+
+const baseDirectDeps = directDepNames(baseLock)
+const headDirectDeps = directDepNames(headLock)
+
 const added = []
 const updated = []
 const removed = []
 
-// Find added and updated
+// Find added and updated — direct deps only
 for (const key of Object.keys(headPkgs)) {
   const atIdx = key.lastIndexOf('@')
   if (atIdx <= 0) continue
   const name = key.slice(0, atIdx)
+  if (!headDirectDeps.has(name)) continue   // skip transitive
   const version = key.slice(atIdx + 1)
 
   const baseKey = Object.keys(basePkgs).find(k => k.slice(0, k.lastIndexOf('@')) === name)
@@ -52,11 +70,12 @@ for (const key of Object.keys(headPkgs)) {
   }
 }
 
-// Find removed
+// Find removed — only if it was a direct dep in base
 for (const key of Object.keys(basePkgs)) {
   const atIdx = key.lastIndexOf('@')
   if (atIdx <= 0) continue
   const name = key.slice(0, atIdx)
+  if (!baseDirectDeps.has(name)) continue   // skip transitive
   const version = key.slice(atIdx + 1)
   const stillPresent = Object.keys(headPkgs).some(k => k.slice(0, k.lastIndexOf('@')) === name)
   if (!stillPresent) removed.push({ name, version })
