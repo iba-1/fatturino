@@ -200,28 +200,30 @@ jobs:
                 }).join('\n\n')
             } catch (_) {}
 
-            const body = `## 🧪 Test Results
-
-| Suite | Result |
-|-------|--------|
-| Unit Tests | ${unitSummary} |
-| E2E Tests | ${e2eSummary} |
-
-<details>
-<summary>Unit test details</summary>
-
-${unitDetails || '_No details available_'}
-
-</details>
-
-<details>
-<summary>E2E test details</summary>
-
-${e2eDetails || '_No details available_'}
-
-</details>
-
-> Run [#${process.env.RUN_NUMBER}](${process.env.RUN_URL})`
+            const body = [
+              '## 🧪 Test Results',
+              '',
+              '| Suite | Result |',
+              '|-------|--------|',
+              `| Unit Tests | ${unitSummary} |`,
+              `| E2E Tests | ${e2eSummary} |`,
+              '',
+              '<details>',
+              '<summary>Unit test details</summary>',
+              '',
+              unitDetails || '_No details available_',
+              '',
+              '</details>',
+              '',
+              '<details>',
+              '<summary>E2E test details</summary>',
+              '',
+              e2eDetails || '_No details available_',
+              '',
+              '</details>',
+              '',
+              `> Run [#${process.env.RUN_NUMBER}](${process.env.RUN_URL})`,
+            ].join('\n')
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
