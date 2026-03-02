@@ -171,6 +171,83 @@ test.describe("Invoice CRUD", () => {
     await expect(page.locator('[data-testid="empty-state"]')).toBeVisible({ timeout: 5_000 });
   });
 
+  // --- Bollo boundary ---
+
+  test("should NOT apply bollo at exactly €77.47 (threshold boundary)", async ({ page }) => {
+    await page.goto("/invoices/new");
+    await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
+    await page.click('[id="clientId"]');
+    await page.click('[role="option"]:has-text("Test Client Srl")');
+    await page.fill('input[placeholder="Description"]', "Boundary service");
+    const numberInputs = page.locator('form input[type="number"]');
+    await numberInputs.nth(0).fill("1");
+    await numberInputs.nth(1).fill("77.47");
+
+    await expect(page.locator("form .flex.flex-col.items-end")).toContainText("77.47");
+    await expect(page.locator('text=/Stamp Duty|Imposta di Bollo/i')).not.toBeVisible();
+  });
+
+  test("should apply bollo at €77.48 (one cent above threshold)", async ({ page }) => {
+    await page.goto("/invoices/new");
+    await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
+    await page.click('[id="clientId"]');
+    await page.click('[role="option"]:has-text("Test Client Srl")');
+    await page.fill('input[placeholder="Description"]', "Just-over-threshold service");
+    const numberInputs = page.locator('form input[type="number"]');
+    await numberInputs.nth(0).fill("1");
+    await numberInputs.nth(1).fill("77.48");
+
+    const totals = page.locator("form .flex.flex-col.items-end");
+    await expect(totals).toContainText("77.48");
+    // Bollo €2.00 should appear
+    await expect(totals).toContainText("2.00");
+    await expect(totals).toContainText("79.48");
+  });
+
+  // --- Delete restriction by status ---
+
+  test("should not show delete button for non-draft (inviata) invoices", async ({ page }) => {
+    // Mock the GET /api/invoices to return a non-draft invoice
+    await page.route("**/api/invoices", async (route) => {
+      if (route.request().method() === "GET") {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify([
+            {
+              id: "mocked-issued-id",
+              numeroFattura: 99,
+              anno: 2026,
+              stato: "inviata",
+              clientId: "mocked-client",
+              dataEmissione: new Date().toISOString().slice(0, 10),
+              totaleDocumento: "500.00",
+              imponibile: "500.00",
+              iva: "0.00",
+              bollo: "0.00",
+              causale: "",
+              righe: [],
+            },
+          ]),
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await registerAndLogin(page, "nodelete");
+    await page.goto("/invoices");
+    await expect(page.locator("table")).toBeVisible({ timeout: 5_000 });
+    // The issued invoice row is present
+    await expect(page.locator("table")).toContainText("99/2026");
+    // View button exists
+    await expect(page.locator('button[aria-label="View"]')).toBeVisible();
+    // Delete button must NOT be rendered for non-draft invoice
+    await expect(
+      page.locator('button[aria-label="Delete"], button[aria-label="Elimina"]')
+    ).not.toBeVisible();
+  });
+
   test("should view invoice detail with preview", async ({ page }) => {
     // Create an invoice
     await page.goto("/invoices/new");
