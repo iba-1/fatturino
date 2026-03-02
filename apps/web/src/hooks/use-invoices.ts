@@ -90,3 +90,22 @@ export function useDeleteInvoice() {
     },
   });
 }
+
+export interface ValidationError {
+  code: string;
+  field: string;
+  message: string;
+}
+
+export interface ValidationResult {
+  valid: boolean;
+  errors: ValidationError[];
+}
+
+export function useValidateInvoice(id: string) {
+  return useQuery<ValidationResult>({
+    queryKey: ["invoices", id, "validate"],
+    queryFn: () => api.get<ValidationResult>(`/invoices/${id}/xml/validate`),
+    enabled: false, // only run on demand via refetch
+  });
+}

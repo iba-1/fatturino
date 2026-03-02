@@ -44,6 +44,23 @@ async function request<T>(
   return response.json();
 }
 
+async function downloadFile(path: string, filename: string): Promise<void> {
+  const url = `${API_BASE}${path}`;
+  const response = await fetch(url, { credentials: "include" });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new ApiError(response.status, body.error || "Download failed", body.details);
+  }
+
+  const blob = await response.blob();
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
 export const api = {
   get: <T>(path: string) => request<T>(path),
 
@@ -61,6 +78,8 @@ export const api = {
 
   delete: <T>(path: string) =>
     request<T>(path, { method: "DELETE" }),
+
+  download: downloadFile,
 };
 
 export { ApiError };
