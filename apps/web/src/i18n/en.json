@@ -123,5 +123,14 @@
     "pec": "PEC Email",
     "sdiCode": "SDI Code",
     "iban": "IBAN"
+  },
+  "toast": {
+    "profileSaved": "Profile saved",
+    "clientCreated": "Client created",
+    "clientUpdated": "Client updated",
+    "clientDeleted": "Client deleted",
+    "invoiceCreated": "Invoice created",
+    "invoiceDeleted": "Invoice deleted",
+    "error": "Error"
   }
 }

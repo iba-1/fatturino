@@ -123,5 +123,14 @@
     "pec": "PEC",
     "sdiCode": "Codice SDI",
     "iban": "IBAN"
+  },
+  "toast": {
+    "profileSaved": "Profilo salvato",
+    "clientCreated": "Cliente creato",
+    "clientUpdated": "Cliente aggiornato",
+    "clientDeleted": "Cliente eliminato",
+    "invoiceCreated": "Fattura creata",
+    "invoiceDeleted": "Fattura eliminata",
+    "error": "Errore"
   }
 }

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { logger } from "@/lib/logger";
+import i18next from "i18next";
 
 export interface InvoiceLine {
   id: string;
@@ -78,11 +79,11 @@ export function useCreateInvoice() {
       api.post<InvoiceWithLines>("/invoices", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
-      toast({ title: "Invoice created", variant: "success" });
+      toast({ title: i18next.t("toast.invoiceCreated"), variant: "success" });
     },
     onError: (error: Error) => {
       logger.error("create_invoice_failed", { error: error.message });
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: i18next.t("toast.error"), description: error.message, variant: "destructive" });
     },
   });
 }
@@ -94,11 +95,11 @@ export function useDeleteInvoice() {
     mutationFn: (id: string) => api.delete(`/invoices/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
-      toast({ title: "Invoice deleted", variant: "success" });
+      toast({ title: i18next.t("toast.invoiceDeleted"), variant: "success" });
     },
     onError: (error: Error) => {
       logger.error("delete_invoice_failed", { error: error.message });
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: i18next.t("toast.error"), description: error.message, variant: "destructive" });
     },
   });
 }
