@@ -95,7 +95,7 @@ Copy `apps/api/.env.example` to `apps/api/.env` and fill in the required values.
 | `GITHUB_CLIENT_ID` | No | — | GitHub OAuth client ID |
 | `GITHUB_CLIENT_SECRET` | No | — | GitHub OAuth client secret |
 | `INVOICETRONIC_API_KEY` | No | — | Invoicetronic SDI API key (Phase 3) |
-| `INVOICETRONIC_BASE_URL` | No | — | Invoicetronic API base URL (Phase 3) |
+| `INVOICETRONIC_BASE_URL` | No | `https://api.invoicetronic.com` | Invoicetronic API base URL (Phase 3) |
 
 > OAuth providers are optional — the app works with email/password auth alone.
 
@@ -115,8 +115,9 @@ Copy `apps/api/.env.example` to `apps/api/.env` and fill in the required values.
 
 The test suite has two layers:
 
-**Unit + integration tests** (`pnpm test`) — 119 tests across three packages:
+**Unit + integration tests** (`pnpm test`) — 168 tests across four packages:
 - `packages/shared` — tax calculation engine, Zod schemas
+- `packages/fattura-xml` — FatturaPA XML builder and validators
 - `apps/api` — route handlers (tested with Fastify's `inject`)
 - `apps/web` — TanStack Query hooks, invoice calculation logic
 
@@ -133,10 +134,15 @@ E2E tests require both the API and web dev servers to be running (`pnpm dev`).
 |---|---|---|
 | GET | `/health` | Health check |
 | ALL | `/api/auth/*` | Authentication (Better Auth) |
+| GET | `/api/profile` | Get authenticated user profile |
+| PUT | `/api/profile` | Update user profile |
 | GET/POST | `/api/clients` | List / Create clients |
 | GET/PUT/DELETE | `/api/clients/:id` | Get / Update / Delete client |
 | GET/POST | `/api/invoices` | List / Create invoices |
 | GET/DELETE | `/api/invoices/:id` | Get / Delete invoice |
+| GET | `/api/invoices/:id/xml/validate` | Validate invoice for FatturaPA XML generation |
+| GET | `/api/invoices/:id/xml` | Generate and download FatturaPA XML file |
+| GET | `/api/invoices/:id/pdf` | Generate and download invoice PDF |
 | POST | `/api/taxes/imposta` | Calculate imposta sostitutiva |
 | POST | `/api/taxes/inps` | Calculate INPS contributions |
 | POST | `/api/taxes/acconto-saldo` | Calculate acconto/saldo breakdown |
@@ -175,7 +181,9 @@ Turborepo orchestrates builds and tests. Shared code lives in `packages/shared` 
 
 - [x] Phase 1: Foundation (monorepo, auth, DB, i18n)
 - [x] Phase 2: Core Invoicing (clients, invoices, preview, e2e tests)
-- [ ] Phase 3: FatturaPA XML + SDI Integration
+- [x] Phase 2.5: Error Handling & Notifications (toast system, form validation errors, error boundary, structured logging)
+- [x] Phase 3: FatturaPA XML + PDF export (XML builder, business rules validator, PDF generation, profile management)
+- [ ] Phase 3.5: SDI Integration (Invoicetronic API)
 - [ ] Phase 4: Tax Calculation Engine (UI)
 - [ ] Phase 5: F24 Form Generation
 - [ ] Phase 6: Polish & Production Readiness
