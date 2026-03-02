@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { toast } from "@/hooks/use-toast";
+import { logger } from "@/lib/logger";
 
 export interface Client {
   id: string;
@@ -60,6 +62,11 @@ export function useCreateClient() {
       api.post<Client>("/clients", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
+      toast({ title: "Client created", variant: "success" });
+    },
+    onError: (error: Error) => {
+      logger.error("create_client_failed", { error: error.message });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     },
   });
 }
@@ -73,6 +80,11 @@ export function useUpdateClient() {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
       queryClient.invalidateQueries({ queryKey: ["clients", id] });
+      toast({ title: "Client updated", variant: "success" });
+    },
+    onError: (error: Error) => {
+      logger.error("update_client_failed", { error: error.message });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     },
   });
 }
@@ -84,6 +96,11 @@ export function useDeleteClient() {
     mutationFn: (id: string) => api.delete(`/clients/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
+      toast({ title: "Client deleted", variant: "success" });
+    },
+    onError: (error: Error) => {
+      logger.error("delete_client_failed", { error: error.message });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     },
   });
 }

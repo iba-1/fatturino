@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { toast } from "@/hooks/use-toast";
+import { logger } from "@/lib/logger";
 
 export interface UserProfile {
   id: string;
@@ -52,6 +54,11 @@ export function useSaveProfile() {
       api.put<UserProfile>("/profile", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      toast({ title: "Profile saved", variant: "success" });
+    },
+    onError: (error: Error) => {
+      logger.error("save_profile_failed", { error: error.message });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     },
   });
 }
