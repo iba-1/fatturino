@@ -221,3 +221,37 @@ The tax calculator for regime forfettario. Input your annual revenue and ATECO c
 - Imposta sostitutiva due
 - INPS contributions
 - Acconto and saldo breakdown with codici tributo
+
+### How-to Guides
+
+#### Create a client
+
+1. Click **Clients** in the sidebar.
+2. Click **New Client**.
+3. Fill in the client's name, tax code or VAT number, and address.
+4. Click **Save**. The client now appears in your registry and can be selected when creating invoices.
+
+#### Create an invoice
+
+1. Click **Invoices** in the sidebar.
+2. Click **New Invoice**.
+3. Select a client from the dropdown.
+4. Set the invoice date and your payment terms.
+5. Add one or more line items — enter a description, quantity, and unit price. The line total updates automatically.
+6. The subtotal, bollo (if applicable), and total are calculated automatically.
+7. Click **Save as Draft** to save without issuing, or **Issue** to finalize.
+
+#### Preview an invoice
+
+1. Open any invoice from the Invoices list.
+2. Click **Preview**. A print-ready view opens in the browser.
+3. Use your browser's print function (`Cmd+P` / `Ctrl+P`) to export as PDF.
+
+#### Calculate your taxes
+
+1. Click **Taxes** in the sidebar.
+2. Enter your total annual revenue (fatturato).
+3. Select your ATECO code from the dropdown.
+4. Select whether you are in your first 5 years of activity (5% rate) or not (15% rate).
+5. Choose your INPS regime (Gestione Separata or Artigiani/Commercianti).
+6. The app calculates imposta sostitutiva, INPS contributions, and the acconto/saldo split.
