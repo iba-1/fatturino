@@ -150,6 +150,27 @@ The tax engine in `packages/shared/tax/` implements:
 3. **INPS contributions** — Gestione Separata (26.07%) or Artigiani/Commercianti (fixed + variable, with 35% forfettari discount)
 4. **Acconto/saldo** — Payment installment calculation with correct codici tributo
 
+## Architecture Notes
+
+### Authentication
+
+Auth is handled by [Better Auth](https://www.better-auth.com/), mounted at `/api/auth/*` as a Fastify plugin. Sessions are cookie-based.
+
+Two important quirks:
+- **Body parser conflict:** Fastify's default body parser consumes the request body before Better Auth can read it. The auth plugin calls `fastify.removeAllContentTypeParsers()` and registers a no-op wildcard parser so Better Auth gets the raw stream.
+- **Auth client baseURL:** The frontend auth client uses `window.location.origin` as `baseURL` (not a hardcoded URL) so cookies are set on the correct origin in both dev and production.
+
+### Database
+
+- **ORM:** Drizzle ORM with PostgreSQL via the `postgres` driver
+- **Schema:** `apps/api/src/db/schema.ts`
+- **Migrations:** Generated with `pnpm db:generate`, applied with `pnpm db:migrate`. Use `pnpm db:push` in development only (bypasses migration history).
+- **Primary keys:** Better Auth tables use `text` PKs (not UUID) — Better Auth generates its own string IDs.
+
+### Monorepo
+
+Turborepo orchestrates builds and tests. Shared code lives in `packages/shared` (tax engine, Zod schemas, TypeScript types) and is consumed by both `apps/api` and `apps/web` without duplication.
+
 ## Implementation Status
 
 - [x] Phase 1: Foundation (monorepo, auth, DB, i18n)
