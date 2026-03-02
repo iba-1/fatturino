@@ -6,6 +6,7 @@ import {
   integer,
   numeric,
   timestamp,
+  boolean,
   jsonb,
   pgEnum,
 } from "drizzle-orm/pg-core";
@@ -52,19 +53,23 @@ export const tipoF24Enum = pgEnum("tipo_f24", [
 
 // --- Tables ---
 
+// --- Better Auth tables ---
+// Better Auth generates its own random string IDs (not UUIDs),
+// so these tables use text primary keys instead of uuid.
+
 export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id").primaryKey(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }).notNull(),
-  emailVerified: timestamp("email_verified", { withTimezone: true }),
+  emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const sessions = pgTable("sessions", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  id: text("id").primaryKey(),
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   token: text("token").notNull().unique(),
@@ -76,8 +81,8 @@ export const sessions = pgTable("sessions", {
 });
 
 export const accounts = pgTable("accounts", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  id: text("id").primaryKey(),
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   accountId: text("account_id").notNull(),
@@ -94,7 +99,7 @@ export const accounts = pgTable("accounts", {
 });
 
 export const verifications = pgTable("verifications", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
@@ -104,7 +109,7 @@ export const verifications = pgTable("verifications", {
 
 export const userProfiles = pgTable("user_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" })
     .unique(),
@@ -127,7 +132,7 @@ export const userProfiles = pgTable("user_profiles", {
 
 export const clients = pgTable("clients", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   tipo: tipoClienteEnum("tipo").notNull(),
@@ -149,7 +154,7 @@ export const clients = pgTable("clients", {
 
 export const invoices = pgTable("invoices", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   clientId: uuid("client_id")
@@ -187,7 +192,7 @@ export const invoiceLines = pgTable("invoice_lines", {
 
 export const taxPeriods = pgTable("tax_periods", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   anno: integer("anno").notNull(),
@@ -206,7 +211,7 @@ export const taxPeriods = pgTable("tax_periods", {
 
 export const inpsContributions = pgTable("inps_contributions", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   anno: integer("anno").notNull(),
@@ -224,7 +229,7 @@ export const inpsContributions = pgTable("inps_contributions", {
 
 export const f24Forms = pgTable("f24_forms", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   anno: integer("anno").notNull(),

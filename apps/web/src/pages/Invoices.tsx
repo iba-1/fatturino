@@ -69,9 +69,9 @@ export function Invoices() {
 
   function handleDelete() {
     if (!deletingInvoice) return;
-    deleteInvoice.mutate(deletingInvoice.id, {
-      onSuccess: () => setDeletingInvoice(undefined),
-    });
+    const id = deletingInvoice.id;
+    setDeletingInvoice(undefined);
+    deleteInvoice.mutate(id);
   }
 
   if (isError) {

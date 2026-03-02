@@ -71,11 +71,9 @@ export function Clients() {
 
   function handleDelete() {
     if (!deletingClient) return;
-    deleteClient.mutate(deletingClient.id, {
-      onSuccess: () => {
-        setDeletingClient(undefined);
-      },
-    });
+    const id = deletingClient.id;
+    setDeletingClient(undefined);
+    deleteClient.mutate(id);
   }
 
   function getClientDisplayName(client: Client): string {
