@@ -10,9 +10,10 @@ interface ProfileFormProps {
   profile?: UserProfile;
   onSubmit: (data: ProfileFormData) => void;
   isLoading: boolean;
+  serverErrors?: Record<string, string>;
 }
 
-export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) {
+export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }: ProfileFormProps) {
   const { t } = useTranslation();
 
   const [ragioneSociale, setRagioneSociale] = useState("");
@@ -84,6 +85,9 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
                 onChange={(e) => setRagioneSociale(e.target.value)}
                 required
               />
+              {serverErrors.ragioneSociale && (
+                <p className="text-sm text-destructive">{serverErrors.ragioneSociale}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="partitaIva">{t("settings.vatNumber")}</Label>
@@ -94,6 +98,9 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
                 maxLength={11}
                 required
               />
+              {serverErrors.partitaIva && (
+                <p className="text-sm text-destructive">{serverErrors.partitaIva}</p>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -106,6 +113,9 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
                 maxLength={16}
                 required
               />
+              {serverErrors.codiceFiscale && (
+                <p className="text-sm text-destructive">{serverErrors.codiceFiscale}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="codiceAteco">{t("settings.atecoCode")}</Label>
@@ -115,6 +125,9 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
                 onChange={(e) => setCodiceAteco(e.target.value)}
                 required
               />
+              {serverErrors.codiceAteco && (
+                <p className="text-sm text-destructive">{serverErrors.codiceAteco}</p>
+              )}
             </div>
           </div>
           <div className="space-y-2">
@@ -125,6 +138,9 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
               onChange={(e) => setIndirizzo(e.target.value)}
               required
             />
+            {serverErrors.indirizzo && (
+              <p className="text-sm text-destructive">{serverErrors.indirizzo}</p>
+            )}
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
@@ -136,6 +152,9 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
                 maxLength={5}
                 required
               />
+              {serverErrors.cap && (
+                <p className="text-sm text-destructive">{serverErrors.cap}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="citta">{t("settings.city")}</Label>
@@ -145,6 +164,9 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
                 onChange={(e) => setCitta(e.target.value)}
                 required
               />
+              {serverErrors.citta && (
+                <p className="text-sm text-destructive">{serverErrors.citta}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="provincia">{t("settings.province")}</Label>
@@ -155,6 +177,9 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
                 maxLength={2}
                 required
               />
+              {serverErrors.provincia && (
+                <p className="text-sm text-destructive">{serverErrors.provincia}</p>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -167,6 +192,9 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
                 onChange={(e) => setPec(e.target.value)}
                 placeholder="email@pec.it"
               />
+              {serverErrors.pec && (
+                <p className="text-sm text-destructive">{serverErrors.pec}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="codiceSdi">{t("settings.sdiCode")}</Label>
@@ -177,6 +205,9 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
                 maxLength={7}
                 placeholder="0000000"
               />
+              {serverErrors.codiceSdi && (
+                <p className="text-sm text-destructive">{serverErrors.codiceSdi}</p>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -187,6 +218,9 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
                 value={iban}
                 onChange={(e) => setIban(e.target.value)}
               />
+              {serverErrors.iban && (
+                <p className="text-sm text-destructive">{serverErrors.iban}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="annoInizioAttivita">
@@ -201,6 +235,9 @@ export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) 
                 }
                 required
               />
+              {serverErrors.annoInizioAttivita && (
+                <p className="text-sm text-destructive">{serverErrors.annoInizioAttivita}</p>
+              )}
             </div>
           </div>
           <Button type="submit" disabled={isLoading}>

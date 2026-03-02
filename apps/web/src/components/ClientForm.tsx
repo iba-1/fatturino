@@ -17,9 +17,10 @@ interface ClientFormProps {
   onSubmit: (data: CreateClientData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  serverErrors?: Record<string, string>;
 }
 
-export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientFormProps) {
+export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors = {} }: ClientFormProps) {
   const { t } = useTranslation();
   const isEdit = !!client;
 
@@ -107,6 +108,9 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
             <SelectItem value="persona_fisica">{t("clients.individual")}</SelectItem>
           </SelectContent>
         </Select>
+        {serverErrors.tipo && (
+          <p className="text-sm text-destructive">{serverErrors.tipo}</p>
+        )}
       </div>
 
       {tipo === "persona_giuridica" && (
@@ -117,8 +121,8 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
             value={ragioneSociale}
             onChange={(e) => setRagioneSociale(e.target.value)}
           />
-          {errors.ragioneSociale && (
-            <p className="text-sm text-destructive">{errors.ragioneSociale}</p>
+          {(errors.ragioneSociale || serverErrors.ragioneSociale) && (
+            <p className="text-sm text-destructive">{errors.ragioneSociale || serverErrors.ragioneSociale}</p>
           )}
         </div>
       )}
@@ -132,6 +136,9 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
               value={nome}
               onChange={(e) => setNome(e.target.value)}
             />
+            {serverErrors.nome && (
+              <p className="text-sm text-destructive">{serverErrors.nome}</p>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="cognome">{t("clients.lastName")}</Label>
@@ -140,6 +147,9 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
               value={cognome}
               onChange={(e) => setCognome(e.target.value)}
             />
+            {serverErrors.cognome && (
+              <p className="text-sm text-destructive">{serverErrors.cognome}</p>
+            )}
           </div>
         </div>
       )}
@@ -152,8 +162,8 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
             value={codiceFiscale}
             onChange={(e) => setCodiceFiscale(e.target.value)}
           />
-          {errors.codiceFiscale && (
-            <p className="text-sm text-destructive">{errors.codiceFiscale}</p>
+          {(errors.codiceFiscale || serverErrors.codiceFiscale) && (
+            <p className="text-sm text-destructive">{errors.codiceFiscale || serverErrors.codiceFiscale}</p>
           )}
         </div>
         <div className="space-y-2">
@@ -164,8 +174,8 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
             onChange={(e) => setPartitaIva(e.target.value)}
             placeholder="12345678901"
           />
-          {errors.partitaIva && (
-            <p className="text-sm text-destructive">{errors.partitaIva}</p>
+          {(errors.partitaIva || serverErrors.partitaIva) && (
+            <p className="text-sm text-destructive">{errors.partitaIva || serverErrors.partitaIva}</p>
           )}
         </div>
       </div>
@@ -177,8 +187,8 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
           value={indirizzo}
           onChange={(e) => setIndirizzo(e.target.value)}
         />
-        {errors.indirizzo && (
-          <p className="text-sm text-destructive">{errors.indirizzo}</p>
+        {(errors.indirizzo || serverErrors.indirizzo) && (
+          <p className="text-sm text-destructive">{errors.indirizzo || serverErrors.indirizzo}</p>
         )}
       </div>
 
@@ -191,8 +201,8 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
             onChange={(e) => setCap(e.target.value)}
             placeholder="00100"
           />
-          {errors.cap && (
-            <p className="text-sm text-destructive">{errors.cap}</p>
+          {(errors.cap || serverErrors.cap) && (
+            <p className="text-sm text-destructive">{errors.cap || serverErrors.cap}</p>
           )}
         </div>
         <div className="space-y-2">
@@ -202,8 +212,8 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
             value={citta}
             onChange={(e) => setCitta(e.target.value)}
           />
-          {errors.citta && (
-            <p className="text-sm text-destructive">{errors.citta}</p>
+          {(errors.citta || serverErrors.citta) && (
+            <p className="text-sm text-destructive">{errors.citta || serverErrors.citta}</p>
           )}
         </div>
         <div className="space-y-2">
@@ -215,8 +225,8 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
             placeholder="RM"
             maxLength={2}
           />
-          {errors.provincia && (
-            <p className="text-sm text-destructive">{errors.provincia}</p>
+          {(errors.provincia || serverErrors.provincia) && (
+            <p className="text-sm text-destructive">{errors.provincia || serverErrors.provincia}</p>
           )}
         </div>
       </div>
@@ -231,6 +241,9 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
             onChange={(e) => setPec(e.target.value)}
             placeholder="email@pec.it"
           />
+          {serverErrors.pec && (
+            <p className="text-sm text-destructive">{serverErrors.pec}</p>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="codiceSdi">{t("clients.sdiCode")}</Label>
@@ -241,6 +254,9 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading }: ClientForm
             placeholder="0000000"
             maxLength={7}
           />
+          {serverErrors.codiceSdi && (
+            <p className="text-sm text-destructive">{serverErrors.codiceSdi}</p>
+          )}
         </div>
       </div>
 

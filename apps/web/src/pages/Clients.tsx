@@ -36,6 +36,7 @@ import {
   type Client,
   type CreateClientData,
 } from "@/hooks/use-clients";
+import { parseApiFieldErrors } from "@/lib/api";
 import { Pencil, Trash2, Plus } from "lucide-react";
 
 export function Clients() {
@@ -48,23 +49,24 @@ export function Clients() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | undefined>();
   const [deletingClient, setDeletingClient] = useState<Client | undefined>();
+  const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
 
   function handleCreate(data: CreateClientData) {
+    setServerErrors({});
     createClient.mutate(data, {
-      onSuccess: () => {
-        setFormOpen(false);
-      },
+      onSuccess: () => setFormOpen(false),
+      onError: (error) => setServerErrors(parseApiFieldErrors(error)),
     });
   }
 
   function handleUpdate(data: CreateClientData) {
     if (!editingClient) return;
+    setServerErrors({});
     updateClient.mutate(
       { id: editingClient.id, data },
       {
-        onSuccess: () => {
-          setEditingClient(undefined);
-        },
+        onSuccess: () => setEditingClient(undefined),
+        onError: (error) => setServerErrors(parseApiFieldErrors(error)),
       }
     );
   }
@@ -164,7 +166,7 @@ export function Clients() {
       </div>
 
       {/* Create Dialog */}
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+      <Dialog open={formOpen} onOpenChange={(open) => { setFormOpen(open); if (!open) setServerErrors({}); }}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{t("clients.new")}</DialogTitle>
@@ -174,6 +176,7 @@ export function Clients() {
             onSubmit={handleCreate}
             onCancel={() => setFormOpen(false)}
             isLoading={createClient.isPending}
+            serverErrors={serverErrors}
           />
         </DialogContent>
       </Dialog>
@@ -181,7 +184,7 @@ export function Clients() {
       {/* Edit Dialog */}
       <Dialog
         open={!!editingClient}
-        onOpenChange={(open) => !open && setEditingClient(undefined)}
+        onOpenChange={(open) => { if (!open) { setEditingClient(undefined); setServerErrors({}); } }}
       >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -194,6 +197,7 @@ export function Clients() {
               onSubmit={handleUpdate}
               onCancel={() => setEditingClient(undefined)}
               isLoading={updateClient.isPending}
+              serverErrors={serverErrors}
             />
           )}
         </DialogContent>

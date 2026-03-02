@@ -22,6 +22,7 @@ interface InvoiceFormProps {
   onSubmit: (data: CreateInvoiceData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  serverErrors?: Record<string, string>;
 }
 
 function emptyLine(): CreateInvoiceLineData {
@@ -38,7 +39,7 @@ export function calculateSubtotal(lines: CreateInvoiceLineData[]): number {
   ) / 100;
 }
 
-export function InvoiceForm({ clients, onSubmit, onCancel, isLoading }: InvoiceFormProps) {
+export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErrors = {} }: InvoiceFormProps) {
   const { t } = useTranslation();
 
   const [clientId, setClientId] = useState("");
@@ -137,8 +138,8 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading }: InvoiceF
               ))}
             </SelectContent>
           </Select>
-          {errors.clientId && (
-            <p className="text-sm text-destructive">{errors.clientId}</p>
+          {(errors.clientId || serverErrors.clientId) && (
+            <p className="text-sm text-destructive">{errors.clientId || serverErrors.clientId}</p>
           )}
         </div>
         <div className="space-y-2">
@@ -149,8 +150,8 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading }: InvoiceF
             value={dataEmissione}
             onChange={(e) => setDataEmissione(e.target.value)}
           />
-          {errors.dataEmissione && (
-            <p className="text-sm text-destructive">{errors.dataEmissione}</p>
+          {(errors.dataEmissione || serverErrors.dataEmissione) && (
+            <p className="text-sm text-destructive">{errors.dataEmissione || serverErrors.dataEmissione}</p>
           )}
         </div>
       </div>
@@ -168,6 +169,9 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading }: InvoiceF
               <SelectItem value="TD24">TD24 — Fattura differita</SelectItem>
             </SelectContent>
           </Select>
+          {serverErrors.tipoDocumento && (
+            <p className="text-sm text-destructive">{serverErrors.tipoDocumento}</p>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="causale">Causale</Label>
@@ -177,6 +181,9 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading }: InvoiceF
             onChange={(e) => setCausale(e.target.value)}
             placeholder="Descrizione della prestazione"
           />
+          {serverErrors.causale && (
+            <p className="text-sm text-destructive">{serverErrors.causale}</p>
+          )}
         </div>
       </div>
 
@@ -192,8 +199,8 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading }: InvoiceF
           </Button>
         </div>
 
-        {errors.lines && (
-          <p className="text-sm text-destructive mb-2">{errors.lines}</p>
+        {(errors.lines || serverErrors.lines) && (
+          <p className="text-sm text-destructive mb-2">{errors.lines || serverErrors.lines}</p>
         )}
 
         <div className="space-y-3">
