@@ -1,0 +1,119 @@
+name: Dep Check
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '**/package.json'
+      - '**/pnpm-lock.yaml'
+
+concurrency:
+  group: dep-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dep-check:
+    name: Dependency Hygiene
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Run dep-check analysis
+        id: analysis
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          RESULT=$(node .github/scripts/dep-check.mjs)
+          echo "result<<EOF" >> $GITHUB_OUTPUT
+          echo "$RESULT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post dep-check comment
+        uses: actions/github-script@v7
+        env:
+          ANALYSIS: ${{ steps.analysis.outputs.result }}
+        with:
+          script: |
+            const data = JSON.parse(process.env.ANALYSIS)
+            const { added, updated, removed, audit } = data
+
+            const fmtSize = (bytes) => {
+              if (bytes == null) return '—'
+              if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)}MB`
+              if (bytes >= 1024) return `${(bytes / 1024).toFixed(1)}kB`
+              return `${bytes}B`
+            }
+
+            const sections = []
+
+            if (added.length) {
+              const rows = added.map(p => {
+                const lic = `${p.license} ${p.licenseOk ? '✅' : '⚠️'}`
+                const size = p.size != null ? `${fmtSize(p.size)} / ${fmtSize(p.gzip)} gz` : '—'
+                return `| \`${p.name}\` | ${p.version} | ${lic} | ${size} |`
+              }).join('\n')
+              sections.push(`### Added (${added.length})\n| Package | Version | License | Min / Gzip |\n|---------|---------|---------|------------|\n${rows}`)
+            }
+
+            if (updated.length) {
+              const rows = updated.map(p => `| \`${p.name}\` | ${p.from} | ${p.to} |`).join('\n')
+              sections.push(`### Updated (${updated.length})\n| Package | From | To |\n|---------|------|----|  \n${rows}`)
+            }
+
+            if (removed.length) {
+              const list = removed.map(p => `- \`${p.name}\` (${p.version})`).join('\n')
+              sections.push(`### Removed (${removed.length})\n${list}`)
+            }
+
+            if (!added.length && !updated.length && !removed.length) {
+              sections.push('_No dependency changes detected in lockfile._')
+            }
+
+            const auditSection = audit.length
+              ? `### 🔐 Audit\n${audit.map(a => `- **${a.severity}** [\`${a.name}\`](${a.url}): ${a.title}`).join('\n')}`
+              : `### 🔐 Audit\nNo vulnerabilities found in changed packages.`
+            sections.push(auditSection)
+
+            const body = [
+              '## 📦 Dependency Changes',
+              '',
+              ...sections,
+              '',
+              `> Run [#${context.runNumber}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+            ].join('\n\n')
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const existing = comments.find(c => c.user.type === 'Bot' && c.body.startsWith('## 📦 Dependency Changes'))
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              })
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              })
+            }
