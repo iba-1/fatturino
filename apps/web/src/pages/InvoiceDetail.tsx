@@ -2,11 +2,12 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { InvoicePreview } from "@/components/InvoicePreview";
-import { useInvoice, useValidateInvoice } from "@/hooks/use-invoices";
+import { useInvoice, useValidateInvoice, useSendInvoice } from "@/hooks/use-invoices";
 import { useClient } from "@/hooks/use-clients";
 import { useProfile } from "@/hooks/use-profile";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, FileCheck, FileDown, FileText, AlertTriangle } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { ArrowLeft, FileCheck, FileDown, FileText, AlertTriangle, Pencil, Send } from "lucide-react";
 import { api } from "@/lib/api";
 
 export function InvoiceDetail() {
@@ -17,10 +18,17 @@ export function InvoiceDetail() {
   const { data: client } = useClient(invoice?.clientId ?? "");
   const { data: profile } = useProfile();
   const { data: validation, refetch: validate, isFetching: isValidating } = useValidateInvoice(id ?? "");
+  const sendInvoice = useSendInvoice();
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [showSendConfirm, setShowSendConfirm] = useState(false);
 
   if (isLoading) {
-    return <p className="text-muted-foreground">{t("common.loading")}</p>;
+    return (
+      <div className="space-y-4">
+        <div className="h-8 w-48 rounded-lg bg-secondary animate-skeleton" />
+        <div className="h-64 rounded-xl bg-secondary animate-skeleton" />
+      </div>
+    );
   }
 
   if (isError || !invoice) {
@@ -65,13 +73,29 @@ export function InvoiceDetail() {
         <Button variant="ghost" size="icon" onClick={() => navigate("/invoices")}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-3xl font-bold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight">
           Fattura {invoice.numeroFattura}/{invoice.anno}
         </h1>
       </div>
 
       {/* Action bar */}
       <div className="flex gap-2 mb-4">
+        {invoice.stato === "bozza" && (
+          <Button variant="outline" onClick={() => navigate(`/invoices/${id}/edit`)}>
+            <Pencil className="h-4 w-4 mr-2" />
+            {t("common.edit")}
+          </Button>
+        )}
+        {invoice.stato === "bozza" && (
+          <Button
+            variant="default"
+            onClick={() => setShowSendConfirm(true)}
+            disabled={!hasProfile || sendInvoice.isPending}
+          >
+            <Send className="h-4 w-4 mr-2" />
+            {sendInvoice.isPending ? t("common.loading") : t("invoices.send")}
+          </Button>
+        )}
         <Button variant="outline" onClick={handleValidate} disabled={isValidating || !hasProfile}>
           <FileCheck className="h-4 w-4 mr-2" />
           {t("invoices.validate")}
@@ -88,7 +112,7 @@ export function InvoiceDetail() {
 
       {/* Missing profile banner */}
       {!hasProfile && (
-        <div data-testid="missing-profile-banner" className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md flex items-center gap-2">
+        <div data-testid="missing-profile-banner" className="mb-4 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-yellow-600" />
           <span className="text-sm text-yellow-800">
             {t("invoices.missingProfile")}{" "}
@@ -99,7 +123,7 @@ export function InvoiceDetail() {
 
       {/* Validation errors */}
       {validation && !validation.valid && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+        <div className="mb-4 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
           <h3 className="text-sm font-semibold text-red-800 mb-2">{t("invoices.validationErrors")}</h3>
           <ul className="text-sm text-red-700 space-y-1">
             {validation.errors.map((err, i) => (
@@ -118,12 +142,34 @@ export function InvoiceDetail() {
 
       {/* Download error */}
       {downloadError && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+        <div className="mb-4 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
           <p className="text-sm text-red-800">{downloadError}</p>
         </div>
       )}
 
       <InvoicePreview invoice={invoice} client={client} />
+
+      <AlertDialog open={showSendConfirm} onOpenChange={setShowSendConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("invoices.sendConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("invoices.sendConfirmDescription")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowSendConfirm(false);
+                sendInvoice.mutate(id!);
+              }}
+            >
+              {t("invoices.send")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

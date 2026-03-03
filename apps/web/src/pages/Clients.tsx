@@ -37,7 +37,7 @@ import {
   type CreateClientData,
 } from "@/hooks/use-clients";
 import { parseApiFieldErrors } from "@/lib/api";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, Users } from "lucide-react";
 
 export function Clients() {
   const { t } = useTranslation();
@@ -94,7 +94,7 @@ export function Clients() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">{t("clients.title")}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("clients.title")}</h1>
         <Button onClick={() => setFormOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           {t("clients.new")}
@@ -103,12 +103,20 @@ export function Clients() {
 
       <div className="mt-6">
         {isLoading ? (
-          <p className="text-muted-foreground">{t("common.loading")}</p>
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-14 rounded-lg bg-secondary animate-skeleton" />
+            ))}
+          </div>
         ) : !clients || clients.length === 0 ? (
-          <div className="text-center py-12 border rounded-lg">
-            <p className="text-muted-foreground" data-testid="empty-state">
-              {t("clients.title")} — {t("clients.new")}
-            </p>
+          <div className="text-center py-16">
+            <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
+            <h3 className="mt-4 text-lg font-medium">{t("clients.noClients")}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">{t("clients.createFirst")}</p>
+            <Button className="mt-4" onClick={() => setFormOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t("clients.new")}
+            </Button>
           </div>
         ) : (
           <Table>

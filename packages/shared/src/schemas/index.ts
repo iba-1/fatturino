@@ -63,6 +63,7 @@ export const createClientSchema = z.object({
   codiceFiscale: z.string().min(1),
   codiceSdi: z.string().length(7).optional(),
   pec: z.string().email().optional(),
+  email: z.string().email().optional(),
   indirizzo: z.string().min(1),
   cap: z.string().regex(/^\d{5}$/),
   citta: z.string().min(1),
@@ -123,6 +124,14 @@ export const tipoDocumentoSchema = z.enum([
 ]);
 
 export const createInvoiceSchema = z.object({
+  clientId: z.string().uuid(),
+  tipoDocumento: tipoDocumentoSchema.default("TD01"),
+  causale: z.string().optional(),
+  dataEmissione: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  lines: z.array(createInvoiceLineSchema).min(1),
+});
+
+export const updateInvoiceSchema = z.object({
   clientId: z.string().uuid(),
   tipoDocumento: tipoDocumentoSchema.default("TD01"),
   causale: z.string().optional(),

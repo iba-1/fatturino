@@ -44,6 +44,7 @@
     "invoicesSent": "Fatture Inviate",
     "pendingInvoices": "Fatture in Bozza",
     "taxDue": "Imposte Dovute",
+    "netIncome": "Reddito Netto",
     "year": "Anno",
     "monthlyRevenue": "Fatturato Mensile",
     "recentInvoices": "Fatture Recenti",
@@ -90,7 +91,11 @@
     "missingProfile": "Completa il tuo profilo per generare fatture elettroniche.",
     "goToSettings": "Vai alle impostazioni",
     "validationErrors": "Errori di validazione",
-    "validationSuccess": "Fattura valida — pronta per il download XML."
+    "validationSuccess": "Fattura valida — pronta per il download XML.",
+    "edit": "Modifica Fattura",
+    "send": "Invia Fattura",
+    "sendConfirmTitle": "Inviare la fattura?",
+    "sendConfirmDescription": "La fattura verrà inviata via email al cliente e contrassegnata come inviata. Questa azione non può essere annullata."
   },
   "clients": {
     "title": "Clienti",
@@ -107,6 +112,7 @@
     "country": "Nazione",
     "pec": "PEC",
     "sdiCode": "Codice SDI",
+    "email": "Email",
     "type": "Tipo",
     "individual": "Persona Fisica",
     "business": "Persona Giuridica"
@@ -152,7 +158,9 @@
     "clientUpdated": "Cliente aggiornato",
     "clientDeleted": "Cliente eliminato",
     "invoiceCreated": "Fattura creata",
+    "invoiceUpdated": "Fattura aggiornata",
     "invoiceDeleted": "Fattura eliminata",
+    "invoiceSent": "Fattura inviata",
     "error": "Errore"
   }
 }

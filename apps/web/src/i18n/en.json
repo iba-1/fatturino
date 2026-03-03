@@ -44,6 +44,7 @@
     "invoicesSent": "Invoices Sent",
     "pendingInvoices": "Pending Invoices",
     "taxDue": "Tax Due",
+    "netIncome": "Net Income",
     "year": "Year",
     "monthlyRevenue": "Monthly Revenue",
     "recentInvoices": "Recent Invoices",
@@ -90,7 +91,11 @@
     "missingProfile": "Complete your profile to generate electronic invoices.",
     "goToSettings": "Go to settings",
     "validationErrors": "Validation errors",
-    "validationSuccess": "Invoice valid — ready for XML download."
+    "validationSuccess": "Invoice valid — ready for XML download.",
+    "edit": "Edit Invoice",
+    "send": "Send Invoice",
+    "sendConfirmTitle": "Send Invoice?",
+    "sendConfirmDescription": "This will email the invoice PDF to the client and mark it as sent. This action cannot be undone."
   },
   "clients": {
     "title": "Clients",
@@ -107,6 +112,7 @@
     "country": "Country",
     "pec": "PEC",
     "sdiCode": "SDI Code",
+    "email": "Email",
     "type": "Type",
     "individual": "Individual",
     "business": "Business"
@@ -152,7 +158,9 @@
     "clientUpdated": "Client updated",
     "clientDeleted": "Client deleted",
     "invoiceCreated": "Invoice created",
+    "invoiceUpdated": "Invoice updated",
     "invoiceDeleted": "Invoice deleted",
+    "invoiceSent": "Invoice sent",
     "error": "Error"
   }
 }

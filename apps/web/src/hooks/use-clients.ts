@@ -15,6 +15,7 @@ export interface Client {
   codiceFiscale: string;
   codiceSdi: string | null;
   pec: string | null;
+  email: string | null;
   indirizzo: string;
   cap: string;
   citta: string;
@@ -33,6 +34,7 @@ export interface CreateClientData {
   codiceFiscale: string;
   codiceSdi?: string;
   pec?: string;
+  email?: string;
   indirizzo: string;
   cap: string;
   citta: string;

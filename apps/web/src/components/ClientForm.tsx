@@ -34,6 +34,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
   const [codiceFiscale, setCodiceFiscale] = useState(client?.codiceFiscale ?? "");
   const [codiceSdi, setCodiceSdi] = useState(client?.codiceSdi ?? "");
   const [pec, setPec] = useState(client?.pec ?? "");
+  const [email, setEmail] = useState(client?.email ?? "");
   const [indirizzo, setIndirizzo] = useState(client?.indirizzo ?? "");
   const [cap, setCap] = useState(client?.cap ?? "");
   const [citta, setCitta] = useState(client?.citta ?? "");
@@ -91,6 +92,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
     if (partitaIva.trim()) data.partitaIva = partitaIva.trim();
     if (codiceSdi.trim()) data.codiceSdi = codiceSdi.trim();
     if (pec.trim()) data.pec = pec.trim();
+    if (email.trim()) data.email = email.trim();
 
     onSubmit(data);
   }
@@ -231,7 +233,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="pec">{t("clients.pec")}</Label>
           <Input
@@ -256,6 +258,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
           />
           {serverErrors.codiceSdi && (
             <p className="text-sm text-destructive">{serverErrors.codiceSdi}</p>
+          )}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="email">{t("clients.email")}</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="name@example.com"
+          />
+          {serverErrors.email && (
+            <p className="text-sm text-destructive">{serverErrors.email}</p>
           )}
         </div>
       </div>

@@ -104,6 +104,43 @@ export function useDeleteInvoice() {
   });
 }
 
+export function useUpdateInvoice() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: CreateInvoiceData }) =>
+      api.put<InvoiceWithLines>(`/invoices/${id}`, data),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["invoices", id] });
+      toast({ title: i18next.t("toast.invoiceUpdated"), variant: "success" });
+    },
+    onError: (error: Error) => {
+      logger.error("update_invoice_failed", { error: error.message });
+      toast({ title: i18next.t("toast.error"), description: error.message, variant: "destructive" });
+    },
+  });
+}
+
+export function useSendInvoice() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) =>
+      api.post<InvoiceWithLines>(`/invoices/${id}/send`, {}),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["invoices", id] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      toast({ title: i18next.t("toast.invoiceSent"), variant: "success" });
+    },
+    onError: (error: Error) => {
+      logger.error("send_invoice_failed", { error: error.message });
+      toast({ title: i18next.t("toast.error"), description: error.message, variant: "destructive" });
+    },
+  });
+}
+
 export interface ValidationError {
   code: string;
   field: string;

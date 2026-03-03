@@ -21,7 +21,7 @@ export function Settings() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold tracking-tight mb-6">
+      <h1 className="text-2xl font-semibold tracking-tight mb-6">
         {t("settings.title")}
       </h1>
       {isLoading ? (
