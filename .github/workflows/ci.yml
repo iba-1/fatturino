@@ -25,6 +25,19 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+
+      - name: Debug lucide-react types
+        run: |
+          echo "=== Symlink resolution ==="
+          ls -la apps/web/node_modules/lucide-react || echo "no direct link"
+          readlink -f apps/web/node_modules/lucide-react/dist/lucide-react.d.ts || echo "no d.ts"
+          echo "=== FileText in d.ts ==="
+          grep "declare const FileText" apps/web/node_modules/lucide-react/dist/lucide-react.d.ts | head -2 || echo "NOT FOUND"
+          echo "=== tsc --version ==="
+          pnpm --filter @fatturino/web exec tsc --version
+          echo "=== tsc --traceResolution (lucide-react) ==="
+          cd apps/web && npx tsc --noEmit --traceResolution 2>&1 | grep -A5 "lucide-react" | head -30
+
       - run: pnpm build
       - run: pnpm type-check
 
