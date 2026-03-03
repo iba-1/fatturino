@@ -161,6 +161,7 @@
     "invoiceUpdated": "Fattura aggiornata",
     "invoiceDeleted": "Fattura eliminata",
     "invoiceSent": "Fattura inviata",
+    "paymentRecorded": "Pagamento registrato",
     "error": "Errore"
   }
 }

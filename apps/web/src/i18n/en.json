@@ -161,6 +161,7 @@
     "invoiceUpdated": "Invoice updated",
     "invoiceDeleted": "Invoice deleted",
     "invoiceSent": "Invoice sent",
+    "paymentRecorded": "Payment recorded",
     "error": "Error"
   }
 }
