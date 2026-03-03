@@ -107,6 +107,7 @@
     "country": "Nazione",
     "pec": "PEC",
     "sdiCode": "Codice SDI",
+    "email": "Email",
     "type": "Tipo",
     "individual": "Persona Fisica",
     "business": "Persona Giuridica"

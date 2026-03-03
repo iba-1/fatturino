@@ -107,6 +107,7 @@
     "country": "Country",
     "pec": "PEC",
     "sdiCode": "SDI Code",
+    "email": "Email",
     "type": "Type",
     "individual": "Individual",
     "business": "Business"

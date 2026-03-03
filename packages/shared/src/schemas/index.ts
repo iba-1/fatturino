@@ -63,6 +63,7 @@ export const createClientSchema = z.object({
   codiceFiscale: z.string().min(1),
   codiceSdi: z.string().length(7).optional(),
   pec: z.string().email().optional(),
+  email: z.string().email().optional(),
   indirizzo: z.string().min(1),
   cap: z.string().regex(/^\d{5}$/),
   citta: z.string().min(1),
