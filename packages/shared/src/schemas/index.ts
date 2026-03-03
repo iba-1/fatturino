@@ -131,6 +131,14 @@ export const createInvoiceSchema = z.object({
   lines: z.array(createInvoiceLineSchema).min(1),
 });
 
+export const updateInvoiceSchema = z.object({
+  clientId: z.string().uuid(),
+  tipoDocumento: tipoDocumentoSchema.default("TD01"),
+  causale: z.string().optional(),
+  dataEmissione: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  lines: z.array(createInvoiceLineSchema).min(1),
+});
+
 export const invoiceSchema = z.object({
   id: z.string().uuid(),
   userId: z.string().uuid(),
