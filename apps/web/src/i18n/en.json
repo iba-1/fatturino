@@ -92,7 +92,10 @@
     "goToSettings": "Go to settings",
     "validationErrors": "Validation errors",
     "validationSuccess": "Invoice valid — ready for XML download.",
-    "edit": "Edit Invoice"
+    "edit": "Edit Invoice",
+    "send": "Send Invoice",
+    "sendConfirmTitle": "Send Invoice?",
+    "sendConfirmDescription": "This will email the invoice PDF to the client and mark it as sent. This action cannot be undone."
   },
   "clients": {
     "title": "Clients",
@@ -157,6 +160,7 @@
     "invoiceCreated": "Invoice created",
     "invoiceUpdated": "Invoice updated",
     "invoiceDeleted": "Invoice deleted",
+    "invoiceSent": "Invoice sent",
     "error": "Error"
   }
 }

@@ -2,11 +2,12 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { InvoicePreview } from "@/components/InvoicePreview";
-import { useInvoice, useValidateInvoice } from "@/hooks/use-invoices";
+import { useInvoice, useValidateInvoice, useSendInvoice } from "@/hooks/use-invoices";
 import { useClient } from "@/hooks/use-clients";
 import { useProfile } from "@/hooks/use-profile";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, FileCheck, FileDown, FileText, AlertTriangle, Pencil } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { ArrowLeft, FileCheck, FileDown, FileText, AlertTriangle, Pencil, Send } from "lucide-react";
 import { api } from "@/lib/api";
 
 export function InvoiceDetail() {
@@ -17,7 +18,9 @@ export function InvoiceDetail() {
   const { data: client } = useClient(invoice?.clientId ?? "");
   const { data: profile } = useProfile();
   const { data: validation, refetch: validate, isFetching: isValidating } = useValidateInvoice(id ?? "");
+  const sendInvoice = useSendInvoice();
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [showSendConfirm, setShowSendConfirm] = useState(false);
 
   if (isLoading) {
     return (
@@ -83,6 +86,16 @@ export function InvoiceDetail() {
             {t("common.edit")}
           </Button>
         )}
+        {invoice.stato === "bozza" && (
+          <Button
+            variant="default"
+            onClick={() => setShowSendConfirm(true)}
+            disabled={!hasProfile || sendInvoice.isPending}
+          >
+            <Send className="h-4 w-4 mr-2" />
+            {sendInvoice.isPending ? t("common.loading") : t("invoices.send")}
+          </Button>
+        )}
         <Button variant="outline" onClick={handleValidate} disabled={isValidating || !hasProfile}>
           <FileCheck className="h-4 w-4 mr-2" />
           {t("invoices.validate")}
@@ -135,6 +148,28 @@ export function InvoiceDetail() {
       )}
 
       <InvoicePreview invoice={invoice} client={client} />
+
+      <AlertDialog open={showSendConfirm} onOpenChange={setShowSendConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("invoices.sendConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("invoices.sendConfirmDescription")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowSendConfirm(false);
+                sendInvoice.mutate(id!);
+              }}
+            >
+              {t("invoices.send")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
