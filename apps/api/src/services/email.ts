@@ -1,6 +1,5 @@
 import { Resend } from "resend";
 
-<<<<<<< phase-5/invoice-editing-clean
 let _resend: Resend | null = null;
 
 function getResend(): Resend {
@@ -12,9 +11,7 @@ function getResend(): Resend {
   }
   return _resend;
 }
-=======
-const resend = new Resend(process.env.RESEND_API_KEY);
->>>>>>> main
+
 
 const FROM_EMAIL = process.env.FROM_EMAIL || "noreply@fatturino.app";
 
@@ -63,11 +60,7 @@ export async function sendInvoiceEmail(params: SendInvoiceEmailParams): Promise<
     </div>
   `;
 
-<<<<<<< phase-5/invoice-editing-clean
   const { data, error } = await getResend().emails.send({
-=======
-  const { data, error } = await resend.emails.send({
->>>>>>> main
     from: FROM_EMAIL,
     to: [to],
     bcc: bcc ? [bcc] : undefined,
