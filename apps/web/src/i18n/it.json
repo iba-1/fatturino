@@ -91,7 +91,10 @@
     "goToSettings": "Vai alle impostazioni",
     "validationErrors": "Errori di validazione",
     "validationSuccess": "Fattura valida — pronta per il download XML.",
-    "edit": "Modifica Fattura"
+    "edit": "Modifica Fattura",
+    "send": "Invia Fattura",
+    "sendConfirmTitle": "Inviare la fattura?",
+    "sendConfirmDescription": "La fattura verrà inviata via email al cliente e contrassegnata come inviata. Questa azione non può essere annullata."
   },
   "clients": {
     "title": "Clienti",
@@ -156,6 +159,7 @@
     "invoiceCreated": "Fattura creata",
     "invoiceUpdated": "Fattura aggiornata",
     "invoiceDeleted": "Fattura eliminata",
+    "invoiceSent": "Fattura inviata",
     "error": "Errore"
   }
 }
