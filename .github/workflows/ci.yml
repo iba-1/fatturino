@@ -96,6 +96,11 @@ jobs:
           cp apps/api/.env.example apps/api/.env
           sed -i 's|postgresql://fatturino:fatturino@localhost:5432/fatturino|postgresql://fatturino:fatturino@localhost:5432/fatturino_test|' apps/api/.env
           sed -i 's|change-me-to-a-random-secret|ci-test-secret-that-is-at-least-32-characters-long|' apps/api/.env
+          if [ -n "$RESEND_API_KEY" ]; then
+            sed -i "s|^RESEND_API_KEY=.*|RESEND_API_KEY=${RESEND_API_KEY}|" apps/api/.env
+          fi
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
       - name: Push DB schema
         run: pnpm db:push
