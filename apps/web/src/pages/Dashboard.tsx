@@ -63,24 +63,27 @@ export function Dashboard() {
         </div>
       )}
 
-      {/* Summary cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Bento grid: hero + stat cards */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {isLoading ? (
           <>
-            <div className="h-[106px] rounded-xl bg-secondary animate-skeleton" />
+            <div className="h-[240px] rounded-xl bg-secondary animate-skeleton md:col-span-2 lg:row-span-2" />
             <div className="h-[106px] rounded-xl bg-secondary animate-skeleton" />
             <div className="h-[106px] rounded-xl bg-secondary animate-skeleton" />
             <div className="h-[106px] rounded-xl bg-secondary animate-skeleton" />
           </>
         ) : (
           <>
-            <DashboardCard
-              title={t("dashboard.totalRevenue")}
-              value={formatEur(data?.totalRevenue ?? 0)}
-              icon={DollarSign}
-              iconBg="bg-emerald-100"
-              iconColor="text-emerald-700"
-            />
+            {/* Hero revenue card — 2 cols, 2 rows on desktop */}
+            <div className="md:col-span-2 lg:row-span-2">
+              <HeroRevenueCard
+                totalRevenue={data?.totalRevenue ?? 0}
+                chartData={chartData}
+                chartConfig={chartConfig}
+                year={anno}
+                t={t}
+              />
+            </div>
             <DashboardCard
               title={t("dashboard.invoicesSent")}
               value={String(data?.invoicesSent ?? 0)}
@@ -132,7 +135,7 @@ export function Dashboard() {
       {data && !data.profileIncomplete && (
         <div className="grid gap-4 md:grid-cols-3">
           {/* Imposta Sostitutiva */}
-          <Card>
+          <Card className="border-l-4 border-l-emerald-400">
             <CardHeader>
               <CardTitle className="text-base">{t("dashboard.impostaSostitutiva")}</CardTitle>
             </CardHeader>
@@ -166,7 +169,7 @@ export function Dashboard() {
           </Card>
 
           {/* INPS */}
-          <Card>
+          <Card className="border-l-4 border-l-blue-400">
             <CardHeader>
               <CardTitle className="text-base">{t("dashboard.inpsContributions")}</CardTitle>
             </CardHeader>
@@ -199,7 +202,7 @@ export function Dashboard() {
           </Card>
 
           {/* F24 Schedule */}
-          <Card>
+          <Card className="border-l-4 border-l-amber-400">
             <CardHeader>
               <CardTitle className="text-base">{t("dashboard.f24Schedule")}</CardTitle>
             </CardHeader>
@@ -262,6 +265,43 @@ export function Dashboard() {
             </table>
           </CardContent>
         </Card>
+      )}
+    </div>
+  );
+}
+
+function HeroRevenueCard({
+  totalRevenue,
+  chartData,
+  chartConfig,
+  year,
+  t,
+}: {
+  totalRevenue: number;
+  chartData: Array<{ month: string; revenue: number }>;
+  chartConfig: Record<string, { label: string; color: string }>;
+  year: number;
+  t: (key: string) => string;
+}) {
+  return (
+    <div className="flex h-full flex-col justify-between rounded-xl border border-emerald-200/60 bg-gradient-to-br from-emerald-50 via-emerald-100/80 to-teal-50 p-6 shadow-md">
+      <div>
+        <p className="text-sm font-medium text-emerald-700">
+          {t("dashboard.totalRevenue")} {year}
+        </p>
+        <p className="mt-2 text-4xl font-bold tracking-tight font-mono text-[#064E3B]">
+          {formatEur(totalRevenue)}
+        </p>
+      </div>
+      {chartData.length > 0 && (
+        <div className="mt-4">
+          <ChartContainer config={chartConfig} className="h-[150px] w-full">
+            <BarChart data={chartData}>
+              <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
+              <Bar dataKey="revenue" fill="var(--color-revenue)" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ChartContainer>
+        </div>
       )}
     </div>
   );
