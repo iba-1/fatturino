@@ -168,6 +168,10 @@ jobs:
 
             const statusIcon = (result) => result === 'success' ? '✅' : result === 'failure' ? '❌' : '⚠️'
 
+            // Strip ANSI escape codes and trim to a max number of lines
+            const cleanError = (msg, maxLines = 15) =>
+              msg.replace(/\x1b\[[0-9;]*m/g, '').trim().split('\n').slice(0, maxLines).join('\n')
+
             // --- Unit tests ---
             let unitSummary = `${statusIcon(process.env.UNIT_RESULT)} ${process.env.UNIT_RESULT}`
             let unitDetails = ''
@@ -183,7 +187,12 @@ jobs:
                 const file = suite.testFilePath.replace(/.*__tests__\//, '')
                 const rows = (suite.testResults ?? []).map(t => {
                   const icon = t.status === 'passed' ? '✅' : '❌'
-                  return `  ${icon} ${t.title} *(${t.duration}ms)*`
+                  let line = `  ${icon} ${t.title} *(${t.duration}ms)*`
+                  if (t.status === 'failed' && t.failureMessages?.length) {
+                    const msg = cleanError(t.failureMessages.join('\n---\n'))
+                    line += `\n  <details><summary>Show error</summary>\n\n  \`\`\`\n${msg}\n  \`\`\`\n\n  </details>`
+                  }
+                  return line
                 }).join('\n')
                 return `**${file}**\n${rows}`
               }).join('\n\n')
@@ -207,11 +216,23 @@ jobs:
                   const rows = (suite.specs ?? []).map(spec => {
                     const result = spec.tests?.[0]?.results?.[0]
                     const ok     = result?.status === 'passed'
-                    return `  ${ok ? '✅' : '❌'} ${spec.title}`
+                    let line = `  ${ok ? '✅' : '❌'} ${spec.title}`
+                    if (!ok && result?.errors?.length) {
+                      const msg = cleanError(
+                        result.errors.map(e => e.message || e.stack || '').join('\n---\n')
+                      )
+                      if (msg) {
+                        line += `\n  <details><summary>Show error</summary>\n\n  \`\`\`\n${msg}\n  \`\`\`\n\n  </details>`
+                      }
+                    }
+                    return line
                   }).join('\n')
                   return `**${suite.title}**\n${rows}`
                 }).join('\n\n')
             } catch (_) {}
+
+            const unitOpen = process.env.UNIT_RESULT === 'failure' ? ' open' : ''
+            const e2eOpen  = process.env.E2E_RESULT  === 'failure' ? ' open' : ''
 
             const body = [
               '## 🧪 Test Results',
@@ -221,14 +242,14 @@ jobs:
               `| Unit Tests | ${unitSummary} |`,
               `| E2E Tests | ${e2eSummary} |`,
               '',
-              '<details>',
+              `<details${unitOpen}>`,
               '<summary>Unit test details</summary>',
               '',
               unitDetails || '_No details available_',
               '',
               '</details>',
               '',
-              '<details>',
+              `<details${e2eOpen}>`,
               '<summary>E2E test details</summary>',
               '',
               e2eDetails || '_No details available_',
