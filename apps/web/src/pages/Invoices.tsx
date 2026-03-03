@@ -22,11 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useInvoices, useDeleteInvoice, type Invoice } from "@/hooks/use-invoices";
 import { useClients } from "@/hooks/use-clients";
-<<<<<<< phase-5/invoice-editing-clean
 import { Plus, Trash2, Eye, Pencil } from "lucide-react";
-=======
-import { Plus, Trash2, Eye, FileText, Pencil } from "lucide-react";
->>>>>>> main
 import { useState } from "react";
 
 function statusVariant(stato: string): "default" | "secondary" | "destructive" | "outline" | "warning" | "success" {
