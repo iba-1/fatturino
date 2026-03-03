@@ -2,6 +2,8 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 import { calcolaImposta, calcolaInps, calcolaAccontoSaldo } from "@fatturino/shared";
+import type { GestioneInps } from "@fatturino/shared";
+import { generateF24Pdf, type F24Deadline } from "../services/f24-pdf.js";
 import { db } from "../db/index.js";
 import { invoices, userProfiles, taxPayments } from "../db/schema.js";
 import { requireAuth, getUserId } from "../middleware/auth.js";
@@ -435,6 +437,90 @@ export async function taxRoutes(app: FastifyInstance) {
       });
 
       return overview;
+    }
+  );
+
+  // GET /api/taxes/:anno/f24/:deadline — generate a pre-filled F24 PDF
+  const VALID_DEADLINES = ["primo-acconto", "secondo-acconto", "saldo"] as const;
+
+  app.get<{ Params: { anno: string; deadline: string }; Querystring: { amount?: string } }>(
+    "/api/taxes/:anno/f24/:deadline",
+    async (request, reply) => {
+      const userId = getUserId(request);
+      const anno = parseInt(request.params.anno, 10);
+      const deadlineParam = request.params.deadline;
+
+      if (!anno || anno < 1900 || anno > 2100 || !VALID_DEADLINES.includes(deadlineParam as any)) {
+        return reply.status(400).send({ error: "Invalid anno or deadline" });
+      }
+
+      const deadline = deadlineParam.replace(/-/g, "_") as F24Deadline;
+
+      // Get profile (needs codiceFiscale and ragioneSociale for F24 header)
+      const profiles = await db.select().from(userProfiles).where(eq(userProfiles.userId, userId));
+      const profile = profiles[0];
+      if (!profile) {
+        return reply.status(400).send({ error: "Profile required to generate F24" });
+      }
+
+      // Amount: use override from query param (for simulator) or compute from invoices
+      let amount = 0;
+      const amountOverride = request.query.amount ? parseFloat(request.query.amount) : null;
+      if (amountOverride !== null && !isNaN(amountOverride) && amountOverride >= 0) {
+        amount = amountOverride;
+      } else {
+        // Compute from real invoices
+        const yearInvoices = await db
+          .select()
+          .from(invoices)
+          .where(and(eq(invoices.userId, userId), eq(invoices.anno, anno)));
+        const nonDraft = yearInvoices.filter((i) => i.stato !== "bozza");
+        const totalRevenue = nonDraft.reduce(
+          (sum, i) => sum + parseFloat(String(i.totaleDocumento)),
+          0
+        );
+
+        try {
+          const inpsResult = calcolaInps({
+            fatturato: totalRevenue,
+            codiceAteco: profile.codiceAteco,
+            gestione: profile.gestioneInps as GestioneInps,
+          });
+          const taxResult = calcolaImposta({
+            fatturato: totalRevenue,
+            codiceAteco: profile.codiceAteco,
+            contributiInpsVersati: inpsResult.totaleDovuto,
+            annoInizioAttivita: profile.annoInizioAttivita,
+            annoFiscale: anno,
+          });
+          const f24 = calcolaAccontoSaldo({
+            impostaDovuta: taxResult.impostaDovuta,
+            accontiVersati: 0,
+            anno,
+          });
+          amount =
+            deadline === "primo_acconto"
+              ? f24.primoAcconto
+              : deadline === "secondo_acconto"
+                ? f24.secondoAcconto
+                : f24.saldo;
+        } catch {
+          return reply.status(400).send({ error: "Unable to compute tax for this year" });
+        }
+      }
+
+      const pdfBuffer = await generateF24Pdf({
+        codiceFiscale: profile.codiceFiscale,
+        ragioneSociale: profile.ragioneSociale,
+        anno,
+        deadline,
+        amount,
+      });
+
+      return reply
+        .header("Content-Type", "application/pdf")
+        .header("Content-Disposition", `attachment; filename="F24_${anno}_${deadline}.pdf"`)
+        .send(pdfBuffer);
     }
   );
 }
