@@ -23,6 +23,13 @@ interface InvoiceFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   serverErrors?: Record<string, string>;
+  initialData?: {
+    clientId: string;
+    tipoDocumento: string;
+    dataEmissione: string;
+    causale: string | null;
+    lines: { descrizione: string; quantita: string; prezzoUnitario: string }[];
+  };
 }
 
 function emptyLine(): CreateInvoiceLineData {
@@ -39,16 +46,22 @@ export function calculateSubtotal(lines: CreateInvoiceLineData[]): number {
   ) / 100;
 }
 
-export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErrors = {} }: InvoiceFormProps) {
+export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErrors = {}, initialData }: InvoiceFormProps) {
   const { t } = useTranslation();
 
-  const [clientId, setClientId] = useState("");
-  const [tipoDocumento, setTipoDocumento] = useState("TD01");
+  const [clientId, setClientId] = useState(initialData?.clientId ?? "");
+  const [tipoDocumento, setTipoDocumento] = useState(initialData?.tipoDocumento ?? "TD01");
   const [dataEmissione, setDataEmissione] = useState(
-    new Date().toISOString().split("T")[0]
+    initialData?.dataEmissione ?? new Date().toISOString().split("T")[0]
   );
-  const [causale, setCausale] = useState("");
-  const [lines, setLines] = useState<CreateInvoiceLineData[]>([emptyLine()]);
+  const [causale, setCausale] = useState(initialData?.causale ?? "");
+  const [lines, setLines] = useState<CreateInvoiceLineData[]>(
+    initialData?.lines?.map((l) => ({
+      descrizione: l.descrizione,
+      quantita: parseFloat(l.quantita),
+      prezzoUnitario: parseFloat(l.prezzoUnitario),
+    })) ?? [emptyLine()]
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const subtotal = calculateSubtotal(lines);
@@ -309,7 +322,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
           {t("common.cancel")}
         </Button>
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? t("common.loading") : t("common.create")}
+          {isLoading ? t("common.loading") : initialData ? t("common.save") : t("common.create")}
         </Button>
       </div>
     </form>
