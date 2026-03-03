@@ -35,7 +35,7 @@ export function Layout() {
     <>
       {/* Brand */}
       <div className="flex h-16 items-center px-6">
-        <span className="text-lg font-bold tracking-tight text-foreground">
+        <span className="text-lg font-bold tracking-tight text-sidebar-foreground">
           Fatturino
         </span>
       </div>
@@ -51,8 +51,8 @@ export function Layout() {
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
                 isActive
-                  ? "border-l-[3px] border-primary bg-sidebar-active text-primary-foreground"
-                  : "border-l-[3px] border-transparent text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  ? "bg-sidebar-active text-sidebar-foreground"
+                  : "text-sidebar-muted hover:bg-sidebar-active/50 hover:text-sidebar-foreground"
               }`
             }
           >
@@ -66,7 +66,7 @@ export function Layout() {
       <div className="border-t border-sidebar-border px-3 py-4">
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:bg-secondary hover:text-foreground cursor-pointer"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-muted transition-colors duration-200 hover:bg-sidebar-active/50 hover:text-sidebar-foreground cursor-pointer"
         >
           <LogOut className="h-5 w-5 shrink-0" />
           {t("nav.logout")}
@@ -94,7 +94,7 @@ export function Layout() {
         {/* Mobile close button */}
         <button
           onClick={() => setSidebarOpen(false)}
-          className="absolute right-3 top-4 rounded-lg p-1 text-muted-foreground hover:bg-secondary lg:hidden cursor-pointer"
+          className="absolute right-3 top-4 rounded-lg p-1 text-sidebar-muted hover:bg-sidebar-active/50 hover:text-sidebar-foreground lg:hidden cursor-pointer"
         >
           <X className="h-5 w-5" />
         </button>
@@ -104,14 +104,14 @@ export function Layout() {
       {/* Main content */}
       <div className="flex flex-1 flex-col lg:ml-[var(--sidebar-width)]">
         {/* Mobile top bar */}
-        <header className="sticky top-0 z-30 flex h-14 items-center border-b border-border bg-background/95 backdrop-blur-sm px-4 lg:hidden">
+        <header className="sticky top-0 z-30 flex h-14 items-center bg-sidebar-bg px-4 lg:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="rounded-lg p-2 text-muted-foreground hover:bg-secondary cursor-pointer"
+            className="rounded-lg p-2 text-sidebar-muted hover:bg-sidebar-active/50 hover:text-sidebar-foreground cursor-pointer"
           >
             <Menu className="h-5 w-5" />
           </button>
-          <span className="ml-3 text-sm font-semibold">Fatturino</span>
+          <span className="ml-3 text-sm font-semibold text-sidebar-foreground">Fatturino</span>
         </header>
 
         <main className="animate-page-in flex-1 p-6 lg:p-8">

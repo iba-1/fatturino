@@ -26,9 +26,11 @@
     --radius: 0.75rem;
 
     /* Sidebar-specific tokens */
-    --sidebar-bg: 40 14% 97%;
-    --sidebar-border: 36 12% 91%;
-    --sidebar-active: 156 72% 95%;
+    --sidebar-bg: 164 88% 16%;        /* #064E3B dark forest */
+    --sidebar-border: 163 70% 20%;    /* slightly lighter forest */
+    --sidebar-active: 160 60% 22%;    /* lighter forest for active bg */
+    --sidebar-foreground: 0 0% 100%;  /* white text */
+    --sidebar-muted: 156 30% 70%;     /* muted mint for inactive text */
     --sidebar-width: 240px;
 
     /* Semantic colors */

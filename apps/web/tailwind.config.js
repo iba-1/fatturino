@@ -54,6 +54,8 @@ export default {
           bg: "hsl(var(--sidebar-bg))",
           border: "hsl(var(--sidebar-border))",
           active: "hsl(var(--sidebar-active))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          muted: "hsl(var(--sidebar-muted))",
         },
       },
       borderRadius: {
