@@ -29,3 +29,7 @@ export async function requireAuth(
 export function getUserId(request: FastifyRequest): string {
   return (request as any).user.id;
 }
+
+export function getUserEmail(request: FastifyRequest): string {
+  return (request as any).user.email;
+}
