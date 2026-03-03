@@ -90,7 +90,8 @@
     "missingProfile": "Complete your profile to generate electronic invoices.",
     "goToSettings": "Go to settings",
     "validationErrors": "Validation errors",
-    "validationSuccess": "Invoice valid — ready for XML download."
+    "validationSuccess": "Invoice valid — ready for XML download.",
+    "edit": "Edit Invoice"
   },
   "clients": {
     "title": "Clients",
@@ -153,6 +154,7 @@
     "clientUpdated": "Client updated",
     "clientDeleted": "Client deleted",
     "invoiceCreated": "Invoice created",
+    "invoiceUpdated": "Invoice updated",
     "invoiceDeleted": "Invoice deleted",
     "error": "Error"
   }

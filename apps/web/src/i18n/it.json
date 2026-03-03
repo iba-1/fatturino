@@ -90,7 +90,8 @@
     "missingProfile": "Completa il tuo profilo per generare fatture elettroniche.",
     "goToSettings": "Vai alle impostazioni",
     "validationErrors": "Errori di validazione",
-    "validationSuccess": "Fattura valida — pronta per il download XML."
+    "validationSuccess": "Fattura valida — pronta per il download XML.",
+    "edit": "Modifica Fattura"
   },
   "clients": {
     "title": "Clienti",
@@ -153,6 +154,7 @@
     "clientUpdated": "Cliente aggiornato",
     "clientDeleted": "Cliente eliminato",
     "invoiceCreated": "Fattura creata",
+    "invoiceUpdated": "Fattura aggiornata",
     "invoiceDeleted": "Fattura eliminata",
     "error": "Errore"
   }
