@@ -14,6 +14,7 @@
     "next": "Avanti",
     "yes": "Sì",
     "no": "No",
+    "view": "Visualizza",
     "error": "Errore",
     "success": "Operazione completata"
   },
@@ -95,7 +96,15 @@
     "edit": "Modifica Fattura",
     "send": "Invia Fattura",
     "sendConfirmTitle": "Inviare la fattura?",
-    "sendConfirmDescription": "La fattura verrà inviata via email al cliente e contrassegnata come inviata. Questa azione non può essere annullata."
+    "sendConfirmDescription": "La fattura verrà inviata via email al cliente e contrassegnata come inviata. Questa azione non può essere annullata.",
+    "markSent": "Segna come Inviata",
+    "markSentConfirmTitle": "Segnare come inviata?",
+    "markSentConfirmDescription": "La fattura verrà contrassegnata come inviata senza inviarla via email. Usa questa opzione se l'hai inviata al di fuori di Fatturino.",
+    "markPaid": "Segna come Pagata",
+    "markUnpaid": "Segna come Non Pagata",
+    "paid": "Pagata",
+    "deleteConfirmTitle": "Eliminare la fattura?",
+    "deleteConfirmDescription": "La fattura verrà eliminata definitivamente. Questa azione non può essere annullata."
   },
   "clients": {
     "title": "Clienti",
@@ -198,6 +207,8 @@
     "invoiceDeleted": "Fattura eliminata",
     "invoiceSent": "Fattura inviata",
     "paymentRecorded": "Pagamento registrato",
+    "invoiceMarkedSent": "Fattura contrassegnata come inviata",
+    "invoiceMarkedPaid": "Stato pagamento fattura aggiornato",
     "error": "Errore"
   }
 }

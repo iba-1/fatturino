@@ -110,11 +110,27 @@ export async function invoiceRoutes(app: FastifyInstance) {
     return reply.status(201).send({ ...created, lines: createdLines });
   });
 
-  // Delete draft invoice
+  // Delete invoice
   app.delete<{ Params: { id: string } }>("/api/invoices/:id", async (request, reply) => {
     const userId = getUserId(request);
 
-    // Only allow deleting drafts
+    const existing = await db
+      .select()
+      .from(invoices)
+      .where(and(eq(invoices.id, request.params.id), eq(invoices.userId, userId)));
+
+    if (existing.length === 0) {
+      return reply.status(404).send({ error: "Invoice not found" });
+    }
+
+    await db.delete(invoices).where(eq(invoices.id, request.params.id));
+    return { success: true };
+  });
+
+  // Mark invoice as sent (without sending email)
+  app.patch<{ Params: { id: string } }>("/api/invoices/:id/mark-sent", async (request, reply) => {
+    const userId = getUserId(request);
+
     const existing = await db
       .select()
       .from(invoices)
@@ -125,11 +141,44 @@ export async function invoiceRoutes(app: FastifyInstance) {
     }
 
     if (existing[0].stato !== "bozza") {
-      return reply.status(400).send({ error: "Only draft invoices can be deleted" });
+      return reply.status(400).send({ error: "Only draft invoices can be marked as sent" });
     }
 
-    await db.delete(invoices).where(eq(invoices.id, request.params.id));
-    return { success: true };
+    const [updated] = await db
+      .update(invoices)
+      .set({ stato: "inviata", updatedAt: new Date() })
+      .where(eq(invoices.id, request.params.id))
+      .returning();
+
+    return updated;
+  });
+
+  // Mark invoice as paid / unpaid
+  app.patch<{ Params: { id: string } }>("/api/invoices/:id/mark-paid", async (request, reply) => {
+    const userId = getUserId(request);
+
+    const existing = await db
+      .select()
+      .from(invoices)
+      .where(and(eq(invoices.id, request.params.id), eq(invoices.userId, userId)));
+
+    if (existing.length === 0) {
+      return reply.status(404).send({ error: "Invoice not found" });
+    }
+
+    const isPaid = !existing[0].pagata;
+
+    const [updated] = await db
+      .update(invoices)
+      .set({
+        pagata: isPaid,
+        dataPagamento: isPaid ? new Date() : null,
+        updatedAt: new Date(),
+      })
+      .where(eq(invoices.id, request.params.id))
+      .returning();
+
+    return updated;
   });
 
   // Update draft invoice

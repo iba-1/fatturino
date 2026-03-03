@@ -176,6 +176,8 @@ export const invoices = pgTable("invoices", {
   sdiIdentifier: varchar("sdi_identifier", { length: 255 }),
   sdiStatus: text("sdi_status"),
   xmlContent: text("xml_content"),
+  pagata: boolean("pagata").notNull().default(false),
+  dataPagamento: timestamp("data_pagamento", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
