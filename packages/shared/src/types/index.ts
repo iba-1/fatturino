@@ -6,6 +6,7 @@ import type {
   invoiceSchema,
   invoiceLineSchema,
   createInvoiceSchema,
+  updateInvoiceSchema,
   createClientSchema,
   createUserProfileSchema,
 } from "../schemas/index.js";
@@ -16,5 +17,6 @@ export type Client = z.infer<typeof clientSchema>;
 export type Invoice = z.infer<typeof invoiceSchema>;
 export type InvoiceLine = z.infer<typeof invoiceLineSchema>;
 export type CreateInvoice = z.infer<typeof createInvoiceSchema>;
+export type UpdateInvoice = z.infer<typeof updateInvoiceSchema>;
 export type CreateClient = z.infer<typeof createClientSchema>;
 export type CreateUserProfile = z.infer<typeof createUserProfileSchema>;
