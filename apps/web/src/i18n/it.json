@@ -122,7 +122,11 @@
     "province": "Provincia",
     "pec": "PEC",
     "sdiCode": "Codice SDI",
-    "iban": "IBAN"
+    "iban": "IBAN",
+    "inpsManagement": "Gestione INPS",
+    "gestSeparata": "Gestione Separata",
+    "gestArtigiani": "Artigiani",
+    "gestCommercianti": "Commercianti"
   },
   "toast": {
     "profileSaved": "Profilo salvato",
