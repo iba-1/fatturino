@@ -239,6 +239,147 @@ export async function taxRoutes(app: FastifyInstance) {
     return result;
   });
 
+  // POST /api/taxes/payments — record or update an F24 payment
+  const paymentSchema = z.object({
+    anno: z.number().int().min(1900).max(2100),
+    deadline: z.enum(["primo_acconto", "secondo_acconto", "saldo"]),
+    amountPaid: z.number().nonnegative(),
+    datePaid: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  });
+
+  app.post("/api/taxes/payments", async (request, reply) => {
+    const parsed = paymentSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({ error: "Validation failed", details: parsed.error.issues });
+    }
+
+    const userId = getUserId(request);
+    const { anno, deadline, amountPaid, datePaid } = parsed.data;
+
+    // Check if a record already exists for (userId, anno, deadline)
+    const existing = await db
+      .select()
+      .from(taxPayments)
+      .where(
+        and(
+          eq(taxPayments.userId, userId),
+          eq(taxPayments.anno, anno),
+          eq(taxPayments.deadline, deadline)
+        )
+      );
+
+    if (existing.length > 0) {
+      // Update the existing record
+      const updated = await db
+        .update(taxPayments)
+        .set({
+          amountPaid: String(amountPaid),
+          datePaid,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(taxPayments.userId, userId),
+            eq(taxPayments.anno, anno),
+            eq(taxPayments.deadline, deadline)
+          )
+        )
+        .returning();
+      return updated[0];
+    }
+
+    // Insert: compute amountDue from the tax engine
+    const [yearInvoices, profiles] = await Promise.all([
+      db
+        .select({
+          totaleDocumento: invoices.totaleDocumento,
+          stato: invoices.stato,
+        })
+        .from(invoices)
+        .where(and(eq(invoices.userId, userId), eq(invoices.anno, anno))),
+
+      db
+        .select({
+          codiceAteco: userProfiles.codiceAteco,
+          annoInizioAttivita: userProfiles.annoInizioAttivita,
+          gestioneInps: userProfiles.gestioneInps,
+        })
+        .from(userProfiles)
+        .where(eq(userProfiles.userId, userId)),
+    ]);
+
+    const profile = profiles.length > 0 ? profiles[0] : null;
+
+    let amountDue = 0;
+
+    if (profile && profile.codiceAteco && profile.annoInizioAttivita) {
+      try {
+        const nonDraft = yearInvoices.filter((i) => i.stato !== "bozza");
+        const totalRevenue =
+          Math.round(
+            nonDraft.reduce((sum, i) => sum + parseFloat(String(i.totaleDocumento)), 0) * 100
+          ) / 100;
+
+        const inpsResult = calcolaInps({
+          fatturato: totalRevenue,
+          codiceAteco: profile.codiceAteco,
+          gestione: profile.gestioneInps as "separata" | "artigiani" | "commercianti",
+        });
+
+        const taxResult = calcolaImposta({
+          fatturato: totalRevenue,
+          codiceAteco: profile.codiceAteco,
+          contributiInpsVersati: inpsResult.totaleDovuto,
+          annoInizioAttivita: profile.annoInizioAttivita,
+          annoFiscale: anno,
+        });
+
+        // Fetch previously recorded acconto payments (not saldo) to compute saldo accurately
+        const existingPayments = await db
+          .select({
+            deadline: taxPayments.deadline,
+            amountPaid: taxPayments.amountPaid,
+          })
+          .from(taxPayments)
+          .where(and(eq(taxPayments.userId, userId), eq(taxPayments.anno, anno)));
+
+        const accontiVersati = existingPayments
+          .filter((p) => p.deadline !== "saldo" && p.amountPaid)
+          .reduce((sum, p) => sum + parseFloat(String(p.amountPaid)), 0);
+
+        const f24Result = calcolaAccontoSaldo({
+          impostaDovuta: taxResult.impostaDovuta,
+          accontiVersati,
+          anno,
+        });
+
+        const amountDueByDeadline: Record<string, number> = {
+          primo_acconto: f24Result.primoAcconto,
+          secondo_acconto: f24Result.secondoAcconto,
+          saldo: f24Result.saldo,
+        };
+
+        amountDue = amountDueByDeadline[deadline] ?? 0;
+      } catch {
+        amountDue = 0;
+      }
+    }
+
+    const inserted = await db
+      .insert(taxPayments)
+      .values({
+        userId,
+        anno,
+        deadline,
+        amountDue: String(amountDue),
+        amountPaid: String(amountPaid),
+        datePaid,
+      })
+      .returning();
+
+    return reply.status(201).send(inserted[0]);
+  });
+
   // GET /api/taxes/overview?anno=YYYY
   app.get<{ Querystring: { anno?: string } }>(
     "/api/taxes/overview",
