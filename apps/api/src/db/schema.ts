@@ -9,6 +9,8 @@ import {
   boolean,
   jsonb,
   pgEnum,
+  unique,
+  date,
 } from "drizzle-orm/pg-core";
 
 // --- Enums ---
@@ -243,3 +245,23 @@ export const f24Forms = pgTable("f24_forms", {
   generatedPdfPath: text("generated_pdf_path"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const deadlineTypeEnum = pgEnum("deadline_type", [
+  "primo_acconto",
+  "secondo_acconto",
+  "saldo",
+]);
+
+export const taxPayments = pgTable("tax_payments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  anno: integer("anno").notNull(),
+  deadline: deadlineTypeEnum("deadline").notNull(),
+  amountDue: numeric("amount_due", { precision: 12, scale: 2 }).notNull(),
+  amountPaid: numeric("amount_paid", { precision: 12, scale: 2 }),
+  datePaid: date("date_paid"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  unique().on(table.userId, table.anno, table.deadline),
+]);
