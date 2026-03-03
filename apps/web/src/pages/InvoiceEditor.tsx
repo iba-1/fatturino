@@ -7,7 +7,7 @@ import { useInvoice, useCreateInvoice, useUpdateInvoice, type CreateInvoiceData 
 import { parseApiFieldErrors } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Users } from "lucide-react";
 
 export function InvoiceEditor() {
   const { t } = useTranslation();
@@ -45,10 +45,10 @@ export function InvoiceEditor() {
 
   if (!clients || clients.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">
-          {t("clients.title")} — {t("clients.new")}
-        </p>
+      <div className="text-center py-16">
+        <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
+        <h3 className="mt-4 text-lg font-medium">{t("clients.title")}</h3>
+        <p className="mt-1 text-sm text-muted-foreground">{t("clients.new")}</p>
         <Button className="mt-4" onClick={() => navigate("/clients")}>
           {t("clients.new")}
         </Button>

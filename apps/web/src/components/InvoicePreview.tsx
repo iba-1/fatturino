@@ -86,13 +86,13 @@ export function InvoicePreview({ invoice, client }: InvoicePreviewProps) {
               {invoice.lines.map((line) => (
                 <tr key={line.id} className="border-b">
                   <td className="py-2">{line.descrizione}</td>
-                  <td className="text-right py-2">
+                  <td className="text-right py-2 font-mono">
                     {parseFloat(line.quantita).toFixed(2)}
                   </td>
-                  <td className="text-right py-2">
+                  <td className="text-right py-2 font-mono">
                     {parseFloat(line.prezzoUnitario).toFixed(2)}
                   </td>
-                  <td className="text-right py-2">
+                  <td className="text-right py-2 font-mono">
                     {parseFloat(line.prezzoTotale).toFixed(2)}
                   </td>
                 </tr>
@@ -107,17 +107,17 @@ export function InvoicePreview({ invoice, client }: InvoicePreviewProps) {
         <div className="flex flex-col items-end space-y-1">
           <div className="flex gap-8 text-sm">
             <span className="text-muted-foreground">{t("invoices.subtotal")}</span>
-            <span className="w-24 text-right">{subtotal.toFixed(2)}</span>
+            <span className="font-mono w-24 text-right">{subtotal.toFixed(2)}</span>
           </div>
           {bollo > 0 && (
             <div className="flex gap-8 text-sm">
               <span className="text-muted-foreground">{t("invoices.bollo")}</span>
-              <span className="w-24 text-right">{bollo.toFixed(2)}</span>
+              <span className="font-mono w-24 text-right">{bollo.toFixed(2)}</span>
             </div>
           )}
           <div className="flex gap-8 text-base font-bold border-t pt-1">
             <span>{t("invoices.total")}</span>
-            <span className="w-24 text-right">{total.toFixed(2)}</span>
+            <span className="font-mono w-24 text-right">{total.toFixed(2)}</span>
           </div>
         </div>
 

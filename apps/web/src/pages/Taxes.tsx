@@ -1,14 +1,13 @@
 import { useTranslation } from "react-i18next";
+import { Calculator } from "lucide-react";
 
 export function Taxes() {
   const { t } = useTranslation();
-
   return (
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">{t("taxes.title")}</h1>
-      <div className="mt-6">
-        <p className="text-muted-foreground">Phase 4 — Tax calculations will be implemented here.</p>
-      </div>
+    <div className="text-center py-16">
+      <Calculator className="mx-auto h-12 w-12 text-muted-foreground/50" />
+      <h1 className="mt-4 text-lg font-medium">{t("taxes.title")}</h1>
+      <p className="mt-1 text-sm text-muted-foreground">Tax calculations will be available here soon.</p>
     </div>
   );
 }
