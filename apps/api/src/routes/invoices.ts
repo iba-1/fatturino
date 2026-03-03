@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { eq, and, sql } from "drizzle-orm";
-import { createInvoiceSchema, SOGLIA_BOLLO, IMPORTO_BOLLO } from "@fatturino/shared";
+import { createInvoiceSchema, updateInvoiceSchema, SOGLIA_BOLLO, IMPORTO_BOLLO } from "@fatturino/shared";
 import { buildFatturaXml, validateBusinessRules } from "@fatturino/fattura-xml";
 import { db } from "../db/index.js";
 import { invoices, invoiceLines, userProfiles, clients } from "../db/schema.js";
@@ -129,6 +129,70 @@ export async function invoiceRoutes(app: FastifyInstance) {
 
     await db.delete(invoices).where(eq(invoices.id, request.params.id));
     return { success: true };
+  });
+
+  // Update draft invoice
+  app.put<{ Params: { id: string } }>("/api/invoices/:id", async (request, reply) => {
+    const userId = getUserId(request);
+    const parsed = updateInvoiceSchema.safeParse(request.body);
+
+    if (!parsed.success) {
+      return reply.status(400).send({ error: "Validation failed", details: parsed.error.issues });
+    }
+
+    const existing = await db
+      .select()
+      .from(invoices)
+      .where(and(eq(invoices.id, request.params.id), eq(invoices.userId, userId)));
+
+    if (existing.length === 0) {
+      return reply.status(404).send({ error: "Invoice not found" });
+    }
+
+    if (existing[0].stato !== "bozza") {
+      return reply.status(400).send({ error: "Only draft invoices can be edited" });
+    }
+
+    const { lines, ...invoiceData } = parsed.data;
+
+    const imponibile = lines.reduce(
+      (sum, line) => sum + line.quantita * line.prezzoUnitario, 0
+    );
+    const imponibileRounded = Math.round(imponibile * 100) / 100;
+    const impostaBollo = imponibileRounded > SOGLIA_BOLLO ? IMPORTO_BOLLO : 0;
+    const totaleDocumento = imponibileRounded + impostaBollo;
+
+    const [updated] = await db
+      .update(invoices)
+      .set({
+        clientId: invoiceData.clientId,
+        dataEmissione: new Date(invoiceData.dataEmissione),
+        tipoDocumento: invoiceData.tipoDocumento,
+        causale: invoiceData.causale ?? null,
+        imponibile: imponibileRounded.toString(),
+        impostaBollo: impostaBollo.toString(),
+        totaleDocumento: totaleDocumento.toString(),
+        xmlContent: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(invoices.id, request.params.id))
+      .returning();
+
+    await db.delete(invoiceLines).where(eq(invoiceLines.invoiceId, request.params.id));
+
+    const lineValues = lines.map((line) => ({
+      invoiceId: updated.id,
+      descrizione: line.descrizione,
+      quantita: line.quantita.toString(),
+      prezzoUnitario: line.prezzoUnitario.toString(),
+      prezzoTotale: (Math.round(line.quantita * line.prezzoUnitario * 100) / 100).toString(),
+      aliquotaIva: (line.aliquotaIva ?? 0).toString(),
+      naturaIva: line.naturaIva ?? "N2.2",
+    }));
+
+    const createdLines = await db.insert(invoiceLines).values(lineValues).returning();
+
+    return { ...updated, lines: createdLines };
   });
 
   // Validate invoice for XML generation
