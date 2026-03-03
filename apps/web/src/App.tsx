@@ -36,6 +36,7 @@ export function App() {
               <Route path="invoices" element={<Invoices />} />
               <Route path="invoices/new" element={<InvoiceEditor />} />
               <Route path="invoices/:id" element={<InvoiceDetail />} />
+              <Route path="invoices/:id/edit" element={<InvoiceEditor />} />
               <Route path="clients" element={<Clients />} />
               <Route path="taxes" element={<Taxes />} />
               <Route path="settings" element={<Settings />} />

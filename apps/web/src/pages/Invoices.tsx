@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useInvoices, useDeleteInvoice, type Invoice } from "@/hooks/use-invoices";
 import { useClients } from "@/hooks/use-clients";
-import { Plus, Trash2, Eye } from "lucide-react";
+import { Plus, Trash2, Eye, Pencil } from "lucide-react";
 import { useState } from "react";
 
 function statusVariant(stato: string): "default" | "secondary" | "destructive" | "outline" {
@@ -142,14 +142,24 @@ export function Invoices() {
                         <Eye className="h-4 w-4" />
                       </Button>
                       {inv.stato === "bozza" && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setDeletingInvoice(inv)}
-                          aria-label={t("common.delete")}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => navigate(`/invoices/${inv.id}/edit`)}
+                            aria-label={t("common.edit")}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setDeletingInvoice(inv)}
+                            aria-label={t("common.delete")}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </>
                       )}
                     </div>
                   </TableCell>

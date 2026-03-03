@@ -6,7 +6,7 @@ import { useInvoice, useValidateInvoice } from "@/hooks/use-invoices";
 import { useClient } from "@/hooks/use-clients";
 import { useProfile } from "@/hooks/use-profile";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, FileCheck, FileDown, FileText, AlertTriangle } from "lucide-react";
+import { ArrowLeft, FileCheck, FileDown, FileText, AlertTriangle, Pencil } from "lucide-react";
 import { api } from "@/lib/api";
 
 export function InvoiceDetail() {
@@ -72,6 +72,12 @@ export function InvoiceDetail() {
 
       {/* Action bar */}
       <div className="flex gap-2 mb-4">
+        {invoice.stato === "bozza" && (
+          <Button variant="outline" onClick={() => navigate(`/invoices/${id}/edit`)}>
+            <Pencil className="h-4 w-4 mr-2" />
+            {t("common.edit")}
+          </Button>
+        )}
         <Button variant="outline" onClick={handleValidate} disabled={isValidating || !hasProfile}>
           <FileCheck className="h-4 w-4 mr-2" />
           {t("invoices.validate")}
