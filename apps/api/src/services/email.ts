@@ -1,6 +1,17 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let _resend: Resend | null = null;
+
+function getResend(): Resend {
+  if (!_resend) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is not set. Configure it to enable invoice email sending.");
+    }
+    _resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return _resend;
+}
+
 
 const FROM_EMAIL = process.env.FROM_EMAIL || "noreply@fatturino.app";
 
@@ -49,7 +60,7 @@ export async function sendInvoiceEmail(params: SendInvoiceEmailParams): Promise<
     </div>
   `;
 
-  const { data, error } = await resend.emails.send({
+  const { data, error } = await getResend().emails.send({
     from: FROM_EMAIL,
     to: [to],
     bcc: bcc ? [bcc] : undefined,
