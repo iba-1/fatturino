@@ -144,6 +144,7 @@ export const clients = pgTable("clients", {
   codiceFiscale: varchar("codice_fiscale", { length: 16 }).notNull(),
   codiceSdi: varchar("codice_sdi", { length: 7 }),
   pec: varchar("pec", { length: 255 }),
+  email: varchar("email", { length: 255 }),
   indirizzo: text("indirizzo").notNull(),
   cap: varchar("cap", { length: 5 }).notNull(),
   citta: varchar("citta", { length: 255 }).notNull(),
