@@ -43,7 +43,25 @@
     "totalRevenue": "Total Revenue",
     "invoicesSent": "Invoices Sent",
     "pendingInvoices": "Pending Invoices",
-    "taxDue": "Tax Due"
+    "taxDue": "Tax Due",
+    "year": "Year",
+    "monthlyRevenue": "Monthly Revenue",
+    "recentInvoices": "Recent Invoices",
+    "noInvoices": "No invoices yet",
+    "profileWarning": "Complete your profile in Settings to see tax estimates.",
+    "goToSettings": "Go to Settings",
+    "taxBreakdown": "Tax Breakdown",
+    "impostaSostitutiva": "Imposta Sostitutiva",
+    "inpsContributions": "INPS Contributions",
+    "f24Schedule": "F24 Payment Schedule",
+    "startup": "Startup Rate",
+    "ordinary": "Ordinary Rate",
+    "primoAcconto": "First Advance (Jun 30)",
+    "secondoAcconto": "Second Advance (Nov 30)",
+    "saldo": "Balance (Jun 30 next year)",
+    "contributoFisso": "Fixed Contribution",
+    "eccedenza": "Excess Contribution",
+    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
   },
   "invoices": {
     "title": "Invoices",
@@ -122,7 +140,11 @@
     "province": "Province",
     "pec": "PEC Email",
     "sdiCode": "SDI Code",
-    "iban": "IBAN"
+    "iban": "IBAN",
+    "inpsManagement": "INPS Management",
+    "gestSeparata": "Gestione Separata",
+    "gestArtigiani": "Artigiani",
+    "gestCommercianti": "Commercianti"
   },
   "toast": {
     "profileSaved": "Profile saved",

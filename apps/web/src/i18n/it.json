@@ -42,8 +42,26 @@
     "title": "Dashboard",
     "totalRevenue": "Fatturato Totale",
     "invoicesSent": "Fatture Inviate",
-    "pendingInvoices": "Fatture in Sospeso",
-    "taxDue": "Imposte Dovute"
+    "pendingInvoices": "Fatture in Bozza",
+    "taxDue": "Imposte Dovute",
+    "year": "Anno",
+    "monthlyRevenue": "Fatturato Mensile",
+    "recentInvoices": "Fatture Recenti",
+    "noInvoices": "Nessuna fattura",
+    "profileWarning": "Completa il tuo profilo nelle Impostazioni per vedere le stime fiscali.",
+    "goToSettings": "Vai alle Impostazioni",
+    "taxBreakdown": "Riepilogo Fiscale",
+    "impostaSostitutiva": "Imposta Sostitutiva",
+    "inpsContributions": "Contributi INPS",
+    "f24Schedule": "Scadenziario F24",
+    "startup": "Aliquota Startup",
+    "ordinary": "Aliquota Ordinaria",
+    "primoAcconto": "Primo Acconto (30 giu)",
+    "secondoAcconto": "Secondo Acconto (30 nov)",
+    "saldo": "Saldo (30 giu anno succ.)",
+    "contributoFisso": "Contributo Fisso",
+    "eccedenza": "Eccedenza",
+    "months": ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"]
   },
   "invoices": {
     "title": "Fatture",
@@ -122,7 +140,11 @@
     "province": "Provincia",
     "pec": "PEC",
     "sdiCode": "Codice SDI",
-    "iban": "IBAN"
+    "iban": "IBAN",
+    "inpsManagement": "Gestione INPS",
+    "gestSeparata": "Gestione Separata",
+    "gestArtigiani": "Artigiani",
+    "gestCommercianti": "Commercianti"
   },
   "toast": {
     "profileSaved": "Profilo salvato",

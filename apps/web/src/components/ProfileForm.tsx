@@ -30,6 +30,7 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
   const [annoInizioAttivita, setAnnoInizioAttivita] = useState(
     new Date().getFullYear()
   );
+  const [gestioneInps, setGestioneInps] = useState<"separata" | "artigiani" | "commercianti">("separata");
 
   const initializedRef = useRef(false);
 
@@ -48,6 +49,7 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
       setCodiceSdi(profile.codiceSdi ?? "");
       setIban(profile.iban ?? "");
       setAnnoInizioAttivita(profile.annoInizioAttivita);
+      setGestioneInps(profile.gestioneInps ?? "separata");
     }
   }, [profile]);
 
@@ -63,6 +65,7 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
       citta: citta.trim(),
       provincia: provincia.trim().toUpperCase(),
       annoInizioAttivita,
+      gestioneInps,
     };
     if (pec.trim()) data.pec = pec.trim();
     if (codiceSdi.trim()) data.codiceSdi = codiceSdi.trim();
@@ -213,7 +216,7 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
               )}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="iban">{t("settings.iban")}</Label>
               <Input
@@ -240,6 +243,22 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
               />
               {serverErrors.annoInizioAttivita && (
                 <p className="text-sm text-destructive">{serverErrors.annoInizioAttivita}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="gestioneInps">{t("settings.inpsManagement")}</Label>
+              <select
+                id="gestioneInps"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                value={gestioneInps}
+                onChange={(e) => setGestioneInps(e.target.value as "separata" | "artigiani" | "commercianti")}
+              >
+                <option value="separata">{t("settings.gestSeparata")}</option>
+                <option value="artigiani">{t("settings.gestArtigiani")}</option>
+                <option value="commercianti">{t("settings.gestCommercianti")}</option>
+              </select>
+              {serverErrors.gestioneInps && (
+                <p className="text-sm text-destructive">{serverErrors.gestioneInps}</p>
               )}
             </div>
           </div>

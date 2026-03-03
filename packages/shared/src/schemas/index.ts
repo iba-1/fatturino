@@ -37,6 +37,7 @@ export const createUserProfileSchema = z.object({
     .optional(),
   iban: z.string().optional(),
   annoInizioAttivita: z.number().int().min(1900).max(2100),
+  gestioneInps: z.enum(["separata", "artigiani", "commercianti"]).default("separata"),
 });
 
 export const userProfileSchema = createUserProfileSchema.extend({

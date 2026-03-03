@@ -126,6 +126,7 @@ export const userProfiles = pgTable("user_profiles", {
   codiceSdi: varchar("codice_sdi", { length: 7 }),
   iban: varchar("iban", { length: 34 }),
   annoInizioAttivita: integer("anno_inizio_attivita").notNull(),
+  gestioneInps: gestioneInpsEnum("gestione_inps").notNull().default("separata"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

@@ -9,6 +9,7 @@ import { invoiceRoutes } from "./routes/invoices.js";
 import { taxRoutes } from "./routes/taxes.js";
 import { sdiRoutes } from "./routes/sdi.js";
 import { profileRoutes } from "./routes/profile.js";
+import { dashboardRoutes } from "./routes/dashboard.js";
 
 const PORT = parseInt(process.env.PORT || "3000", 10);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -41,6 +42,7 @@ export async function buildApp() {
   await app.register(taxRoutes);
   await app.register(sdiRoutes);
   await app.register(profileRoutes);
+  await app.register(dashboardRoutes);
 
   return app;
 }
