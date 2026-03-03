@@ -59,6 +59,8 @@
     "primoAcconto": "First Advance (Jun 30)",
     "secondoAcconto": "Second Advance (Nov 30)",
     "saldo": "Balance (Jun 30 next year)",
+    "contributoFisso": "Fixed Contribution",
+    "eccedenza": "Excess Contribution",
     "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
   },
   "invoices": {

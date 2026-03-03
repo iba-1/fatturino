@@ -135,11 +135,15 @@ export async function dashboardRoutes(app: FastifyInstance) {
 
   app.get<{ Querystring: { anno?: string } }>(
     "/api/dashboard/summary",
-    async (request) => {
+    async (request, reply) => {
       const userId = getUserId(request);
       const anno = request.query.anno
         ? parseInt(request.query.anno, 10)
         : new Date().getFullYear();
+
+      if (isNaN(anno) || anno < 1900 || anno > 2100) {
+        return reply.status(400).send({ error: "Invalid anno parameter" });
+      }
 
       const yearInvoices = await db
         .select({

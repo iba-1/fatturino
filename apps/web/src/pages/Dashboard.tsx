@@ -155,13 +155,13 @@ export function Dashboard() {
               </div>
               {data.inps!.contributoFisso > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Contributo fisso</span>
+                  <span className="text-muted-foreground">{t("dashboard.contributoFisso")}</span>
                   <span>{formatEur(data.inps!.contributoFisso)}</span>
                 </div>
               )}
               {data.inps!.contributoEccedenza > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Eccedenza</span>
+                  <span className="text-muted-foreground">{t("dashboard.eccedenza")}</span>
                   <span>{formatEur(data.inps!.contributoEccedenza)}</span>
                 </div>
               )}

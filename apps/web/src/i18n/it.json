@@ -59,6 +59,8 @@
     "primoAcconto": "Primo Acconto (30 giu)",
     "secondoAcconto": "Secondo Acconto (30 nov)",
     "saldo": "Saldo (30 giu anno succ.)",
+    "contributoFisso": "Contributo Fisso",
+    "eccedenza": "Eccedenza",
     "months": ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"]
   },
   "invoices": {
