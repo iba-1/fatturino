@@ -157,7 +157,15 @@
     "profileRequired": "Complete your profile in Settings to see tax calculations.",
     "inpsDeduction": "INPS Deduction",
     "totaleDovuto": "Total Due",
-    "year": "Year"
+    "year": "Year",
+    "simulator": "Tax Simulator",
+    "simulatorDescription": "Estimate your taxes with custom inputs",
+    "simulatorEmptyState": "Enter your annual revenue above to see the tax estimate",
+    "annualRevenue": "Annual Revenue",
+    "atecoCode": "ATECO Code",
+    "fiscalYear": "Fiscal Year",
+    "startYear": "Activity Start Year",
+    "downloadSimulatedF24": "Download Simulated F24"
   },
   "settings": {
     "title": "Settings",
