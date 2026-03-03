@@ -44,6 +44,7 @@
     "invoicesSent": "Invoices Sent",
     "pendingInvoices": "Pending Invoices",
     "taxDue": "Tax Due",
+    "netIncome": "Net Income",
     "year": "Year",
     "monthlyRevenue": "Monthly Revenue",
     "recentInvoices": "Recent Invoices",

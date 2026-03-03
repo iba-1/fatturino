@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useDashboardSummary } from "@/hooks/use-dashboard";
-import { DollarSign, Send, Clock, Calculator } from "lucide-react";
+import { DollarSign, Send, Clock, Wallet, Calculator } from "lucide-react";
 
 const formatEur = (n: number) =>
   new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
@@ -99,11 +99,13 @@ export function Dashboard() {
               iconColor="text-amber-700"
             />
             <DashboardCard
-              title={t("dashboard.taxDue")}
-              value={data?.tax ? formatEur(data.tax.impostaDovuta) : "\u2014"}
-              icon={Calculator}
-              iconBg="bg-red-100"
-              iconColor="text-red-700"
+              title={t("dashboard.netIncome")}
+              value={data?.tax && data?.inps
+                ? formatEur(data.totalRevenue - data.inps.totaleDovuto - data.tax.impostaDovuta)
+                : "\u2014"}
+              icon={Wallet}
+              iconBg="bg-emerald-100"
+              iconColor="text-emerald-700"
             />
           </>
         )}
