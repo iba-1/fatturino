@@ -2,12 +2,13 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { InvoicePreview } from "@/components/InvoicePreview";
-import { useInvoice, useValidateInvoice, useSendInvoice } from "@/hooks/use-invoices";
+import { useInvoice, useValidateInvoice, useSendInvoice, useDeleteInvoice, useMarkSent, useMarkPaid } from "@/hooks/use-invoices";
 import { useClient } from "@/hooks/use-clients";
 import { useProfile } from "@/hooks/use-profile";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ArrowLeft, FileCheck, FileDown, FileText, AlertTriangle, Pencil, Send } from "lucide-react";
+import { ArrowLeft, FileCheck, FileDown, FileText, AlertTriangle, Pencil, Send, Trash2, CheckCircle, CircleOff } from "lucide-react";
 import { api } from "@/lib/api";
 
 export function InvoiceDetail() {
@@ -19,8 +20,13 @@ export function InvoiceDetail() {
   const { data: profile } = useProfile();
   const { data: validation, refetch: validate, isFetching: isValidating } = useValidateInvoice(id ?? "");
   const sendInvoice = useSendInvoice();
+  const deleteInvoice = useDeleteInvoice();
+  const markSentMutation = useMarkSent();
+  const markPaidMutation = useMarkPaid();
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const [showSendConfirm, setShowSendConfirm] = useState(false);
+  const [showMarkSentConfirm, setShowMarkSentConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   if (isLoading) {
     return (
@@ -63,6 +69,18 @@ export function InvoiceDetail() {
     }
   };
 
+  const handleDelete = () => {
+    setShowDeleteConfirm(false);
+    deleteInvoice.mutate(id!, {
+      onSuccess: () => navigate("/invoices"),
+    });
+  };
+
+  const handleMarkSent = () => {
+    setShowMarkSentConfirm(false);
+    markSentMutation.mutate(id!);
+  };
+
   const hasProfile = !!profile;
   const isValid = validation?.valid === true;
   const hasValidated = validation !== undefined;
@@ -76,10 +94,13 @@ export function InvoiceDetail() {
         <h1 className="text-2xl font-semibold tracking-tight">
           Fattura {invoice.numeroFattura}/{invoice.anno}
         </h1>
+        {invoice.pagata && (
+          <Badge variant="success">{t("invoices.paid")}</Badge>
+        )}
       </div>
 
       {/* Action bar */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         {invoice.stato === "bozza" && (
           <Button variant="outline" onClick={() => navigate(`/invoices/${id}/edit`)}>
             <Pencil className="h-4 w-4 mr-2" />
@@ -96,6 +117,33 @@ export function InvoiceDetail() {
             {sendInvoice.isPending ? t("common.loading") : t("invoices.send")}
           </Button>
         )}
+        {invoice.stato === "bozza" && (
+          <Button
+            variant="outline"
+            onClick={() => setShowMarkSentConfirm(true)}
+            disabled={markSentMutation.isPending}
+          >
+            <Send className="h-4 w-4 mr-2" />
+            {t("invoices.markSent")}
+          </Button>
+        )}
+        <Button
+          variant="outline"
+          onClick={() => markPaidMutation.mutate(id!)}
+          disabled={markPaidMutation.isPending}
+        >
+          {invoice.pagata ? (
+            <>
+              <CircleOff className="h-4 w-4 mr-2" />
+              {t("invoices.markUnpaid")}
+            </>
+          ) : (
+            <>
+              <CheckCircle className="h-4 w-4 mr-2" />
+              {t("invoices.markPaid")}
+            </>
+          )}
+        </Button>
         <Button variant="outline" onClick={handleValidate} disabled={isValidating || !hasProfile}>
           <FileCheck className="h-4 w-4 mr-2" />
           {t("invoices.validate")}
@@ -107,6 +155,15 @@ export function InvoiceDetail() {
         <Button variant="outline" onClick={handleDownloadPdf} disabled={!hasProfile}>
           <FileText className="h-4 w-4 mr-2" />
           {t("invoices.downloadPdf")}
+        </Button>
+        <Button
+          variant="outline"
+          className="text-destructive hover:text-destructive"
+          onClick={() => setShowDeleteConfirm(true)}
+          disabled={deleteInvoice.isPending}
+        >
+          <Trash2 className="h-4 w-4 mr-2" />
+          {t("common.delete")}
         </Button>
       </div>
 
@@ -149,6 +206,7 @@ export function InvoiceDetail() {
 
       <InvoicePreview invoice={invoice} client={client} />
 
+      {/* Send via email confirmation */}
       <AlertDialog open={showSendConfirm} onOpenChange={setShowSendConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -166,6 +224,45 @@ export function InvoiceDetail() {
               }}
             >
               {t("invoices.send")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Mark as sent confirmation */}
+      <AlertDialog open={showMarkSentConfirm} onOpenChange={setShowMarkSentConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("invoices.markSentConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("invoices.markSentConfirmDescription")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleMarkSent}>
+              {t("invoices.markSent")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("invoices.deleteConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("invoices.deleteConfirmDescription")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

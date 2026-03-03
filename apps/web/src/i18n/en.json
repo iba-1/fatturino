@@ -14,6 +14,7 @@
     "next": "Next",
     "yes": "Yes",
     "no": "No",
+    "view": "View",
     "error": "Error",
     "success": "Operation completed"
   },
@@ -95,7 +96,15 @@
     "edit": "Edit Invoice",
     "send": "Send Invoice",
     "sendConfirmTitle": "Send Invoice?",
-    "sendConfirmDescription": "This will email the invoice PDF to the client and mark it as sent. This action cannot be undone."
+    "sendConfirmDescription": "This will email the invoice PDF to the client and mark it as sent. This action cannot be undone.",
+    "markSent": "Mark as Sent",
+    "markSentConfirmTitle": "Mark as Sent?",
+    "markSentConfirmDescription": "This will mark the invoice as sent without emailing it. Use this if you sent it outside of Fatturino.",
+    "markPaid": "Mark as Paid",
+    "markUnpaid": "Mark as Unpaid",
+    "paid": "Paid",
+    "deleteConfirmTitle": "Delete Invoice?",
+    "deleteConfirmDescription": "This will permanently delete this invoice. This action cannot be undone."
   },
   "clients": {
     "title": "Clients",
@@ -198,6 +207,8 @@
     "invoiceDeleted": "Invoice deleted",
     "invoiceSent": "Invoice sent",
     "paymentRecorded": "Payment recorded",
+    "invoiceMarkedSent": "Invoice marked as sent",
+    "invoiceMarkedPaid": "Invoice payment status updated",
     "error": "Error"
   }
 }

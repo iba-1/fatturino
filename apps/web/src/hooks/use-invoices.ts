@@ -29,6 +29,8 @@ export interface Invoice {
   impostaBollo: string;
   totaleDocumento: string;
   stato: string;
+  pagata: boolean;
+  dataPagamento: string | null;
   sdiIdentifier: string | null;
   sdiStatus: string | null;
   xmlContent: string | null;
@@ -136,6 +138,44 @@ export function useSendInvoice() {
     },
     onError: (error: Error) => {
       logger.error("send_invoice_failed", { error: error.message });
+      toast({ title: i18next.t("toast.error"), description: error.message, variant: "destructive" });
+    },
+  });
+}
+
+export function useMarkSent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) =>
+      api.patch<Invoice>(`/invoices/${id}/mark-sent`, {}),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["invoices", id] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      toast({ title: i18next.t("toast.invoiceMarkedSent"), variant: "success" });
+    },
+    onError: (error: Error) => {
+      logger.error("mark_sent_failed", { error: error.message });
+      toast({ title: i18next.t("toast.error"), description: error.message, variant: "destructive" });
+    },
+  });
+}
+
+export function useMarkPaid() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) =>
+      api.patch<Invoice>(`/invoices/${id}/mark-paid`, {}),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["invoices", id] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      toast({ title: i18next.t("toast.invoiceMarkedPaid"), variant: "success" });
+    },
+    onError: (error: Error) => {
+      logger.error("mark_paid_failed", { error: error.message });
       toast({ title: i18next.t("toast.error"), description: error.message, variant: "destructive" });
     },
   });
