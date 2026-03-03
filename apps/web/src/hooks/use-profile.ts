@@ -20,6 +20,7 @@ export interface UserProfile {
   codiceSdi: string | null;
   iban: string | null;
   annoInizioAttivita: number;
+  gestioneInps: "separata" | "artigiani" | "commercianti";
   createdAt: string;
   updatedAt: string;
 }
@@ -38,6 +39,7 @@ export interface ProfileFormData {
   codiceSdi?: string;
   iban?: string;
   annoInizioAttivita: number;
+  gestioneInps?: "separata" | "artigiani" | "commercianti";
 }
 
 export function useProfile() {
