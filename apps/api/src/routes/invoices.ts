@@ -4,7 +4,8 @@ import { createInvoiceSchema, updateInvoiceSchema, SOGLIA_BOLLO, IMPORTO_BOLLO }
 import { buildFatturaXml, validateBusinessRules } from "@fatturino/fattura-xml";
 import { db } from "../db/index.js";
 import { invoices, invoiceLines, userProfiles, clients } from "../db/schema.js";
-import { requireAuth, getUserId } from "../middleware/auth.js";
+import { requireAuth, getUserId, getUserEmail } from "../middleware/auth.js";
+import { sendInvoiceEmail } from "../services/email.js";
 import { mapToFatturaInput } from "../services/fattura-mapper.js";
 import { renderInvoiceHtml } from "../services/pdf/invoice-template.js";
 import { generatePdf } from "../services/pdf/pdf-generator.js";
@@ -326,5 +327,113 @@ export async function invoiceRoutes(app: FastifyInstance) {
       .header("Content-Type", "application/pdf")
       .header("Content-Disposition", `attachment; filename="${filename}"`)
       .send(pdf);
+  });
+
+  // Send invoice via email and mark as sent
+  app.post<{ Params: { id: string } }>("/api/invoices/:id/send", async (request, reply) => {
+    const userId = getUserId(request);
+    const userEmail = getUserEmail(request);
+
+    const existing = await db
+      .select()
+      .from(invoices)
+      .where(and(eq(invoices.id, request.params.id), eq(invoices.userId, userId)));
+
+    if (existing.length === 0) {
+      return reply.status(404).send({ error: "Invoice not found" });
+    }
+
+    if (existing[0].stato !== "bozza") {
+      return reply.status(400).send({ error: "Only draft invoices can be sent" });
+    }
+
+    const inv = existing[0];
+
+    const clientRows = await db.select().from(clients).where(eq(clients.id, inv.clientId));
+    if (clientRows.length === 0) {
+      return reply.status(400).send({ error: "Client not found" });
+    }
+    const client = clientRows[0];
+
+    const recipientEmail = client.email || client.pec;
+    if (!recipientEmail) {
+      return reply.status(400).send({ error: "Client has no email or PEC address" });
+    }
+
+    const profiles = await db.select().from(userProfiles).where(eq(userProfiles.userId, userId));
+    if (profiles.length === 0) {
+      return reply.status(400).send({ error: "Profilo utente non completato", code: "MISSING_PROFILE" });
+    }
+
+    const lines = await db.select().from(invoiceLines).where(eq(invoiceLines.invoiceId, inv.id));
+    const input = mapToFatturaInput(profiles[0], client, inv, lines);
+    const validationErrors = validateBusinessRules(input);
+    if (validationErrors.length > 0) {
+      return reply.status(422).send({ error: "Validation failed", errors: validationErrors });
+    }
+
+    const formatNumber = (n: string) =>
+      parseFloat(n).toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const bollo = parseFloat(inv.impostaBollo);
+    const html = renderInvoiceHtml({
+      cedente: {
+        ragioneSociale: profiles[0].ragioneSociale,
+        partitaIva: profiles[0].partitaIva,
+        codiceFiscale: profiles[0].codiceFiscale,
+        indirizzo: profiles[0].indirizzo,
+        cap: profiles[0].cap,
+        citta: profiles[0].citta,
+        provincia: profiles[0].provincia,
+      },
+      cliente: {
+        denominazione: client.ragioneSociale || [client.nome, client.cognome].filter(Boolean).join(" "),
+        partitaIva: client.partitaIva ?? undefined,
+        codiceFiscale: client.codiceFiscale,
+        indirizzo: client.indirizzo,
+        cap: client.cap,
+        citta: client.citta,
+        provincia: client.provincia,
+      },
+      fattura: {
+        numero: `${inv.numeroFattura}/${inv.anno}`,
+        data: new Date(inv.dataEmissione).toLocaleDateString("it-IT"),
+        causale: inv.causale ?? undefined,
+      },
+      linee: lines.map((l) => ({
+        descrizione: l.descrizione,
+        quantita: formatNumber(l.quantita),
+        prezzoUnitario: formatNumber(l.prezzoUnitario),
+        prezzoTotale: formatNumber(l.prezzoTotale),
+      })),
+      imponibile: formatNumber(inv.imponibile),
+      bollo: bollo > 0 ? formatNumber(inv.impostaBollo) : undefined,
+      totale: formatNumber(inv.totaleDocumento),
+      disclaimer: DISCLAIMER_FORFETTARIO,
+    });
+
+    const pdfBuffer = await generatePdf(html);
+
+    const clientName = client.ragioneSociale || [client.nome, client.cognome].filter(Boolean).join(" ") || "Cliente";
+
+    await sendInvoiceEmail({
+      to: recipientEmail,
+      bcc: userEmail,
+      invoiceNumber: inv.numeroFattura.toString(),
+      invoiceYear: inv.anno,
+      invoiceDate: new Date(inv.dataEmissione).toLocaleDateString("it-IT"),
+      invoiceTotal: `€${formatNumber(inv.totaleDocumento)}`,
+      clientName,
+      senderName: profiles[0].ragioneSociale,
+      pdfBuffer: Buffer.from(pdfBuffer),
+    });
+
+    const [updated] = await db
+      .update(invoices)
+      .set({ stato: "inviata", updatedAt: new Date() })
+      .where(eq(invoices.id, inv.id))
+      .returning();
+
+    return { ...updated, lines };
   });
 }
