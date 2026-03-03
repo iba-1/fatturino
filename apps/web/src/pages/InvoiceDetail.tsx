@@ -20,7 +20,12 @@ export function InvoiceDetail() {
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
   if (isLoading) {
-    return <p className="text-muted-foreground">{t("common.loading")}</p>;
+    return (
+      <div className="space-y-4">
+        <div className="h-8 w-48 rounded-lg bg-secondary animate-skeleton" />
+        <div className="h-64 rounded-xl bg-secondary animate-skeleton" />
+      </div>
+    );
   }
 
   if (isError || !invoice) {
@@ -65,7 +70,7 @@ export function InvoiceDetail() {
         <Button variant="ghost" size="icon" onClick={() => navigate("/invoices")}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-3xl font-bold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight">
           Fattura {invoice.numeroFattura}/{invoice.anno}
         </h1>
       </div>
@@ -88,7 +93,7 @@ export function InvoiceDetail() {
 
       {/* Missing profile banner */}
       {!hasProfile && (
-        <div data-testid="missing-profile-banner" className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md flex items-center gap-2">
+        <div data-testid="missing-profile-banner" className="mb-4 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-yellow-600" />
           <span className="text-sm text-yellow-800">
             {t("invoices.missingProfile")}{" "}
@@ -99,7 +104,7 @@ export function InvoiceDetail() {
 
       {/* Validation errors */}
       {validation && !validation.valid && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+        <div className="mb-4 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
           <h3 className="text-sm font-semibold text-red-800 mb-2">{t("invoices.validationErrors")}</h3>
           <ul className="text-sm text-red-700 space-y-1">
             {validation.errors.map((err, i) => (
@@ -118,7 +123,7 @@ export function InvoiceDetail() {
 
       {/* Download error */}
       {downloadError && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+        <div className="mb-4 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
           <p className="text-sm text-red-800">{downloadError}</p>
         </div>
       )}

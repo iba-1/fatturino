@@ -224,6 +224,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
                   <Label className="text-xs">{t("invoices.quantity")}</Label>
                 )}
                 <Input
+                  className="font-mono"
                   type="number"
                   min="0.01"
                   step="0.01"
@@ -238,6 +239,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
                   <Label className="text-xs">{t("invoices.unitPrice")}</Label>
                 )}
                 <Input
+                  className="font-mono"
                   type="number"
                   min="0"
                   step="0.01"
@@ -251,7 +253,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
                 {index === 0 && (
                   <Label className="text-xs">{t("invoices.lineTotal")}</Label>
                 )}
-                <div className="flex h-10 items-center px-3 text-sm font-medium">
+                <div className="flex h-10 items-center px-3 text-sm font-medium font-mono">
                   {calculateLineTotal(line).toFixed(2)}
                 </div>
               </div>
@@ -278,21 +280,21 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
       <div className="flex flex-col items-end space-y-2">
         <div className="flex gap-8 text-sm">
           <span className="text-muted-foreground">{t("invoices.subtotal")}</span>
-          <span className="font-medium w-24 text-right">
+          <span className="font-medium font-mono w-24 text-right">
             {subtotal.toFixed(2)}
           </span>
         </div>
         {bollo > 0 && (
           <div className="flex gap-8 text-sm">
             <span className="text-muted-foreground">{t("invoices.bollo")}</span>
-            <span className="font-medium w-24 text-right">
+            <span className="font-medium font-mono w-24 text-right">
               {bollo.toFixed(2)}
             </span>
           </div>
         )}
         <div className="flex gap-8 text-base font-bold">
           <span>{t("invoices.total")}</span>
-          <span className="w-24 text-right">{total.toFixed(2)}</span>
+          <span className="font-mono w-24 text-right">{total.toFixed(2)}</span>
         </div>
       </div>
 

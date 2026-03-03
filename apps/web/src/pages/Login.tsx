@@ -2,6 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { signIn } from "@/lib/auth";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 export function Login() {
   const { t } = useTranslation();
@@ -15,67 +19,47 @@ export function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     const { error: authError } = await signIn.email({ email, password });
     setLoading(false);
-
     if (authError) {
       setError(authError.message || t("common.error"));
       return;
     }
-
     navigate("/");
   }
 
   return (
-    <div className="mx-auto flex min-h-[80vh] max-w-sm flex-col justify-center">
-      <h1 className="mb-6 text-2xl font-bold">{t("auth.login")}</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-            {error}
-          </div>
-        )}
-        <div>
-          <label htmlFor="email" className="text-sm font-medium">
-            {t("auth.email")}
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
-          />
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="w-full max-w-sm">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold tracking-tight">Fatturino</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t("auth.login")}</p>
         </div>
-        <div>
-          <label htmlFor="password" className="text-sm font-medium">
-            {t("auth.password")}
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-        >
-          {loading ? t("common.loading") : t("auth.login")}
-        </button>
-      </form>
-      <p className="mt-4 text-center text-sm text-muted-foreground">
-        {t("auth.noAccount")}{" "}
-        <Link to="/register" className="text-primary hover:underline">
-          {t("auth.register")}
-        </Link>
-      </p>
+        <Card>
+          <CardContent className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive-foreground">{error}</div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="email">{t("auth.email")}</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">{t("auth.password")}</Label>
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              </div>
+              <Button type="submit" disabled={loading} className="w-full">
+                {loading ? t("common.loading") : t("auth.login")}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          {t("auth.noAccount")}{" "}
+          <Link to="/register" className="text-primary-foreground font-medium hover:underline">{t("auth.register")}</Link>
+        </p>
+      </div>
     </div>
   );
 }

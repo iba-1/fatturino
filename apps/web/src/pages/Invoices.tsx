@@ -22,19 +22,21 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useInvoices, useDeleteInvoice, type Invoice } from "@/hooks/use-invoices";
 import { useClients } from "@/hooks/use-clients";
-import { Plus, Trash2, Eye } from "lucide-react";
+import { Plus, Trash2, Eye, FileText } from "lucide-react";
 import { useState } from "react";
 
-function statusVariant(stato: string): "default" | "secondary" | "destructive" | "outline" {
+function statusVariant(stato: string): "default" | "secondary" | "destructive" | "outline" | "warning" | "success" {
   switch (stato) {
     case "consegnata":
     case "accettata":
-      return "default";
+      return "success";
     case "inviata":
-      return "secondary";
+      return "default";
     case "scartata":
     case "rifiutata":
       return "destructive";
+    case "bozza":
+      return "warning";
     default:
       return "outline";
   }
@@ -85,7 +87,7 @@ export function Invoices() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">{t("invoices.title")}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("invoices.title")}</h1>
         <Button onClick={() => navigate("/invoices/new")}>
           <Plus className="mr-2 h-4 w-4" />
           {t("invoices.new")}
@@ -94,12 +96,20 @@ export function Invoices() {
 
       <div className="mt-6">
         {isLoading ? (
-          <p className="text-muted-foreground">{t("common.loading")}</p>
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-14 rounded-lg bg-secondary animate-skeleton" />
+            ))}
+          </div>
         ) : !invoices || invoices.length === 0 ? (
-          <div className="text-center py-12 border rounded-lg">
-            <p className="text-muted-foreground" data-testid="empty-state">
-              {t("invoices.title")} — {t("invoices.new")}
-            </p>
+          <div className="text-center py-16" data-testid="empty-state">
+            <FileText className="mx-auto h-12 w-12 text-muted-foreground/50" />
+            <h3 className="mt-4 text-lg font-medium">{t("invoices.title")}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">{t("invoices.new")}</p>
+            <Button className="mt-4" onClick={() => navigate("/invoices/new")}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t("invoices.new")}
+            </Button>
           </div>
         ) : (
           <Table>
@@ -123,7 +133,7 @@ export function Invoices() {
                     {new Date(inv.dataEmissione).toLocaleDateString("it-IT")}
                   </TableCell>
                   <TableCell>{getClientName(inv.clientId)}</TableCell>
-                  <TableCell>
+                  <TableCell className="font-mono">
                     {parseFloat(inv.totaleDocumento).toFixed(2)}
                   </TableCell>
                   <TableCell>

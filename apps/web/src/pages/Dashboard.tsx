@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useDashboardSummary } from "@/hooks/use-dashboard";
+import { DollarSign, Send, Clock, Calculator } from "lucide-react";
 
 const formatEur = (n: number) =>
   new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
@@ -32,11 +33,11 @@ export function Dashboard() {
     <div className="space-y-6">
       {/* Header with year selector */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">{t("dashboard.title")}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("dashboard.title")}</h1>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">{t("dashboard.year")}:</span>
           <select
-            className="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+            className="rounded-lg border border-input bg-card px-3 py-1.5 text-sm transition-colors duration-150"
             value={anno}
             onChange={(e) => setAnno(parseInt(e.target.value, 10))}
           >
@@ -49,35 +50,60 @@ export function Dashboard() {
 
       {/* Profile warning */}
       {data?.profileIncomplete && (
-        <div className="rounded-lg border border-yellow-300 bg-yellow-50 p-4 text-sm dark:border-yellow-700 dark:bg-yellow-950">
-          <p>{t("dashboard.profileWarning")}</p>
-          <button
-            className="mt-1 text-sm font-medium underline"
-            onClick={() => navigate("/settings")}
-          >
-            {t("dashboard.goToSettings")}
-          </button>
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm flex items-start gap-3">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-warning/40">
+            <Calculator className="h-4 w-4 text-amber-700" />
+          </div>
+          <div>
+            <p className="text-amber-900">{t("dashboard.profileWarning")}</p>
+            <button className="mt-1 text-sm font-medium text-amber-800 underline hover:text-amber-900 cursor-pointer" onClick={() => navigate("/settings")}>
+              {t("dashboard.goToSettings")}
+            </button>
+          </div>
         </div>
       )}
 
       {/* Summary cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <DashboardCard
-          title={t("dashboard.totalRevenue")}
-          value={isLoading ? "..." : formatEur(data?.totalRevenue ?? 0)}
-        />
-        <DashboardCard
-          title={t("dashboard.invoicesSent")}
-          value={isLoading ? "..." : String(data?.invoicesSent ?? 0)}
-        />
-        <DashboardCard
-          title={t("dashboard.pendingInvoices")}
-          value={isLoading ? "..." : String(data?.pendingInvoices ?? 0)}
-        />
-        <DashboardCard
-          title={t("dashboard.taxDue")}
-          value={isLoading ? "..." : data?.tax ? formatEur(data.tax.impostaDovuta) : "\u2014"}
-        />
+        {isLoading ? (
+          <>
+            <div className="h-[106px] rounded-xl bg-secondary animate-skeleton" />
+            <div className="h-[106px] rounded-xl bg-secondary animate-skeleton" />
+            <div className="h-[106px] rounded-xl bg-secondary animate-skeleton" />
+            <div className="h-[106px] rounded-xl bg-secondary animate-skeleton" />
+          </>
+        ) : (
+          <>
+            <DashboardCard
+              title={t("dashboard.totalRevenue")}
+              value={formatEur(data?.totalRevenue ?? 0)}
+              icon={DollarSign}
+              iconBg="bg-emerald-100"
+              iconColor="text-emerald-700"
+            />
+            <DashboardCard
+              title={t("dashboard.invoicesSent")}
+              value={String(data?.invoicesSent ?? 0)}
+              icon={Send}
+              iconBg="bg-blue-100"
+              iconColor="text-blue-700"
+            />
+            <DashboardCard
+              title={t("dashboard.pendingInvoices")}
+              value={String(data?.pendingInvoices ?? 0)}
+              icon={Clock}
+              iconBg="bg-amber-100"
+              iconColor="text-amber-700"
+            />
+            <DashboardCard
+              title={t("dashboard.taxDue")}
+              value={data?.tax ? formatEur(data.tax.impostaDovuta) : "\u2014"}
+              icon={Calculator}
+              iconBg="bg-red-100"
+              iconColor="text-red-700"
+            />
+          </>
+        )}
       </div>
 
       {/* Monthly revenue chart */}
@@ -205,11 +231,11 @@ export function Dashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-muted-foreground">
-                  <th className="pb-2">#</th>
-                  <th className="pb-2">{t("invoices.date")}</th>
-                  <th className="pb-2">{t("invoices.client")}</th>
-                  <th className="pb-2 text-right">{t("invoices.amount")}</th>
-                  <th className="pb-2">{t("invoices.status")}</th>
+                  <th className="pb-2 text-xs font-medium uppercase tracking-wider">#</th>
+                  <th className="pb-2 text-xs font-medium uppercase tracking-wider">{t("invoices.date")}</th>
+                  <th className="pb-2 text-xs font-medium uppercase tracking-wider">{t("invoices.client")}</th>
+                  <th className="pb-2 text-right text-xs font-medium uppercase tracking-wider">{t("invoices.amount")}</th>
+                  <th className="pb-2 text-xs font-medium uppercase tracking-wider">{t("invoices.status")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -224,9 +250,9 @@ export function Dashboard() {
                       {new Date(inv.dataEmissione).toLocaleDateString("it-IT")}
                     </td>
                     <td className="py-2">{inv.clientName}</td>
-                    <td className="py-2 text-right">{formatEur(inv.totaleDocumento)}</td>
+                    <td className="py-2 text-right font-mono">{formatEur(inv.totaleDocumento)}</td>
                     <td className="py-2">
-                      <span className="rounded bg-muted px-2 py-0.5 text-xs capitalize">
+                      <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-medium capitalize text-[#064E3B]">
                         {inv.stato}
                       </span>
                     </td>
@@ -241,12 +267,25 @@ export function Dashboard() {
   );
 }
 
-function DashboardCard({ title, value }: { title: string; value: string }) {
+function DashboardCard({
+  title, value, icon: Icon, iconBg, iconColor,
+}: {
+  title: string; value: string;
+  icon: React.ComponentType<{ className?: string }>;
+  iconBg: string; iconColor: string;
+}) {
   return (
     <Card>
       <CardContent className="p-6">
-        <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-        <p className="mt-2 text-2xl font-bold">{value}</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="mt-2 text-3xl font-bold tracking-tight font-mono">{value}</p>
+          </div>
+          <div className={`flex h-12 w-12 items-center justify-center rounded-full ${iconBg}`}>
+            <Icon className={`h-6 w-6 ${iconColor}`} />
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

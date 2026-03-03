@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { UserProfile, ProfileFormData } from "@/hooks/use-profile";
 
 interface ProfileFormProps {
@@ -247,16 +254,16 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
             </div>
             <div className="space-y-2">
               <Label htmlFor="gestioneInps">{t("settings.inpsManagement")}</Label>
-              <select
-                id="gestioneInps"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                value={gestioneInps}
-                onChange={(e) => setGestioneInps(e.target.value as "separata" | "artigiani" | "commercianti")}
-              >
-                <option value="separata">{t("settings.gestSeparata")}</option>
-                <option value="artigiani">{t("settings.gestArtigiani")}</option>
-                <option value="commercianti">{t("settings.gestCommercianti")}</option>
-              </select>
+              <Select value={gestioneInps} onValueChange={(v) => setGestioneInps(v as "separata" | "artigiani" | "commercianti")}>
+                <SelectTrigger id="gestioneInps">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="separata">{t("settings.gestSeparata")}</SelectItem>
+                  <SelectItem value="artigiani">{t("settings.gestArtigiani")}</SelectItem>
+                  <SelectItem value="commercianti">{t("settings.gestCommercianti")}</SelectItem>
+                </SelectContent>
+              </Select>
               {serverErrors.gestioneInps && (
                 <p className="text-sm text-destructive">{serverErrors.gestioneInps}</p>
               )}
