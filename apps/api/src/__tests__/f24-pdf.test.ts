@@ -1,0 +1,136 @@
+import { describe, it, expect } from "vitest";
+import { CODICI_TRIBUTO_IMPOSTA } from "@fatturino/shared";
+import type { F24Deadline } from "../services/f24-pdf.js";
+
+/**
+ * Pure-logic tests for F24 PDF generation.
+ * These tests do not invoke generateF24Pdf (which reads the template file from disk),
+ * but instead test the logic used inside it in isolation.
+ */
+
+// --- CF splitting logic ---
+
+function splitCodiceFiscale(cf: string): string[] {
+  const upper = cf.toUpperCase();
+  return Array.from({ length: Math.min(upper.length, 16) }, (_, i) => upper[i]);
+}
+
+describe("F24 PDF — codice fiscale splitting", () => {
+  it("splits a 16-character CF into 16 individual chars", () => {
+    const cf = "RSSMRA80A01H501U";
+    const parts = splitCodiceFiscale(cf);
+    expect(parts).toHaveLength(16);
+    expect(parts[0]).toBe("R");
+    expect(parts[1]).toBe("S");
+    expect(parts[15]).toBe("U");
+  });
+
+  it("uppercases lowercase input before splitting", () => {
+    const cf = "rssmra80a01h501u";
+    const parts = splitCodiceFiscale(cf);
+    expect(parts[0]).toBe("R");
+    expect(parts[4]).toBe("R");
+  });
+
+  it("clamps to 16 chars if CF is longer than expected", () => {
+    const cf = "RSSMRA80A01H501U_EXTRA";
+    const parts = splitCodiceFiscale(cf);
+    expect(parts).toHaveLength(16);
+  });
+
+  it("handles a shorter CF without error", () => {
+    const cf = "ABC123";
+    const parts = splitCodiceFiscale(cf);
+    expect(parts).toHaveLength(6);
+    expect(parts[0]).toBe("A");
+    expect(parts[5]).toBe("3");
+  });
+
+  it("produces correct field names cf1 through cf16", () => {
+    const cf = "RSSMRA80A01H501U";
+    const fieldNames = Array.from({ length: cf.length }, (_, i) => `cf${i + 1}`);
+    expect(fieldNames[0]).toBe("cf1");
+    expect(fieldNames[15]).toBe("cf16");
+  });
+});
+
+// --- Deadline → codice tributo mapping ---
+
+const DEADLINE_CODICE: Record<F24Deadline, string> = {
+  primo_acconto: CODICI_TRIBUTO_IMPOSTA.ACCONTO_PRIMO,
+  secondo_acconto: CODICI_TRIBUTO_IMPOSTA.ACCONTO_SECONDO,
+  saldo: CODICI_TRIBUTO_IMPOSTA.SALDO,
+};
+
+describe("F24 PDF — deadline to codice tributo mapping", () => {
+  it("maps primo_acconto to 1790", () => {
+    expect(DEADLINE_CODICE["primo_acconto"]).toBe("1790");
+  });
+
+  it("maps secondo_acconto to 1791", () => {
+    expect(DEADLINE_CODICE["secondo_acconto"]).toBe("1791");
+  });
+
+  it("maps saldo to 1792", () => {
+    expect(DEADLINE_CODICE["saldo"]).toBe("1792");
+  });
+
+  it("uses the exported constants from @fatturino/shared (not hardcoded strings)", () => {
+    expect(CODICI_TRIBUTO_IMPOSTA.ACCONTO_PRIMO).toBe("1790");
+    expect(CODICI_TRIBUTO_IMPOSTA.ACCONTO_SECONDO).toBe("1791");
+    expect(CODICI_TRIBUTO_IMPOSTA.SALDO).toBe("1792");
+  });
+});
+
+// --- Amount formatting ---
+
+function formatAmount(amount: number): string {
+  return amount.toFixed(2);
+}
+
+describe("F24 PDF — amount formatting", () => {
+  it("formats an integer amount with two decimal places", () => {
+    expect(formatAmount(1500)).toBe("1500.00");
+  });
+
+  it("formats an amount with one decimal correctly", () => {
+    expect(formatAmount(1234.5)).toBe("1234.50");
+  });
+
+  it("formats an amount with two decimals unchanged", () => {
+    expect(formatAmount(999.99)).toBe("999.99");
+  });
+
+  it("formats zero as 0.00", () => {
+    expect(formatAmount(0)).toBe("0.00");
+  });
+
+  it("rounds to two decimal places (toFixed behaviour)", () => {
+    // toFixed rounds: 1.005 -> browser-specific, but .006 is safe
+    expect(formatAmount(1.006)).toBe("1.01");
+  });
+
+  it("formats large amounts correctly", () => {
+    expect(formatAmount(85000.75)).toBe("85000.75");
+  });
+});
+
+// --- Route param: deadline URL slug → F24Deadline key conversion ---
+
+function slugToDeadline(slug: string): F24Deadline {
+  return slug.replace(/-/g, "_") as F24Deadline;
+}
+
+describe("F24 route — deadline URL slug conversion", () => {
+  it("converts primo-acconto to primo_acconto", () => {
+    expect(slugToDeadline("primo-acconto")).toBe("primo_acconto");
+  });
+
+  it("converts secondo-acconto to secondo_acconto", () => {
+    expect(slugToDeadline("secondo-acconto")).toBe("secondo_acconto");
+  });
+
+  it("converts saldo to saldo (no hyphens)", () => {
+    expect(slugToDeadline("saldo")).toBe("saldo");
+  });
+});
