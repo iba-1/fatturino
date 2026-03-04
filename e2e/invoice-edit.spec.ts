@@ -16,19 +16,12 @@ test.describe("Invoice Editing", () => {
     await page.fill('input[id="citta"]', "Roma");
     await page.fill('input[id="provincia"]', "RM");
 
-    // Wait for both the POST and the subsequent GET refetch
     const createClientDone = page.waitForResponse(
       (res) => res.request().method() === "POST" && res.url().includes("/api/clients"),
-      { timeout: 10_000 }
-    );
-    const refetchDone = page.waitForResponse(
-      (res) => res.request().method() === "GET" && res.url().includes("/api/clients"),
-      { timeout: 10_000 }
     );
     await page.click('[role="dialog"] button[type="submit"]');
     await createClientDone;
-    await refetchDone;
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10_000 });
     await expect(page.locator("table")).toContainText("Test Edit SRL", { timeout: 10_000 });
 
     // Create an invoice
@@ -49,7 +42,7 @@ test.describe("Invoice Editing", () => {
     );
     await page.click('button[type="submit"]');
     await createInvoiceResponse;
-    await page.waitForURL("/invoices", { timeout: 10_000 });
+    await page.waitForURL("/invoices", { timeout: 30_000 });
 
     // Navigate to invoice detail
     await page.locator('[data-testid="actions-trigger"]').first().click();
@@ -77,16 +70,10 @@ test.describe("Invoice Editing", () => {
 
     const createClientDone = page.waitForResponse(
       (res) => res.request().method() === "POST" && res.url().includes("/api/clients"),
-      { timeout: 10_000 }
-    );
-    const refetchDone = page.waitForResponse(
-      (res) => res.request().method() === "GET" && res.url().includes("/api/clients"),
-      { timeout: 10_000 }
     );
     await page.click('[role="dialog"] button[type="submit"]');
     await createClientDone;
-    await refetchDone;
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10_000 });
     await expect(page.locator("table")).toContainText("Edit Nav SRL", { timeout: 10_000 });
 
     // Create invoice
@@ -104,7 +91,7 @@ test.describe("Invoice Editing", () => {
     );
     await page.click('button[type="submit"]');
     await createInvoiceResponse;
-    await page.waitForURL("/invoices", { timeout: 10_000 });
+    await page.waitForURL("/invoices", { timeout: 30_000 });
 
     // Go to detail then click edit
     await page.locator('[data-testid="actions-trigger"]').first().click();

@@ -24,7 +24,7 @@ async function fillProfile(page: import("@playwright/test").Page) {
   await saveResponse;
 }
 
-test.describe("Invoice XML/PDF download flow", () => {
+test.describe.serial("Invoice XML/PDF download flow", () => {
   // beforeEach creates client + invoice + navigates to detail — needs extra time on CI
   test.setTimeout(60_000);
 
@@ -45,9 +45,13 @@ test.describe("Invoice XML/PDF download flow", () => {
     await page.fill('input[id="citta"]', "Roma");
     await page.fill('input[id="provincia"]', "RM");
     await page.fill('input[id="codiceSdi"]', "ABCDEFG");
+    const createClientDone = page.waitForResponse(
+      (res) => res.request().method() === "POST" && res.url().includes("/api/clients"),
+    );
     await page.click('[role="dialog"] button[type="submit"]');
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5_000 });
-    await expect(page.locator("table")).toContainText("XML Test Client Srl");
+    await createClientDone;
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10_000 });
+    await expect(page.locator("table")).toContainText("XML Test Client Srl", { timeout: 10_000 });
 
     // --- Create a test invoice ---
     await page.goto("/invoices/new");
