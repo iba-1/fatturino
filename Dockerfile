@@ -27,9 +27,6 @@ COPY apps/ ./apps/
 # Build everything (turbo handles dependency order)
 RUN pnpm build
 
-# Prune dev dependencies
-RUN pnpm prune --prod
-
 # ── Stage 2: Runtime ──────────────────────────────────────
 FROM node:20-slim AS runtime
 
@@ -44,19 +41,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy built artifacts and production dependencies
+# Copy full node_modules (pnpm workspace symlinks must stay intact)
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/pnpm-workspace.yaml ./
 COPY --from=builder /app/pnpm-lock.yaml ./
 
-# Copy built packages
+# Copy built packages (dist + package.json + node_modules for resolution)
 COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
 COPY --from=builder /app/packages/shared/package.json ./packages/shared/
+COPY --from=builder /app/packages/shared/node_modules ./packages/shared/node_modules
 COPY --from=builder /app/packages/fattura-xml/dist ./packages/fattura-xml/dist
 COPY --from=builder /app/packages/fattura-xml/package.json ./packages/fattura-xml/
+COPY --from=builder /app/packages/fattura-xml/node_modules ./packages/fattura-xml/node_modules
 
-# Copy built API
+# Copy built API (dist + node_modules + migration SQL files)
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/api/package.json ./apps/api/
 COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
