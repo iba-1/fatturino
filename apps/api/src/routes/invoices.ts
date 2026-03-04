@@ -168,6 +168,30 @@ export async function invoiceRoutes(app: FastifyInstance) {
       return reply.status(404).send({ error: "Invoice not found" });
     }
 
+    // Block deletion of stornata invoices (linked to credit note)
+    if (existing[0].stato === "stornata") {
+      return reply.status(400).send({ error: "Cannot delete a refunded invoice" });
+    }
+
+    // Block deletion if invoice has a linked credit note
+    if (existing[0].creditNoteId) {
+      return reply.status(400).send({ error: "Cannot delete invoice with linked credit note" });
+    }
+
+    // If deleting a credit note, clear the original invoice's creditNoteId reference
+    if (existing[0].tipoDocumento === "TD04" && existing[0].originalInvoiceId) {
+      const original = await db
+        .select()
+        .from(invoices)
+        .where(eq(invoices.id, existing[0].originalInvoiceId));
+      if (original.length > 0 && original[0].creditNoteId === existing[0].id) {
+        await db
+          .update(invoices)
+          .set({ creditNoteId: null, updatedAt: new Date() })
+          .where(eq(invoices.id, existing[0].originalInvoiceId));
+      }
+    }
+
     await db.delete(invoices).where(eq(invoices.id, request.params.id));
     return { success: true };
   });
