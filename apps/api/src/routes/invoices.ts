@@ -11,6 +11,51 @@ import { renderInvoiceHtml } from "../services/pdf/invoice-template.js";
 import { generatePdf } from "../services/pdf/pdf-generator.js";
 import { DISCLAIMER_FORFETTARIO } from "@fatturino/shared";
 
+export function buildCreditNoteValues(
+  original: {
+    id: string;
+    clientId: string;
+    anno: number;
+    imponibile: string;
+    impostaBollo: string;
+    totaleDocumento: string;
+    causale: string | null;
+  },
+  originalLines: Array<{
+    descrizione: string;
+    quantita: string;
+    prezzoUnitario: string;
+    prezzoTotale: string;
+    aliquotaIva: string;
+    naturaIva: string | null;
+  }>,
+  nextNumeroFattura: number
+) {
+  return {
+    invoice: {
+      clientId: original.clientId,
+      numeroFattura: nextNumeroFattura,
+      anno: original.anno,
+      dataEmissione: new Date(),
+      tipoDocumento: "TD04" as const,
+      causale: original.causale,
+      imponibile: original.imponibile,
+      impostaBollo: original.impostaBollo,
+      totaleDocumento: original.totaleDocumento,
+      stato: "bozza" as const,
+      originalInvoiceId: original.id,
+    },
+    lines: originalLines.map((line) => ({
+      descrizione: line.descrizione,
+      quantita: line.quantita,
+      prezzoUnitario: line.prezzoUnitario,
+      prezzoTotale: line.prezzoTotale,
+      aliquotaIva: line.aliquotaIva,
+      naturaIva: line.naturaIva ?? "N2.2",
+    })),
+  };
+}
+
 export async function invoiceRoutes(app: FastifyInstance) {
   app.addHook("preHandler", requireAuth);
 
@@ -123,8 +168,93 @@ export async function invoiceRoutes(app: FastifyInstance) {
       return reply.status(404).send({ error: "Invoice not found" });
     }
 
+    // Block deletion of stornata invoices (linked to credit note)
+    if (existing[0].stato === "stornata") {
+      return reply.status(400).send({ error: "Cannot delete a refunded invoice" });
+    }
+
+    // Block deletion if invoice has a linked credit note
+    if (existing[0].creditNoteId) {
+      return reply.status(400).send({ error: "Cannot delete invoice with linked credit note" });
+    }
+
+    // If deleting a credit note, clear the original invoice's creditNoteId reference
+    if (existing[0].tipoDocumento === "TD04" && existing[0].originalInvoiceId) {
+      const original = await db
+        .select()
+        .from(invoices)
+        .where(eq(invoices.id, existing[0].originalInvoiceId));
+      if (original.length > 0 && original[0].creditNoteId === existing[0].id) {
+        await db
+          .update(invoices)
+          .set({ creditNoteId: null, updatedAt: new Date() })
+          .where(eq(invoices.id, existing[0].originalInvoiceId));
+      }
+    }
+
     await db.delete(invoices).where(eq(invoices.id, request.params.id));
     return { success: true };
+  });
+
+  // Create credit note from existing invoice
+  app.post<{ Params: { id: string } }>("/api/invoices/:id/credit-note", async (request, reply) => {
+    const userId = getUserId(request);
+
+    const existing = await db
+      .select()
+      .from(invoices)
+      .where(and(eq(invoices.id, request.params.id), eq(invoices.userId, userId)));
+
+    if (existing.length === 0) {
+      return reply.status(404).send({ error: "Invoice not found" });
+    }
+
+    const original = existing[0];
+
+    if (original.stato === "bozza") {
+      return reply.status(400).send({ error: "Cannot create credit note for draft invoice" });
+    }
+
+    if (original.creditNoteId) {
+      return reply.status(400).send({ error: "Invoice already has a credit note" });
+    }
+
+    const originalLines = await db
+      .select()
+      .from(invoiceLines)
+      .where(eq(invoiceLines.invoiceId, original.id));
+
+    const maxNumero = await db
+      .select({ max: sql<number>`COALESCE(MAX(${invoices.numeroFattura}), 0)` })
+      .from(invoices)
+      .where(and(eq(invoices.userId, userId), eq(invoices.anno, original.anno)));
+
+    const nextNumero = (maxNumero[0]?.max || 0) + 1;
+
+    const creditNoteData = buildCreditNoteValues(original, originalLines, nextNumero);
+
+    const [created] = await db
+      .insert(invoices)
+      .values({
+        userId,
+        ...creditNoteData.invoice,
+      })
+      .returning();
+
+    const lineValues = creditNoteData.lines.map((line) => ({
+      invoiceId: created.id,
+      ...line,
+    }));
+
+    const createdLines = await db.insert(invoiceLines).values(lineValues).returning();
+
+    // Link original to this credit note immediately (prevents duplicate creation)
+    await db
+      .update(invoices)
+      .set({ creditNoteId: created.id, updatedAt: new Date() })
+      .where(eq(invoices.id, original.id));
+
+    return reply.status(201).send({ ...created, lines: createdLines });
   });
 
   // Mark invoice as sent (without sending email)
@@ -149,6 +279,18 @@ export async function invoiceRoutes(app: FastifyInstance) {
       .set({ stato: "inviata", updatedAt: new Date() })
       .where(eq(invoices.id, request.params.id))
       .returning();
+
+    // If this is a credit note (TD04), mark the original invoice as stornata
+    if (existing[0].tipoDocumento === "TD04" && existing[0].originalInvoiceId) {
+      await db
+        .update(invoices)
+        .set({
+          stato: "stornata",
+          creditNoteId: existing[0].id,
+          updatedAt: new Date(),
+        })
+        .where(eq(invoices.id, existing[0].originalInvoiceId));
+    }
 
     return updated;
   });
@@ -482,6 +624,18 @@ export async function invoiceRoutes(app: FastifyInstance) {
       .set({ stato: "inviata", updatedAt: new Date() })
       .where(eq(invoices.id, inv.id))
       .returning();
+
+    // If this is a credit note (TD04), mark the original invoice as stornata
+    if (inv.tipoDocumento === "TD04" && inv.originalInvoiceId) {
+      await db
+        .update(invoices)
+        .set({
+          stato: "stornata",
+          creditNoteId: inv.id,
+          updatedAt: new Date(),
+        })
+        .where(eq(invoices.id, inv.originalInvoiceId));
+    }
 
     return { ...updated, lines };
   });

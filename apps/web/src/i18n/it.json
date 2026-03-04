@@ -104,7 +104,16 @@
     "markUnpaid": "Segna come Non Pagata",
     "paid": "Pagata",
     "deleteConfirmTitle": "Eliminare la fattura?",
-    "deleteConfirmDescription": "La fattura verrà eliminata definitivamente. Questa azione non può essere annullata."
+    "deleteConfirmDescription": "La fattura verrà eliminata definitivamente. Questa azione non può essere annullata.",
+    "stornata": "Stornata",
+    "creditNote": "Nota di Credito",
+    "createCreditNote": "Crea Nota di Credito",
+    "deleteAnywayTitle": "Eliminare fattura inviata?",
+    "deleteAnywayDescription": "Questa fattura è stata inviata. Puoi creare una nota di credito per stornare correttamente la fattura, oppure eliminarla comunque.",
+    "deleteAnyway": "Elimina comunque",
+    "viewCreditNote": "Vedi Nota di Credito",
+    "viewOriginalInvoice": "Vedi Fattura Originale",
+    "creditNoteFor": "Nota di credito per fattura {{number}}"
   },
   "clients": {
     "title": "Clienti",
@@ -211,6 +220,7 @@
     "paymentRecorded": "Pagamento registrato",
     "invoiceMarkedSent": "Fattura contrassegnata come inviata",
     "invoiceMarkedPaid": "Stato pagamento fattura aggiornato",
+    "creditNoteCreated": "Nota di credito creata",
     "error": "Errore"
   }
 }

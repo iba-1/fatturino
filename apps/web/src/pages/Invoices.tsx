@@ -32,6 +32,7 @@ import {
   useDeleteInvoice,
   useMarkSent,
   useMarkPaid,
+  useCreateCreditNote,
   type Invoice,
 } from "@/hooks/use-invoices";
 import { useClients } from "@/hooks/use-clients";
@@ -60,6 +61,8 @@ function statusVariant(stato: string): "default" | "secondary" | "destructive" |
       return "destructive";
     case "bozza":
       return "warning";
+    case "stornata":
+      return "secondary";
     default:
       return "outline";
   }
@@ -73,6 +76,7 @@ export function Invoices() {
   const deleteInvoice = useDeleteInvoice();
   const markSent = useMarkSent();
   const markPaid = useMarkPaid();
+  const createCreditNote = useCreateCreditNote();
   const [deletingInvoice, setDeletingInvoice] = useState<Invoice | undefined>();
   const [markSentInvoice, setMarkSentInvoice] = useState<Invoice | undefined>();
 
@@ -91,6 +95,7 @@ export function Invoices() {
       consegnata: t("invoices.delivered"),
       scartata: t("invoices.rejected"),
       accettata: t("invoices.accepted"),
+      stornata: t("invoices.stornata"),
     };
     return map[stato] || stato;
   }
@@ -220,13 +225,15 @@ export function Invoices() {
                           )}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onClick={() => setDeletingInvoice(inv)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          {t("common.delete")}
-                        </DropdownMenuItem>
+                        {inv.stato !== "stornata" && !inv.creditNoteId && (
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => setDeletingInvoice(inv)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            {t("common.delete")}
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -237,9 +244,9 @@ export function Invoices() {
         )}
       </div>
 
-      {/* Delete Confirmation */}
+      {/* Delete Confirmation — draft invoices */}
       <AlertDialog
-        open={!!deletingInvoice}
+        open={!!deletingInvoice && deletingInvoice.stato === "bozza"}
         onOpenChange={(open) => !open && setDeletingInvoice(undefined)}
       >
         <AlertDialogContent>
@@ -256,6 +263,42 @@ export function Invoices() {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Confirmation — sent invoices (offer credit note) */}
+      <AlertDialog
+        open={!!deletingInvoice && deletingInvoice.stato !== "bozza"}
+        onOpenChange={(open) => !open && setDeletingInvoice(undefined)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("invoices.deleteAnywayTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("invoices.deleteAnywayDescription")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!deletingInvoice) return;
+                const invoiceId = deletingInvoice.id;
+                setDeletingInvoice(undefined);
+                createCreditNote.mutate(invoiceId, {
+                  onSuccess: (data) => navigate(`/invoices/${data.id}`),
+                });
+              }}
+            >
+              {t("invoices.createCreditNote")}
+            </AlertDialogAction>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t("invoices.deleteAnyway")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

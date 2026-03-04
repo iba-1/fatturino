@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { InvoicePreview } from "@/components/InvoicePreview";
-import { useInvoice, useValidateInvoice, useSendInvoice, useDeleteInvoice, useMarkSent, useMarkPaid } from "@/hooks/use-invoices";
+import { useInvoice, useValidateInvoice, useSendInvoice, useDeleteInvoice, useMarkSent, useMarkPaid, useCreateCreditNote } from "@/hooks/use-invoices";
 import { useClient } from "@/hooks/use-clients";
 import { useProfile } from "@/hooks/use-profile";
 import { Button } from "@/components/ui/button";
@@ -23,10 +23,12 @@ export function InvoiceDetail() {
   const deleteInvoice = useDeleteInvoice();
   const markSentMutation = useMarkSent();
   const markPaidMutation = useMarkPaid();
+  const createCreditNote = useCreateCreditNote();
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const [showSendConfirm, setShowSendConfirm] = useState(false);
   const [showMarkSentConfirm, setShowMarkSentConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showCreditNoteDialog, setShowCreditNoteDialog] = useState(false);
 
   if (isLoading) {
     return (
@@ -97,6 +99,16 @@ export function InvoiceDetail() {
         {invoice.pagata && (
           <Badge variant="success">{t("invoices.paid")}</Badge>
         )}
+        {invoice.creditNoteId && (
+          <Button variant="link" size="sm" onClick={() => navigate(`/invoices/${invoice.creditNoteId}`)}>
+            {t("invoices.viewCreditNote")}
+          </Button>
+        )}
+        {invoice.originalInvoiceId && (
+          <Button variant="link" size="sm" onClick={() => navigate(`/invoices/${invoice.originalInvoiceId}`)}>
+            {t("invoices.viewOriginalInvoice")}
+          </Button>
+        )}
       </div>
 
       {/* Action bar */}
@@ -156,15 +168,23 @@ export function InvoiceDetail() {
           <FileText className="h-4 w-4 mr-2" />
           {t("invoices.downloadPdf")}
         </Button>
-        <Button
-          variant="outline"
-          className="text-destructive hover:text-destructive"
-          onClick={() => setShowDeleteConfirm(true)}
-          disabled={deleteInvoice.isPending}
-        >
-          <Trash2 className="h-4 w-4 mr-2" />
-          {t("common.delete")}
-        </Button>
+        {invoice.stato !== "stornata" && !invoice.creditNoteId && (
+          <Button
+            variant="outline"
+            className="text-destructive hover:text-destructive"
+            onClick={() => {
+              if (invoice.stato === "bozza") {
+                setShowDeleteConfirm(true);
+              } else {
+                setShowCreditNoteDialog(true);
+              }
+            }}
+            disabled={deleteInvoice.isPending}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            {t("common.delete")}
+          </Button>
+        )}
       </div>
 
       {/* Missing profile banner */}
@@ -263,6 +283,42 @@ export function InvoiceDetail() {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Credit note dialog for sent invoices */}
+      <AlertDialog open={showCreditNoteDialog} onOpenChange={setShowCreditNoteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("invoices.deleteAnywayTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("invoices.deleteAnywayDescription")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowCreditNoteDialog(false);
+                createCreditNote.mutate(id!, {
+                  onSuccess: (data) => navigate(`/invoices/${data.id}`),
+                });
+              }}
+            >
+              {t("invoices.createCreditNote")}
+            </AlertDialogAction>
+            <AlertDialogAction
+              onClick={() => {
+                setShowCreditNoteDialog(false);
+                deleteInvoice.mutate(id!, {
+                  onSuccess: () => navigate("/invoices"),
+                });
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t("invoices.deleteAnyway")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

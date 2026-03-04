@@ -105,6 +105,49 @@ describe("aggregateDashboardData", () => {
     expect(result.profileIncomplete).toBe(false);
   });
 
+  it("subtracts credit note (TD04) totals from revenue", () => {
+    const result = aggregateDashboardData({
+      invoices: [
+        { totaleDocumento: "1000.00", stato: "inviata", dataEmissione: new Date("2026-01-15"), tipoDocumento: "TD01" },
+        { totaleDocumento: "500.00", stato: "inviata", dataEmissione: new Date("2026-02-15"), tipoDocumento: "TD01" },
+        { totaleDocumento: "1000.00", stato: "inviata", dataEmissione: new Date("2026-01-20"), tipoDocumento: "TD04" },
+      ],
+      profile: null,
+      anno: 2026,
+    });
+
+    expect(result.totalRevenue).toBe(500);
+    expect(result.invoicesSent).toBe(2);
+  });
+
+  it("excludes stornata invoices from sent count", () => {
+    const result = aggregateDashboardData({
+      invoices: [
+        { totaleDocumento: "1000.00", stato: "stornata", dataEmissione: new Date("2026-01-15"), tipoDocumento: "TD01" },
+        { totaleDocumento: "1000.00", stato: "inviata", dataEmissione: new Date("2026-01-20"), tipoDocumento: "TD04" },
+        { totaleDocumento: "500.00", stato: "inviata", dataEmissione: new Date("2026-02-15"), tipoDocumento: "TD01" },
+      ],
+      profile: null,
+      anno: 2026,
+    });
+
+    expect(result.totalRevenue).toBe(500);
+    expect(result.invoicesSent).toBe(1);
+  });
+
+  it("subtracts credit notes from monthly revenue", () => {
+    const result = aggregateDashboardData({
+      invoices: [
+        { totaleDocumento: "1000.00", stato: "inviata", dataEmissione: new Date("2026-01-15"), tipoDocumento: "TD01" },
+        { totaleDocumento: "400.00", stato: "inviata", dataEmissione: new Date("2026-01-20"), tipoDocumento: "TD04" },
+      ],
+      profile: null,
+      anno: 2026,
+    });
+
+    expect(result.monthlyRevenue[0].revenue).toBe(600);
+  });
+
   it("marks profile incomplete if codiceAteco missing", () => {
     const result = aggregateDashboardData({
       invoices: [],
