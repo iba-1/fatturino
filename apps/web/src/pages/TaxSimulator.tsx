@@ -136,6 +136,7 @@ export function TaxSimulator() {
               <Label htmlFor="fatturato">{t("taxes.annualRevenue")} *</Label>
               <Input
                 id="fatturato"
+                data-testid="input-fatturato"
                 type="number"
                 min="0"
                 step="100"
@@ -150,6 +151,7 @@ export function TaxSimulator() {
               <Label htmlFor="codiceAteco">{t("taxes.atecoCode")}</Label>
               <Input
                 id="codiceAteco"
+                data-testid="input-codice-ateco"
                 type="text"
                 placeholder="62.01.09"
                 value={codiceAteco}
@@ -162,6 +164,7 @@ export function TaxSimulator() {
               <Label htmlFor="gestione">{t("taxes.gestione")}</Label>
               <select
                 id="gestione"
+                data-testid="select-gestione"
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 value={gestione}
                 onChange={(e) => setGestione(e.target.value as GestioneInps)}
@@ -179,6 +182,7 @@ export function TaxSimulator() {
               <Label htmlFor="annoInizio">{t("taxes.startYear")}</Label>
               <Input
                 id="annoInizio"
+                data-testid="input-anno-inizio"
                 type="number"
                 min="2000"
                 max={currentYear}
@@ -192,6 +196,7 @@ export function TaxSimulator() {
               <Label htmlFor="annoFiscale">{t("taxes.fiscalYear")}</Label>
               <Input
                 id="annoFiscale"
+                data-testid="input-anno-fiscale"
                 type="number"
                 min="2020"
                 max={currentYear + 1}
