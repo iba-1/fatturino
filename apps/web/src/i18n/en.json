@@ -104,7 +104,16 @@
     "markUnpaid": "Mark as Unpaid",
     "paid": "Paid",
     "deleteConfirmTitle": "Delete Invoice?",
-    "deleteConfirmDescription": "This will permanently delete this invoice. This action cannot be undone."
+    "deleteConfirmDescription": "This will permanently delete this invoice. This action cannot be undone.",
+    "stornata": "Refunded",
+    "creditNote": "Credit Note",
+    "createCreditNote": "Create Credit Note",
+    "deleteAnywayTitle": "Delete Sent Invoice?",
+    "deleteAnywayDescription": "This invoice has been sent. You can create a credit note to properly reverse it, or delete it anyway.",
+    "deleteAnyway": "Delete Anyway",
+    "viewCreditNote": "View Credit Note",
+    "viewOriginalInvoice": "View Original Invoice",
+    "creditNoteFor": "Credit note for invoice {{number}}"
   },
   "clients": {
     "title": "Clients",
@@ -211,6 +220,7 @@
     "paymentRecorded": "Payment recorded",
     "invoiceMarkedSent": "Invoice marked as sent",
     "invoiceMarkedPaid": "Invoice payment status updated",
+    "creditNoteCreated": "Credit note created",
     "error": "Error"
   }
 }
