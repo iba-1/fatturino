@@ -120,6 +120,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
           <Label htmlFor="ragioneSociale">{t("clients.businessName")}</Label>
           <Input
             id="ragioneSociale"
+            data-testid="input-ragione-sociale"
             value={ragioneSociale}
             onChange={(e) => setRagioneSociale(e.target.value)}
           />
@@ -161,6 +162,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
           <Label htmlFor="codiceFiscale">{t("clients.taxCode")}</Label>
           <Input
             id="codiceFiscale"
+            data-testid="input-codice-fiscale"
             value={codiceFiscale}
             onChange={(e) => setCodiceFiscale(e.target.value)}
           />
@@ -172,6 +174,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
           <Label htmlFor="partitaIva">{t("clients.vatNumber")}</Label>
           <Input
             id="partitaIva"
+            data-testid="input-partita-iva"
             value={partitaIva}
             onChange={(e) => setPartitaIva(e.target.value)}
             placeholder="12345678901"
@@ -186,6 +189,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
         <Label htmlFor="indirizzo">{t("clients.address")}</Label>
         <Input
           id="indirizzo"
+          data-testid="input-indirizzo"
           value={indirizzo}
           onChange={(e) => setIndirizzo(e.target.value)}
         />
@@ -199,6 +203,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
           <Label htmlFor="cap">{t("clients.zip")}</Label>
           <Input
             id="cap"
+            data-testid="input-cap"
             value={cap}
             onChange={(e) => setCap(e.target.value)}
             placeholder="00100"
@@ -211,6 +216,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
           <Label htmlFor="citta">{t("clients.city")}</Label>
           <Input
             id="citta"
+            data-testid="input-citta"
             value={citta}
             onChange={(e) => setCitta(e.target.value)}
           />
@@ -222,6 +228,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
           <Label htmlFor="provincia">{t("clients.province")}</Label>
           <Input
             id="provincia"
+            data-testid="input-provincia"
             value={provincia}
             onChange={(e) => setProvincia(e.target.value)}
             placeholder="RM"
@@ -251,6 +258,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
           <Label htmlFor="codiceSdi">{t("clients.sdiCode")}</Label>
           <Input
             id="codiceSdi"
+            data-testid="input-codice-sdi"
             value={codiceSdi}
             onChange={(e) => setCodiceSdi(e.target.value)}
             placeholder="0000000"
