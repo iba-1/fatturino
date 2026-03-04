@@ -64,9 +64,7 @@ test.describe("Error Handling & Notifications", () => {
     await page.goto("/clients");
 
     // Open new client dialog
-    await page.click(
-      'button:has-text("Nuovo Cliente"), button:has-text("New Client")'
-    );
+    await page.click('[data-testid="btn-new-client"]');
     await expect(page.locator('[role="dialog"]')).toBeVisible();
 
     // Fill client form
@@ -135,14 +133,14 @@ test.describe("Error Handling & Notifications", () => {
     await expect(page.locator("table")).toBeVisible({ timeout: 5_000 });
 
     // Open the actions dropdown menu (... button)
-    await page.locator("table button").filter({ has: page.locator(".sr-only") }).first().click();
+    await page.locator('[data-testid="actions-trigger"]').first().click();
 
     // Click Delete in the dropdown
     await page.locator('[role="menuitem"]').filter({ hasText: /delete|elimina/i }).click();
 
     // Confirm in alert dialog
     await expect(page.locator('[role="alertdialog"]')).toBeVisible();
-    await page.click('[role="alertdialog"] button:has-text("Delete")');
+    await page.click('[data-testid="btn-confirm-delete"]');
 
     // Toast should appear with error
     await expect(

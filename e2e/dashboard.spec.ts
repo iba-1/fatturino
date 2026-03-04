@@ -11,7 +11,7 @@ test.describe("Dashboard", () => {
     await expect(page.locator("h1")).toContainText(/dashboard/i);
 
     // Year selector should be visible with the current year
-    const yearSelect = page.locator("select");
+    const yearSelect = page.locator('[data-testid="select-year"]');
     await expect(yearSelect).toBeVisible();
     const currentYear = new Date().getFullYear().toString();
     await expect(yearSelect).toHaveValue(currentYear);
@@ -19,7 +19,7 @@ test.describe("Dashboard", () => {
 
   test("should show 4 summary cards", async ({ page }) => {
     // The bento grid has 4 direct children: HeroRevenueCard + 3 DashboardCards
-    const grid = page.locator(".grid.grid-cols-1.gap-4");
+    const grid = page.locator('[data-testid="summary-cards"]');
     await expect(grid).toBeVisible({ timeout: 10_000 });
     const cards = grid.locator("> div");
     await expect(cards).toHaveCount(4, { timeout: 10_000 });
@@ -42,7 +42,7 @@ test.describe("Dashboard", () => {
     );
 
     // The amber warning banner should be visible
-    const warning = page.locator(".border-amber-200");
+    const warning = page.locator('[data-testid="profile-warning"]');
     await expect(warning).toBeVisible({ timeout: 5_000 });
 
     // It should contain a link/button to settings
@@ -51,7 +51,7 @@ test.describe("Dashboard", () => {
   });
 
   test("should allow changing year without crashing", async ({ page }) => {
-    const yearSelect = page.locator("select");
+    const yearSelect = page.locator('[data-testid="select-year"]');
     await expect(yearSelect).toBeVisible();
 
     const currentYear = new Date().getFullYear();
@@ -65,7 +65,7 @@ test.describe("Dashboard", () => {
     await expect(page.locator("h1")).toContainText(/dashboard/i);
 
     // Summary cards should still be rendered (may show zeroes)
-    const cards = page.locator(".grid.grid-cols-1.gap-4 > div");
+    const cards = page.locator('[data-testid="summary-cards"] > div');
     await expect(cards).toHaveCount(4, { timeout: 10_000 });
   });
 });

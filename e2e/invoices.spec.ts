@@ -7,7 +7,7 @@ test.describe("Invoice CRUD", () => {
 
     // Create a client first (invoices need a client)
     await page.goto("/clients");
-    await page.click('button:has-text("New Client")');
+    await page.click('[data-testid="btn-new-client"]');
     await page.fill('input[id="ragioneSociale"]', "Test Client Srl");
     await page.fill('input[id="codiceFiscale"]', "99999999999");
     await page.fill('input[id="partitaIva"]', "99999999999");
@@ -30,7 +30,7 @@ test.describe("Invoice CRUD", () => {
 
   test("should navigate to new invoice form", async ({ page }) => {
     await page.goto("/invoices");
-    await page.click('button:has-text("New Invoice")');
+    await page.click('[data-testid="btn-new-invoice"]');
     await expect(page).toHaveURL(/\/invoices\/new/);
     await expect(page.locator("form")).toBeVisible();
   });
@@ -43,16 +43,15 @@ test.describe("Invoice CRUD", () => {
     await page.click('[id="clientId"]');
     await page.click('[role="option"]:has-text("Test Client Srl")');
 
-    // Fill first line item — use placeholder to find the description input
-    await page.fill('input[placeholder="Description"]', "Consulenza tecnica");
+    // Fill first line item
+    await page.fill('[data-testid="input-description-0"]', "Consulenza tecnica");
 
     // Set quantity and price
-    const numberInputs = page.locator('form input[type="number"]');
-    await numberInputs.nth(0).fill("10");  // quantita
-    await numberInputs.nth(1).fill("100"); // prezzo unitario
+    await page.locator('[data-testid="input-quantity-0"]').fill("10");
+    await page.locator('[data-testid="input-unit-price-0"]').fill("100");
 
     // Verify totals section
-    const totalsSection = page.locator("form .flex.flex-col.items-end");
+    const totalsSection = page.locator('[data-testid="invoice-totals"]');
     // Subtotal should show 1000.00
     await expect(totalsSection).toContainText("1000.00");
     // Bollo should be shown (1000 > 77.47)
@@ -91,17 +90,16 @@ test.describe("Invoice CRUD", () => {
     await page.click('[role="option"]:has-text("Test Client Srl")');
 
     // Fill line item with small amount
-    await page.fill('input[placeholder="Description"]', "Small service");
-    const numberInputs = page.locator('form input[type="number"]');
-    await numberInputs.nth(0).fill("1");
-    await numberInputs.nth(1).fill("50");
+    await page.fill('[data-testid="input-description-0"]', "Small service");
+    await page.locator('[data-testid="input-quantity-0"]').fill("1");
+    await page.locator('[data-testid="input-unit-price-0"]').fill("50");
 
     // Verify subtotal = 50.00
-    const totalsSection = page.locator("form .flex.flex-col.items-end");
+    const totalsSection = page.locator('[data-testid="invoice-totals"]');
     await expect(totalsSection).toContainText("50.00");
 
     // Bollo should NOT appear
-    await expect(page.locator('text=/Stamp Duty|Imposta di Bollo/i')).not.toBeVisible();
+    await expect(page.locator('[data-testid="bollo-row"]')).not.toBeVisible();
   });
 
   test("should add and remove line items", async ({ page }) => {
@@ -109,23 +107,21 @@ test.describe("Invoice CRUD", () => {
     await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
 
     // Description inputs (line items only, not causale)
-    const descriptionInputs = page.locator('input[placeholder="Description"]');
+    const descriptionInputs = page.locator('[data-testid^="input-description-"]');
 
     // Should start with 1 line
     await expect(descriptionInputs).toHaveCount(1);
 
     // Add a line
-    await page.click('button:has-text("Add line")');
+    await page.click('[data-testid="btn-add-line"]');
     await expect(descriptionInputs).toHaveCount(2);
 
     // Add another
-    await page.click('button:has-text("Add line")');
+    await page.click('[data-testid="btn-add-line"]');
     await expect(descriptionInputs).toHaveCount(3);
 
     // Remove middle line — each line has a trash button
-    // The grid rows with items-end class contain the line items
-    const lineGrids = page.locator('[class*="grid-cols-"][class*="items-end"]');
-    await lineGrids.nth(1).locator("button").click();
+    await page.locator('[data-testid="btn-remove-line-1"]').click();
     await expect(descriptionInputs).toHaveCount(2);
   });
 
@@ -136,10 +132,9 @@ test.describe("Invoice CRUD", () => {
 
     await page.click('[id="clientId"]');
     await page.click('[role="option"]:has-text("Test Client Srl")');
-    await page.fill('input[placeholder="Description"]', "Draft service");
-    const numberInputs = page.locator('form input[type="number"]');
-    await numberInputs.nth(0).fill("1");
-    await numberInputs.nth(1).fill("100");
+    await page.fill('[data-testid="input-description-0"]', "Draft service");
+    await page.locator('[data-testid="input-quantity-0"]').fill("1");
+    await page.locator('[data-testid="input-unit-price-0"]').fill("100");
 
     const createResponse = page.waitForResponse(
       (res) => res.request().method() === "POST" && res.url().includes("/api/invoices")
@@ -153,7 +148,7 @@ test.describe("Invoice CRUD", () => {
     await expect(page.locator("table")).toContainText(/bozza|draft/i);
 
     // Open the actions dropdown menu (... button)
-    await page.locator("table button").filter({ has: page.locator(".sr-only") }).first().click();
+    await page.locator('[data-testid="actions-trigger"]').first().click();
 
     // Click Delete in the dropdown
     await page.locator('[role="menuitem"]').filter({ hasText: /delete|elimina/i }).click();
@@ -163,7 +158,7 @@ test.describe("Invoice CRUD", () => {
     const deleteResponse = page.waitForResponse(
       (res) => res.request().method() === "DELETE" && res.url().includes("/api/invoices/")
     );
-    await page.click('[role="alertdialog"] button:has-text("Delete")');
+    await page.click('[data-testid="btn-confirm-delete"]');
     await deleteResponse;
 
     await page.waitForResponse(
@@ -181,13 +176,12 @@ test.describe("Invoice CRUD", () => {
     await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
     await page.click('[id="clientId"]');
     await page.click('[role="option"]:has-text("Test Client Srl")');
-    await page.fill('input[placeholder="Description"]', "Boundary service");
-    const numberInputs = page.locator('form input[type="number"]');
-    await numberInputs.nth(0).fill("1");
-    await numberInputs.nth(1).fill("77.47");
+    await page.fill('[data-testid="input-description-0"]', "Boundary service");
+    await page.locator('[data-testid="input-quantity-0"]').fill("1");
+    await page.locator('[data-testid="input-unit-price-0"]').fill("77.47");
 
-    await expect(page.locator("form .flex.flex-col.items-end")).toContainText("77.47");
-    await expect(page.locator('text=/Stamp Duty|Imposta di Bollo/i')).not.toBeVisible();
+    await expect(page.locator('[data-testid="invoice-totals"]')).toContainText("77.47");
+    await expect(page.locator('[data-testid="bollo-row"]')).not.toBeVisible();
   });
 
   test("should apply bollo at €77.48 (one cent above threshold)", async ({ page }) => {
@@ -195,12 +189,11 @@ test.describe("Invoice CRUD", () => {
     await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
     await page.click('[id="clientId"]');
     await page.click('[role="option"]:has-text("Test Client Srl")');
-    await page.fill('input[placeholder="Description"]', "Just-over-threshold service");
-    const numberInputs = page.locator('form input[type="number"]');
-    await numberInputs.nth(0).fill("1");
-    await numberInputs.nth(1).fill("77.48");
+    await page.fill('[data-testid="input-description-0"]', "Just-over-threshold service");
+    await page.locator('[data-testid="input-quantity-0"]').fill("1");
+    await page.locator('[data-testid="input-unit-price-0"]').fill("77.48");
 
-    const totals = page.locator("form .flex.flex-col.items-end");
+    const totals = page.locator('[data-testid="invoice-totals"]');
     await expect(totals).toContainText("77.48");
     // Bollo €2.00 should appear
     await expect(totals).toContainText("2.00");
@@ -245,7 +238,7 @@ test.describe("Invoice CRUD", () => {
     await expect(page.locator("table")).toContainText("99/2026");
 
     // Open the actions dropdown
-    await page.locator("table button").filter({ has: page.locator(".sr-only") }).first().click();
+    await page.locator('[data-testid="actions-trigger"]').first().click();
 
     // View option should exist in the dropdown
     await expect(page.locator('[role="menuitem"]').filter({ hasText: /view|visualizza/i })).toBeVisible();
@@ -266,10 +259,9 @@ test.describe("Invoice CRUD", () => {
 
     await page.click('[id="clientId"]');
     await page.click('[role="option"]:has-text("Test Client Srl")');
-    await page.fill('input[placeholder="Description"]', "Preview service");
-    const numberInputs = page.locator('form input[type="number"]');
-    await numberInputs.nth(0).fill("5");
-    await numberInputs.nth(1).fill("200");
+    await page.fill('[data-testid="input-description-0"]', "Preview service");
+    await page.locator('[data-testid="input-quantity-0"]').fill("5");
+    await page.locator('[data-testid="input-unit-price-0"]').fill("200");
 
     const createResponse = page.waitForResponse(
       (res) => res.request().method() === "POST" && res.url().includes("/api/invoices")
@@ -280,7 +272,7 @@ test.describe("Invoice CRUD", () => {
     await expect(page).toHaveURL("/invoices", { timeout: 10_000 });
 
     // Open the actions dropdown and click View
-    await page.locator("table button").filter({ has: page.locator(".sr-only") }).first().click();
+    await page.locator('[data-testid="actions-trigger"]').first().click();
     await page.locator('[role="menuitem"]').filter({ hasText: /view|visualizza/i }).click();
 
     await expect(page).toHaveURL(/\/invoices\/.+/);

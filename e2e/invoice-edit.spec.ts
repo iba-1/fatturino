@@ -7,7 +7,7 @@ test.describe("Invoice Editing", () => {
 
     // Create a client first
     await page.goto("/clients");
-    await page.click('button:has-text("New Client"), button:has-text("Nuovo Cliente")');
+    await page.click('[data-testid="btn-new-client"]');
     await page.waitForSelector('[role="dialog"]');
     await page.fill('input[id="codiceFiscale"]', "RSSMRA85M01H501Z");
     await page.fill('input[id="ragioneSociale"]', "Test Edit SRL");
@@ -38,14 +38,10 @@ test.describe("Invoice Editing", () => {
     await page.click('[role="option"]:first-child');
 
     // Fill line item description
-    await page.fill(
-      'input[placeholder="Description"], input[placeholder="Descrizione"]',
-      "Test service"
-    );
+    await page.fill('[data-testid="input-description-0"]', "Test service");
 
-    // Set price (second number input; first is quantity)
-    const numberInputs = page.locator('input[type="number"]');
-    await numberInputs.nth(1).fill("100");
+    // Set price
+    await page.locator('[data-testid="input-unit-price-0"]').fill("100");
 
     const createInvoiceResponse = page.waitForResponse(
       (res) => res.request().method() === "POST" && res.url().includes("/api/invoices"),
@@ -56,12 +52,12 @@ test.describe("Invoice Editing", () => {
     await page.waitForURL("/invoices", { timeout: 10_000 });
 
     // Navigate to invoice detail
-    await page.locator("table button").filter({ has: page.locator(".sr-only") }).first().click();
+    await page.locator('[data-testid="actions-trigger"]').first().click();
     await page.locator('[role="menuitem"]').filter({ hasText: /view|visualizza/i }).click();
     await page.waitForSelector("h1");
 
     // Should see Edit button (draft invoice)
-    const editButton = page.getByRole("button").filter({ hasText: /^Edit$|^Modifica$/ });
+    const editButton = page.locator('[data-testid="btn-edit-invoice"]');
     await expect(editButton).toBeVisible();
   });
 
@@ -70,7 +66,7 @@ test.describe("Invoice Editing", () => {
 
     // Create client
     await page.goto("/clients");
-    await page.click('button:has-text("New Client"), button:has-text("Nuovo Cliente")');
+    await page.click('[data-testid="btn-new-client"]');
     await page.waitForSelector('[role="dialog"]');
     await page.fill('input[id="codiceFiscale"]', "VRDLGI80A01F205X");
     await page.fill('input[id="ragioneSociale"]', "Edit Nav SRL");
@@ -99,12 +95,8 @@ test.describe("Invoice Editing", () => {
     await page.click('[id="clientId"]');
     await page.click('[role="option"]:first-child');
 
-    await page.fill(
-      'input[placeholder="Description"], input[placeholder="Descrizione"]',
-      "Original service"
-    );
-    const numberInputs = page.locator('input[type="number"]');
-    await numberInputs.nth(1).fill("200");
+    await page.fill('[data-testid="input-description-0"]', "Original service");
+    await page.locator('[data-testid="input-unit-price-0"]').fill("200");
 
     const createInvoiceResponse = page.waitForResponse(
       (res) => res.request().method() === "POST" && res.url().includes("/api/invoices"),
@@ -115,11 +107,11 @@ test.describe("Invoice Editing", () => {
     await page.waitForURL("/invoices", { timeout: 10_000 });
 
     // Go to detail then click edit
-    await page.locator("table button").filter({ has: page.locator(".sr-only") }).first().click();
+    await page.locator('[data-testid="actions-trigger"]').first().click();
     await page.locator('[role="menuitem"]').filter({ hasText: /view|visualizza/i }).click();
     await page.waitForSelector("h1");
 
-    const editButton = page.getByRole("button").filter({ hasText: /^Edit$|^Modifica$/ });
+    const editButton = page.locator('[data-testid="btn-edit-invoice"]');
     await editButton.click();
 
     // Should be on edit page with form
@@ -127,9 +119,7 @@ test.describe("Invoice Editing", () => {
     await expect(page).toHaveURL(/\/invoices\/.*\/edit/);
 
     // The description field should have the original value
-    const descInput = page.locator(
-      'input[placeholder="Description"], input[placeholder="Descrizione"]'
-    );
+    const descInput = page.locator('[data-testid="input-description-0"]');
     await expect(descInput).toHaveValue("Original service");
   });
 });
