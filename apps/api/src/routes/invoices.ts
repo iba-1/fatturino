@@ -250,6 +250,18 @@ export async function invoiceRoutes(app: FastifyInstance) {
       .where(eq(invoices.id, request.params.id))
       .returning();
 
+    // If this is a credit note (TD04), mark the original invoice as stornata
+    if (existing[0].tipoDocumento === "TD04" && existing[0].originalInvoiceId) {
+      await db
+        .update(invoices)
+        .set({
+          stato: "stornata",
+          creditNoteId: existing[0].id,
+          updatedAt: new Date(),
+        })
+        .where(eq(invoices.id, existing[0].originalInvoiceId));
+    }
+
     return updated;
   });
 
@@ -582,6 +594,18 @@ export async function invoiceRoutes(app: FastifyInstance) {
       .set({ stato: "inviata", updatedAt: new Date() })
       .where(eq(invoices.id, inv.id))
       .returning();
+
+    // If this is a credit note (TD04), mark the original invoice as stornata
+    if (inv.tipoDocumento === "TD04" && inv.originalInvoiceId) {
+      await db
+        .update(invoices)
+        .set({
+          stato: "stornata",
+          creditNoteId: inv.id,
+          updatedAt: new Date(),
+        })
+        .where(eq(invoices.id, inv.originalInvoiceId));
+    }
 
     return { ...updated, lines };
   });
