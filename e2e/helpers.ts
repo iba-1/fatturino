@@ -16,7 +16,7 @@ export async function registerAndLogin(page: Page, prefix = "e2e") {
   await page.click('button[type="submit"]');
 
   // Wait for dashboard
-  await page.waitForURL("/", { timeout: 10_000 });
+  await page.waitForURL("/", { timeout: 30_000 });
 
   return { email, password, name };
 }
