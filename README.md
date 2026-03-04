@@ -14,6 +14,7 @@ Italian invoicing & tax SaaS for freelancers and small businesses operating unde
 - [API Endpoints](#api-endpoints)
 - [Tax Calculation](#tax-calculation-regime-forfettario)
 - [Architecture Notes](#architecture-notes)
+- [Deployment](#deployment)
 - [Implementation Status](#implementation-status)
 - [User Guide](#user-guide)
 
@@ -94,6 +95,8 @@ Copy `apps/api/.env.example` to `apps/api/.env` and fill in the required values.
 | `GOOGLE_CLIENT_SECRET` | No | — | Google OAuth client secret |
 | `GITHUB_CLIENT_ID` | No | — | GitHub OAuth client ID |
 | `GITHUB_CLIENT_SECRET` | No | — | GitHub OAuth client secret |
+| `RESEND_API_KEY` | No | — | Resend email API key (for sending invoices) |
+| `FROM_EMAIL` | No | `noreply@fatturino.app` | Sender email address |
 | `INVOICETRONIC_API_KEY` | No | — | Invoicetronic SDI API key (Phase 3) |
 | `INVOICETRONIC_BASE_URL` | No | `https://api.invoicetronic.com` | Invoicetronic API base URL (Phase 3) |
 
@@ -177,6 +180,68 @@ Two important quirks:
 
 Turborepo orchestrates builds and tests. Shared code lives in `packages/shared` (tax engine, Zod schemas, TypeScript types) and is consumed by both `apps/api` and `apps/web` without duplication.
 
+## Deployment
+
+The app is deployed as a **single Docker container** (monolith) on [Railway](https://railway.app). In production, Fastify serves both the API (`/api/*`, `/health`) and the React SPA (all other routes).
+
+### Architecture
+
+```
+Railway Project
+├── Service: Monolith (Docker)
+│   ├── Fastify API (/api/*, /health)
+│   ├── React SPA (static files, SPA fallback)
+│   └── Playwright/Chromium (PDF generation)
+└── Addon: PostgreSQL 16
+```
+
+### How It Works
+
+- **Multi-stage Dockerfile** — Stage 1 builds all packages with pnpm/Turborepo. Stage 2 copies built artifacts + Chromium into a slim runtime image.
+- **Migrations** run automatically before the server starts (`node apps/api/dist/db/migrate.js`).
+- **Health check** at `/health` — Railway verifies this before routing traffic.
+- **Auto-deploy** — Railway watches the `main` branch. Push triggers CI → deploy.
+
+### Deploy to Railway
+
+1. Create a project at https://railway.app
+2. Add a **PostgreSQL** addon
+3. Connect your GitHub repo (auto-deploy from `main`)
+4. Set environment variables:
+
+| Variable | Value |
+|---|---|
+| `BETTER_AUTH_SECRET` | `openssl rand -base64 32` |
+| `RESEND_API_KEY` | Your Resend API key |
+| `FROM_EMAIL` | `noreply@yourdomain.com` |
+| `NODE_ENV` | `production` |
+| `CORS_ORIGINS` | Your Railway URL (e.g. `https://fatturino.up.railway.app`) |
+
+Railway automatically provides `DATABASE_URL` and `PORT`.
+
+### Running with Docker Locally
+
+```bash
+# Build
+docker build -t fatturino .
+
+# Run (requires local Postgres on port 5432)
+docker run --rm -p 3001:3001 \
+  -e DATABASE_URL="postgresql://fatturino:fatturino@host.docker.internal:5432/fatturino" \
+  -e BETTER_AUTH_SECRET="local-test-secret-that-is-at-least-32-chars" \
+  -e PORT=3001 \
+  fatturino
+```
+
+### Database Migrations
+
+- **Development:** Use `pnpm db:push` for rapid iteration (no migration files)
+- **Production:** Use file-based migrations:
+  1. Change the schema in `apps/api/src/db/schema.ts`
+  2. Run `pnpm db:generate` to create a new migration file
+  3. Commit the migration SQL file to git
+  4. On deploy, migrations run automatically before the server starts
+
 ## Implementation Status
 
 - [x] Phase 1: Foundation (monorepo, auth, DB, i18n)
@@ -184,8 +249,9 @@ Turborepo orchestrates builds and tests. Shared code lives in `packages/shared` 
 - [x] Phase 2.5: Error Handling & Notifications (toast system, form validation errors, error boundary, structured logging)
 - [x] Phase 3: FatturaPA XML + PDF export (XML builder, business rules validator, PDF generation, profile management)
 - [ ] Phase 3.5: SDI Integration (Invoicetronic API)
-- [ ] Phase 4: Tax Calculation Engine (UI)
-- [ ] Phase 5: F24 Form Generation
+- [x] Phase 4: Dashboard & Tax Overview
+- [x] Phase 5: Invoice Editing
+- [x] Deployment Setup (Docker, Railway, CI)
 - [ ] Phase 6: Polish & Production Readiness
 
 ---
