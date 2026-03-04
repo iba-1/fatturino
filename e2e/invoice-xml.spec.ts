@@ -24,14 +24,10 @@ async function fillProfile(page: import("@playwright/test").Page) {
   await saveResponse;
 }
 
-<<<<<<< worktree-federated-tickling-quilt
 test.describe.serial("Invoice XML/PDF download flow", () => {
-=======
-test.describe("Invoice XML/PDF download flow", () => {
   // beforeEach creates client + invoice + navigates to detail — needs extra time on CI
   test.setTimeout(60_000);
 
->>>>>>> main
   /** ID extracted from the URL after creating the invoice. */
   let invoiceId: string;
 
