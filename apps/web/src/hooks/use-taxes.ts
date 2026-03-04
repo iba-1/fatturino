@@ -7,7 +7,12 @@ import i18next from "i18next";
 export interface TaxPaymentStatus {
   deadline: string;
   label: string;
+  /** Combined imposta + INPS amount due */
   amountDue: number;
+  /** Imposta sostitutiva portion */
+  amountDueImposta: number;
+  /** INPS contributi portion */
+  amountDueInps: number;
   amountPaid: number | null;
   datePaid: string | null;
   dueDate: string;
