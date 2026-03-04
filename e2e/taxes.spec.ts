@@ -13,7 +13,7 @@ test.describe("Tax Overview", () => {
     await expect(page.locator("h1")).toContainText(/taxes/i);
 
     // Year selector is present with current year selected
-    const yearSelect = page.locator("select").first();
+    const yearSelect = page.locator('[data-testid="select-year"]');
     await expect(yearSelect).toBeVisible();
     const currentYear = new Date().getFullYear().toString();
     await expect(yearSelect).toHaveValue(currentYear);
@@ -30,7 +30,7 @@ test.describe("Tax Overview", () => {
 
     // A freshly registered user has no profile, so profileIncomplete is true
     // The warning banner uses border-amber-200 and bg-amber-50
-    const warning = page.locator(".border-amber-200");
+    const warning = page.locator('[data-testid="profile-warning"]');
     await expect(warning).toBeVisible({ timeout: 5_000 });
 
     // The banner should mention completing the profile
@@ -61,7 +61,7 @@ test.describe("Tax Overview", () => {
   test("should allow changing year via the year selector", async ({ page }) => {
     await page.goto("/taxes");
 
-    const yearSelect = page.locator("select").first();
+    const yearSelect = page.locator('[data-testid="select-year"]');
     await expect(yearSelect).toBeVisible();
 
     const currentYear = new Date().getFullYear();
@@ -108,7 +108,7 @@ test.describe("Tax Simulator", () => {
 
     // The empty state is rendered when fatturato <= 0
     // It contains a dashed border and descriptive text
-    const emptyState = page.locator(".border-dashed");
+    const emptyState = page.locator('[data-testid="simulator-empty-state"]');
     await expect(emptyState).toBeVisible({ timeout: 5_000 });
     await expect(emptyState).toContainText(/revenue|fatturato/i);
   });
@@ -125,7 +125,7 @@ test.describe("Tax Simulator", () => {
     await page.fill('input[id="codiceAteco"]', "62.01.09");
 
     // Result cards should appear — three Cards for imposta, INPS, net position
-    const resultCards = page.locator(".grid.gap-4.md\\:grid-cols-3");
+    const resultCards = page.locator('[data-testid="simulator-results"]');
     await expect(resultCards).toBeVisible({ timeout: 5_000 });
 
     // Verify "Tax Due" label is visible inside a result card (uses span, not a heading)
@@ -133,7 +133,7 @@ test.describe("Tax Simulator", () => {
 
     // Download simulated F24 card should also be visible
     await expect(
-      page.locator("text=/Download Simulated F24|F24/i").first()
+      page.locator('[data-testid="btn-download-f24-primo-acconto"]')
     ).toBeVisible();
   });
 
@@ -144,7 +144,7 @@ test.describe("Tax Simulator", () => {
     await page.fill('input[id="codiceAteco"]', "00.00.00");
 
     // calcError is rendered in a destructive/red banner
-    const errorBanner = page.locator(".border-destructive\\/30");
+    const errorBanner = page.locator('[data-testid="error-banner"]');
     await expect(errorBanner).toBeVisible({ timeout: 5_000 });
   });
 
@@ -153,7 +153,7 @@ test.describe("Tax Simulator", () => {
 
     // The back button navigates to /taxes (uses navigate("/taxes"))
     // It contains the text from common.back ("Back")
-    const backButton = page.locator('button:has-text("Back")');
+    const backButton = page.locator('[data-testid="btn-back"]');
     await expect(backButton).toBeVisible();
     await backButton.click();
 

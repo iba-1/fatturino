@@ -48,8 +48,8 @@ test.describe("Authentication", () => {
     await page.fill('input[id="password"]', "WrongPass123!");
     await page.click('button[type="submit"]');
 
-    // Error div has class text-destructive-foreground
-    const errorDiv = page.locator(".text-destructive-foreground");
+    // Error div with data-testid
+    const errorDiv = page.locator('[data-testid="auth-error"]');
     await expect(errorDiv).toBeVisible({ timeout: 5_000 });
     await expect(page).toHaveURL(/\/login/);
   });

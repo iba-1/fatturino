@@ -279,7 +279,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
         <Button type="button" variant="outline" onClick={onCancel}>
           {t("common.cancel")}
         </Button>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} data-testid="btn-submit-client">
           {isLoading ? t("common.loading") : isEdit ? t("common.save") : t("common.create")}
         </Button>
       </div>
