@@ -95,7 +95,7 @@ export function Clients() {
     <div>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">{t("clients.title")}</h1>
-        <Button onClick={() => setFormOpen(true)}>
+        <Button onClick={() => setFormOpen(true)} data-testid="btn-new-client">
           <Plus className="mr-2 h-4 w-4" />
           {t("clients.new")}
         </Button>
@@ -153,6 +153,7 @@ export function Clients() {
                         size="icon"
                         onClick={() => setEditingClient(client)}
                         aria-label={t("common.edit")}
+                        data-testid="btn-edit-client"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -161,6 +162,7 @@ export function Clients() {
                         size="icon"
                         onClick={() => setDeletingClient(client)}
                         aria-label={t("common.delete")}
+                        data-testid="btn-delete-client"
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
@@ -228,6 +230,7 @@ export function Clients() {
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="btn-confirm-delete"
             >
               {t("common.delete")}
             </AlertDialogAction>

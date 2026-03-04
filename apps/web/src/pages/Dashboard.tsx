@@ -40,6 +40,7 @@ export function Dashboard() {
             className="rounded-lg border border-input bg-card px-3 py-1.5 text-sm transition-colors duration-150"
             value={anno}
             onChange={(e) => setAnno(parseInt(e.target.value, 10))}
+            data-testid="select-year"
           >
             {yearOptions.map((y) => (
               <option key={y} value={y}>{y}</option>
@@ -50,7 +51,7 @@ export function Dashboard() {
 
       {/* Profile warning */}
       {data?.profileIncomplete && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm flex items-start gap-3">
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm flex items-start gap-3" data-testid="profile-warning">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-warning/40">
             <Calculator className="h-4 w-4 text-amber-700" />
           </div>
@@ -64,7 +65,7 @@ export function Dashboard() {
       )}
 
       {/* Bento grid: hero + stat cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4" data-testid="summary-cards">
         {isLoading ? (
           <>
             <div className="h-[240px] rounded-xl bg-secondary animate-skeleton md:col-span-2 lg:row-span-2" />

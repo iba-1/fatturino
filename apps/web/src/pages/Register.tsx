@@ -40,7 +40,7 @@ export function Register() {
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive-foreground">{error}</div>
+                <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive-foreground" data-testid="auth-error">{error}</div>
               )}
               <div className="space-y-2">
                 <Label htmlFor="name">{t("auth.name")}</Label>

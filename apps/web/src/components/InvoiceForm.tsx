@@ -138,7 +138,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
         <div className="space-y-2">
           <Label htmlFor="clientId">{t("invoices.client")}</Label>
           <Select value={clientId} onValueChange={setClientId}>
-            <SelectTrigger id="clientId">
+            <SelectTrigger id="clientId" data-testid="invoice-client-select">
               <SelectValue placeholder={t("invoices.client")} />
             </SelectTrigger>
             <SelectContent>
@@ -206,7 +206,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
       <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Righe fattura</h3>
-          <Button type="button" variant="outline" size="sm" onClick={addLine}>
+          <Button type="button" variant="outline" size="sm" onClick={addLine} data-testid="btn-add-line">
             <Plus className="mr-1 h-4 w-4" />
             {t("invoices.addLine")}
           </Button>
@@ -221,6 +221,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
             <div
               key={index}
               className="grid grid-cols-[1fr_100px_120px_100px_40px] gap-2 items-end"
+              data-testid={`line-item-${index}`}
             >
               <div className="space-y-1">
                 {index === 0 && (
@@ -230,6 +231,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
                   value={line.descrizione}
                   onChange={(e) => updateLine(index, "descrizione", e.target.value)}
                   placeholder={t("invoices.description")}
+                  data-testid={`input-description-${index}`}
                 />
               </div>
               <div className="space-y-1">
@@ -245,6 +247,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
                   onChange={(e) =>
                     updateLine(index, "quantita", parseFloat(e.target.value) || 0)
                   }
+                  data-testid={`input-quantity-${index}`}
                 />
               </div>
               <div className="space-y-1">
@@ -260,6 +263,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
                   onChange={(e) =>
                     updateLine(index, "prezzoUnitario", parseFloat(e.target.value) || 0)
                   }
+                  data-testid={`input-unit-price-${index}`}
                 />
               </div>
               <div className="space-y-1">
@@ -278,6 +282,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
                   onClick={() => removeLine(index)}
                   disabled={lines.length <= 1}
                   className="h-10 w-10"
+                  data-testid={`btn-remove-line-${index}`}
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
@@ -290,7 +295,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
       <Separator />
 
       {/* Totals */}
-      <div className="flex flex-col items-end space-y-2">
+      <div className="flex flex-col items-end space-y-2" data-testid="invoice-totals">
         <div className="flex gap-8 text-sm">
           <span className="text-muted-foreground">{t("invoices.subtotal")}</span>
           <span className="font-medium font-mono w-24 text-right">
@@ -298,7 +303,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
           </span>
         </div>
         {bollo > 0 && (
-          <div className="flex gap-8 text-sm">
+          <div className="flex gap-8 text-sm" data-testid="bollo-row">
             <span className="text-muted-foreground">{t("invoices.bollo")}</span>
             <span className="font-medium font-mono w-24 text-right">
               {bollo.toFixed(2)}
@@ -321,7 +326,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
         <Button type="button" variant="outline" onClick={onCancel}>
           {t("common.cancel")}
         </Button>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} data-testid="btn-submit-invoice">
           {isLoading ? t("common.loading") : initialData ? t("common.save") : t("common.create")}
         </Button>
       </div>

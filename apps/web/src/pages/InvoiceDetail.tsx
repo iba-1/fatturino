@@ -102,7 +102,7 @@ export function InvoiceDetail() {
       {/* Action bar */}
       <div className="flex flex-wrap gap-2 mb-4">
         {invoice.stato === "bozza" && (
-          <Button variant="outline" onClick={() => navigate(`/invoices/${id}/edit`)}>
+          <Button variant="outline" onClick={() => navigate(`/invoices/${id}/edit`)} data-testid="btn-edit-invoice">
             <Pencil className="h-4 w-4 mr-2" />
             {t("common.edit")}
           </Button>
@@ -144,15 +144,15 @@ export function InvoiceDetail() {
             </>
           )}
         </Button>
-        <Button variant="outline" onClick={handleValidate} disabled={isValidating || !hasProfile}>
+        <Button variant="outline" onClick={handleValidate} disabled={isValidating || !hasProfile} data-testid="btn-validate">
           <FileCheck className="h-4 w-4 mr-2" />
           {t("invoices.validate")}
         </Button>
-        <Button variant="outline" onClick={handleDownloadXml} disabled={!hasProfile || (hasValidated && !isValid)}>
+        <Button variant="outline" onClick={handleDownloadXml} disabled={!hasProfile || (hasValidated && !isValid)} data-testid="btn-download-xml">
           <FileDown className="h-4 w-4 mr-2" />
           {t("invoices.downloadXml")}
         </Button>
-        <Button variant="outline" onClick={handleDownloadPdf} disabled={!hasProfile}>
+        <Button variant="outline" onClick={handleDownloadPdf} disabled={!hasProfile} data-testid="btn-download-pdf">
           <FileText className="h-4 w-4 mr-2" />
           {t("invoices.downloadPdf")}
         </Button>
