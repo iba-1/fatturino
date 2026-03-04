@@ -278,10 +278,14 @@ function PaymentRow({ payment, anno, recordPayment, t }: PaymentRowProps) {
         )}
       </div>
 
-      {/* Center: amount + status */}
+      {/* Center: amount + breakdown + status */}
       <div className="flex items-center gap-3">
         <div className="text-right">
           <p className="text-sm font-mono font-medium">{formatEur(payment.amountDue)}</p>
+          <div className="flex gap-2 text-xs text-muted-foreground">
+            <span>{t("taxes.imposta")}: {formatEur(payment.amountDueImposta)}</span>
+            <span>{t("taxes.inps")}: {formatEur(payment.amountDueInps)}</span>
+          </div>
           {payment.amountPaid !== null && payment.amountPaid !== payment.amountDue && (
             <p className="text-xs text-muted-foreground">
               {t("taxes.amountPaid")}: {formatEur(payment.amountPaid)}

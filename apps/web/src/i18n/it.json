@@ -165,7 +165,9 @@
     "atecoCode": "Codice ATECO",
     "fiscalYear": "Anno Fiscale",
     "startYear": "Anno Inizio Attività",
-    "downloadSimulatedF24": "Scarica F24 Simulato"
+    "downloadSimulatedF24": "Scarica F24 Simulato",
+    "imposta": "Imposta",
+    "inps": "INPS"
   },
   "settings": {
     "title": "Impostazioni",

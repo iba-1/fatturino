@@ -165,7 +165,9 @@
     "atecoCode": "ATECO Code",
     "fiscalYear": "Fiscal Year",
     "startYear": "Activity Start Year",
-    "downloadSimulatedF24": "Download Simulated F24"
+    "downloadSimulatedF24": "Download Simulated F24",
+    "imposta": "Tax",
+    "inps": "INPS"
   },
   "settings": {
     "title": "Settings",

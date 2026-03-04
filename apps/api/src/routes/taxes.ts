@@ -45,20 +45,24 @@ type DeadlineType = keyof typeof DEADLINE_META;
 
 function buildPaymentStatus(
   deadline: DeadlineType,
-  amountDue: number,
+  amountDueImposta: number,
+  amountDueInps: number,
   payment: { amountPaid: string | null; datePaid: string | null } | undefined,
   anno: number,
   now: Date
 ) {
   const dueDate = DEADLINE_META[deadline].getDueDate(anno);
   const amountPaid = payment?.amountPaid ? parseFloat(String(payment.amountPaid)) : 0;
+  const totalDue = Math.round((amountDueImposta + amountDueInps) * 100) / 100;
   const isPaid = amountPaid > 0;
   const isOverdue = !isPaid && now > dueDate;
 
   return {
     deadline,
     label: DEADLINE_META[deadline].label,
-    amountDue: Math.round(amountDue * 100) / 100,
+    amountDue: totalDue,
+    amountDueImposta: Math.round(amountDueImposta * 100) / 100,
+    amountDueInps: Math.round(amountDueInps * 100) / 100,
     amountPaid,
     datePaid: payment?.datePaid ?? null,
     dueDate: dueDate.toISOString().slice(0, 10),
@@ -153,18 +157,31 @@ export function buildTaxOverview(input: {
         saldo: f24Result.saldo,
       };
 
-      // Build payment statuses for all 3 deadlines using computed amounts
+      // Compute INPS acconto/saldo breakdown (same 50/50 split as imposta)
+      const inpsAccontoSaldo = calcolaAccontoSaldo({
+        impostaDovuta: inpsResult.totaleDovuto,
+        accontiVersati: 0,
+        anno,
+      });
+
+      // Build payment statuses for all 3 deadlines using combined imposta + INPS amounts
       const deadlines: DeadlineType[] = ["primo_acconto", "secondo_acconto", "saldo"];
-      const amountDueByDeadline: Record<DeadlineType, number> = {
+      const impostalByDeadline: Record<DeadlineType, number> = {
         primo_acconto: f24Result.primoAcconto,
         secondo_acconto: f24Result.secondoAcconto,
         saldo: f24Result.saldo,
+      };
+      const inpsByDeadline: Record<DeadlineType, number> = {
+        primo_acconto: inpsAccontoSaldo.primoAcconto,
+        secondo_acconto: inpsAccontoSaldo.secondoAcconto,
+        saldo: inpsAccontoSaldo.saldo,
       };
 
       paymentStatuses = deadlines.map((dl) =>
         buildPaymentStatus(
           dl,
-          amountDueByDeadline[dl],
+          impostalByDeadline[dl],
+          inpsByDeadline[dl],
           paymentMap.get(dl) as
             | { amountPaid: string | null; datePaid: string | null }
             | undefined,
