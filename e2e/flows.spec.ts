@@ -34,14 +34,10 @@ test.describe("User Journey", () => {
     const createClientDone = page.waitForResponse(
       (res) => res.request().method() === "POST" && res.url().includes("/api/clients"),
     );
-    const refetchClients = page.waitForResponse(
-      (res) => res.request().method() === "GET" && res.url().includes("/api/clients"),
-    );
     await page.click('[role="dialog"] button[type="submit"]');
     await createClientDone;
-    await refetchClients;
     await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10_000 });
-    await expect(page.locator("table")).toContainText("Journey Srl");
+    await expect(page.locator("table")).toContainText("Journey Srl", { timeout: 10_000 });
 
     // 3. Create an invoice for that client
     await page.goto("/invoices/new");
