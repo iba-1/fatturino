@@ -25,6 +25,9 @@ async function fillProfile(page: import("@playwright/test").Page) {
 }
 
 test.describe("Invoice XML/PDF download flow", () => {
+  // beforeEach creates client + invoice + navigates to detail — needs extra time on CI
+  test.setTimeout(60_000);
+
   /** ID extracted from the URL after creating the invoice. */
   let invoiceId: string;
 
@@ -68,6 +71,9 @@ test.describe("Invoice XML/PDF download flow", () => {
     await createResponse;
 
     await expect(page).toHaveURL("/invoices", { timeout: 10_000 });
+
+    // Wait for the table to render the invoice row before opening dropdown
+    await expect(page.locator("table")).toBeVisible({ timeout: 10_000 });
 
     // Navigate to the created invoice detail — open dropdown then click View
     await page.locator("table button").filter({ has: page.locator(".sr-only") }).first().click();

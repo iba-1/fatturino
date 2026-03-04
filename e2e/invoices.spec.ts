@@ -171,7 +171,7 @@ test.describe("Invoice CRUD", () => {
       { timeout: 5_000 }
     );
 
-    await expect(page.locator('[data-testid="empty-state"]')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('[data-testid="empty-state"]')).toBeVisible({ timeout: 10_000 });
   });
 
   // --- Bollo boundary ---
