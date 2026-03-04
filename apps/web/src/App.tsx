@@ -7,6 +7,7 @@ import { InvoiceEditor } from "@/pages/InvoiceEditor";
 import { InvoiceDetail } from "@/pages/InvoiceDetail";
 import { Clients } from "@/pages/Clients";
 import { Taxes } from "@/pages/Taxes";
+import { TaxSimulator } from "@/pages/TaxSimulator";
 import { Settings } from "@/pages/Settings";
 import { Login } from "@/pages/Login";
 import { Register } from "@/pages/Register";
@@ -39,6 +40,7 @@ export function App() {
               <Route path="invoices/:id/edit" element={<InvoiceEditor />} />
               <Route path="clients" element={<Clients />} />
               <Route path="taxes" element={<Taxes />} />
+              <Route path="taxes/simulator" element={<TaxSimulator />} />
               <Route path="settings" element={<Settings />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

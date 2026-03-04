@@ -20,9 +20,32 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useInvoices, useDeleteInvoice, type Invoice } from "@/hooks/use-invoices";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  useInvoices,
+  useDeleteInvoice,
+  useMarkSent,
+  useMarkPaid,
+  type Invoice,
+} from "@/hooks/use-invoices";
 import { useClients } from "@/hooks/use-clients";
-import { Plus, Trash2, Eye, Pencil, FileText } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Eye,
+  FileText,
+  Pencil,
+  MoreHorizontal,
+  Send,
+  CheckCircle,
+  CircleOff,
+} from "lucide-react";
 import { useState } from "react";
 
 function statusVariant(stato: string): "default" | "secondary" | "destructive" | "outline" | "warning" | "success" {
@@ -48,7 +71,10 @@ export function Invoices() {
   const { data: invoices, isLoading, isError } = useInvoices();
   const { data: clients } = useClients();
   const deleteInvoice = useDeleteInvoice();
+  const markSent = useMarkSent();
+  const markPaid = useMarkPaid();
   const [deletingInvoice, setDeletingInvoice] = useState<Invoice | undefined>();
+  const [markSentInvoice, setMarkSentInvoice] = useState<Invoice | undefined>();
 
   function getClientName(clientId: string): string {
     const client = clients?.find((c) => c.id === clientId);
@@ -74,6 +100,13 @@ export function Invoices() {
     const id = deletingInvoice.id;
     setDeletingInvoice(undefined);
     deleteInvoice.mutate(id);
+  }
+
+  function handleMarkSent() {
+    if (!markSentInvoice) return;
+    const id = markSentInvoice.id;
+    setMarkSentInvoice(undefined);
+    markSent.mutate(id);
   }
 
   if (isError) {
@@ -137,41 +170,65 @@ export function Invoices() {
                     {parseFloat(inv.totaleDocumento).toFixed(2)}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={statusVariant(inv.stato)}>
-                      {getStatusLabel(inv.stato)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => navigate(`/invoices/${inv.id}`)}
-                        aria-label="View"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      {inv.stato === "bozza" && (
-                        <>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => navigate(`/invoices/${inv.id}/edit`)}
-                            aria-label={t("common.edit")}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setDeletingInvoice(inv)}
-                            aria-label={t("common.delete")}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </>
+                    <div className="flex items-center gap-1.5">
+                      <Badge variant={statusVariant(inv.stato)}>
+                        {getStatusLabel(inv.stato)}
+                      </Badge>
+                      {inv.pagata && (
+                        <Badge variant="success">
+                          {t("invoices.paid")}
+                        </Badge>
                       )}
                     </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">{t("common.actions")}</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => navigate(`/invoices/${inv.id}`)}>
+                          <Eye className="h-4 w-4" />
+                          {t("common.view")}
+                        </DropdownMenuItem>
+                        {inv.stato === "bozza" && (
+                          <DropdownMenuItem onClick={() => navigate(`/invoices/${inv.id}/edit`)}>
+                            <Pencil className="h-4 w-4" />
+                            {t("common.edit")}
+                          </DropdownMenuItem>
+                        )}
+                        {inv.stato === "bozza" && (
+                          <DropdownMenuItem onClick={() => setMarkSentInvoice(inv)}>
+                            <Send className="h-4 w-4" />
+                            {t("invoices.markSent")}
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuItem onClick={() => markPaid.mutate(inv.id)}>
+                          {inv.pagata ? (
+                            <>
+                              <CircleOff className="h-4 w-4" />
+                              {t("invoices.markUnpaid")}
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="h-4 w-4" />
+                              {t("invoices.markPaid")}
+                            </>
+                          )}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => setDeletingInvoice(inv)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          {t("common.delete")}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
@@ -187,9 +244,9 @@ export function Invoices() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("common.confirm")}</AlertDialogTitle>
+            <AlertDialogTitle>{t("invoices.deleteConfirmTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t("common.delete")} {deletingInvoice && `${deletingInvoice.numeroFattura}/${deletingInvoice.anno}`}?
+              {t("invoices.deleteConfirmDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -199,6 +256,27 @@ export function Invoices() {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Mark as Sent Confirmation */}
+      <AlertDialog
+        open={!!markSentInvoice}
+        onOpenChange={(open) => !open && setMarkSentInvoice(undefined)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("invoices.markSentConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("invoices.markSentConfirmDescription")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleMarkSent}>
+              {t("invoices.markSent")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

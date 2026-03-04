@@ -12,14 +12,26 @@ export const CODICI_TRIBUTO_IMPOSTA = {
   SALDO: "1792",
 } as const;
 
-/** INPS Gestione Separata */
-export const CODICI_TRIBUTO_INPS_SEPARATA = {
-  /** Acconto prima rata */
-  ACCONTO_PRIMO: "PXX",
-  /** Acconto seconda rata */
-  ACCONTO_SECONDO: "PXX",
-  /** Saldo */
-  SALDO: "PXX",
+/** INPS Gestione Separata (non-pensionati) — causale contributo */
+export const CAUSALI_CONTRIBUTO_SEPARATA = {
+  /** Saldo e acconto (causale unica) */
+  SALDO_ACCONTO: "PXX",
+} as const;
+
+/** INPS Artigiani — causale contributo */
+export const CAUSALI_CONTRIBUTO_ARTIGIANI = {
+  /** Contributi fissi su minimale */
+  FISSI: "AF",
+  /** Contributi su eccedenza minimale */
+  ECCEDENZA: "AP",
+} as const;
+
+/** INPS Commercianti — causale contributo */
+export const CAUSALI_CONTRIBUTO_COMMERCIANTI = {
+  /** Contributi fissi su minimale */
+  FISSI: "CF",
+  /** Contributi su eccedenza minimale */
+  ECCEDENZA: "CP",
 } as const;
 
 /** Tax payment deadlines (month-day) */
