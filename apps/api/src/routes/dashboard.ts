@@ -13,6 +13,7 @@ interface DashboardInvoice {
   totaleDocumento: string;
   stato: string;
   dataEmissione: Date;
+  tipoDocumento?: string;
 }
 
 interface DashboardProfile {
@@ -33,11 +34,23 @@ export function aggregateDashboardData(input: AggregateInput) {
   const nonDraft = invs.filter((i) => i.stato !== "bozza");
   const drafts = invs.filter((i) => i.stato === "bozza");
 
-  const totalRevenue = nonDraft.reduce(
-    (sum, i) => sum + parseFloat(String(i.totaleDocumento)),
-    0
+  // Regular invoices (non-draft, non-credit-note)
+  const regularInvoices = nonDraft.filter((i) => i.tipoDocumento !== "TD04");
+  // Credit notes
+  const creditNotes = nonDraft.filter((i) => i.tipoDocumento === "TD04");
+
+  const regularRevenue = regularInvoices.reduce(
+    (sum, i) => sum + parseFloat(String(i.totaleDocumento)), 0
   );
-  const invoicesSent = nonDraft.length;
+  const creditNoteTotal = creditNotes.reduce(
+    (sum, i) => sum + parseFloat(String(i.totaleDocumento)), 0
+  );
+  const totalRevenue = regularRevenue - creditNoteTotal;
+
+  // Count only non-stornata, non-TD04 invoices as "sent"
+  const invoicesSent = nonDraft.filter(
+    (i) => i.stato !== "stornata" && i.tipoDocumento !== "TD04"
+  ).length;
   const pendingInvoices = drafts.length;
 
   // Monthly revenue (non-draft only)
@@ -46,10 +59,16 @@ export function aggregateDashboardData(input: AggregateInput) {
     revenue: 0,
   }));
 
-  for (const inv of nonDraft) {
+  for (const inv of regularInvoices) {
     const date = new Date(inv.dataEmissione);
-    const month = date.getMonth(); // 0-indexed
+    const month = date.getMonth();
     monthlyRevenue[month].revenue += parseFloat(String(inv.totaleDocumento));
+  }
+
+  for (const inv of creditNotes) {
+    const date = new Date(inv.dataEmissione);
+    const month = date.getMonth();
+    monthlyRevenue[month].revenue -= parseFloat(String(inv.totaleDocumento));
   }
 
   for (const m of monthlyRevenue) {
@@ -150,6 +169,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
           totaleDocumento: invoices.totaleDocumento,
           stato: invoices.stato,
           dataEmissione: invoices.dataEmissione,
+          tipoDocumento: invoices.tipoDocumento,
         })
         .from(invoices)
         .where(and(eq(invoices.userId, userId), eq(invoices.anno, anno)));
