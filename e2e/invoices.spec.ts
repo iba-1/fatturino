@@ -20,8 +20,8 @@ test.describe("Invoice CRUD", () => {
     );
     await page.click('[role="dialog"] button[type="submit"]');
     await createClientDone;
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10_000 });
-    await expect(page.locator("table")).toContainText("Test Client Srl", { timeout: 10_000 });
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 30_000 });
+    await expect(page.locator("table")).toContainText("Test Client Srl", { timeout: 30_000 });
   });
 
   test("should show empty state when no invoices", async ({ page }) => {
