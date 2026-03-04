@@ -94,25 +94,27 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
               </Label>
               <Input
                 id="ragioneSociale"
+                data-testid="input-ragione-sociale"
                 value={ragioneSociale}
                 onChange={(e) => setRagioneSociale(e.target.value)}
                 required
               />
               {serverErrors.ragioneSociale && (
-                <p className="text-sm text-destructive">{serverErrors.ragioneSociale}</p>
+                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.ragioneSociale}</p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="partitaIva">{t("settings.vatNumber")}</Label>
               <Input
                 id="partitaIva"
+                data-testid="input-partita-iva"
                 value={partitaIva}
                 onChange={(e) => setPartitaIva(e.target.value)}
                 maxLength={11}
                 required
               />
               {serverErrors.partitaIva && (
-                <p className="text-sm text-destructive">{serverErrors.partitaIva}</p>
+                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.partitaIva}</p>
               )}
             </div>
           </div>
@@ -121,25 +123,27 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
               <Label htmlFor="codiceFiscale">{t("settings.taxCode")}</Label>
               <Input
                 id="codiceFiscale"
+                data-testid="input-codice-fiscale"
                 value={codiceFiscale}
                 onChange={(e) => setCodiceFiscale(e.target.value)}
                 maxLength={16}
                 required
               />
               {serverErrors.codiceFiscale && (
-                <p className="text-sm text-destructive">{serverErrors.codiceFiscale}</p>
+                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.codiceFiscale}</p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="codiceAteco">{t("settings.atecoCode")}</Label>
               <Input
                 id="codiceAteco"
+                data-testid="input-codice-ateco"
                 value={codiceAteco}
                 onChange={(e) => setCodiceAteco(e.target.value)}
                 required
               />
               {serverErrors.codiceAteco && (
-                <p className="text-sm text-destructive">{serverErrors.codiceAteco}</p>
+                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.codiceAteco}</p>
               )}
             </div>
           </div>
@@ -147,12 +151,13 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
             <Label htmlFor="indirizzo">{t("settings.address")}</Label>
             <Input
               id="indirizzo"
+              data-testid="input-indirizzo"
               value={indirizzo}
               onChange={(e) => setIndirizzo(e.target.value)}
               required
             />
             {serverErrors.indirizzo && (
-              <p className="text-sm text-destructive">{serverErrors.indirizzo}</p>
+              <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.indirizzo}</p>
             )}
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -160,38 +165,41 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
               <Label htmlFor="cap">{t("settings.cap")}</Label>
               <Input
                 id="cap"
+                data-testid="input-cap"
                 value={cap}
                 onChange={(e) => setCap(e.target.value)}
                 maxLength={5}
                 required
               />
               {serverErrors.cap && (
-                <p className="text-sm text-destructive">{serverErrors.cap}</p>
+                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.cap}</p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="citta">{t("settings.city")}</Label>
               <Input
                 id="citta"
+                data-testid="input-citta"
                 value={citta}
                 onChange={(e) => setCitta(e.target.value)}
                 required
               />
               {serverErrors.citta && (
-                <p className="text-sm text-destructive">{serverErrors.citta}</p>
+                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.citta}</p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="provincia">{t("settings.province")}</Label>
               <Input
                 id="provincia"
+                data-testid="input-provincia"
                 value={provincia}
                 onChange={(e) => setProvincia(e.target.value)}
                 maxLength={2}
                 required
               />
               {serverErrors.provincia && (
-                <p className="text-sm text-destructive">{serverErrors.provincia}</p>
+                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.provincia}</p>
               )}
             </div>
           </div>
@@ -206,7 +214,7 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 placeholder="email@pec.it"
               />
               {serverErrors.pec && (
-                <p className="text-sm text-destructive">{serverErrors.pec}</p>
+                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.pec}</p>
               )}
             </div>
             <div className="space-y-2">
@@ -219,7 +227,7 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 placeholder="0000000"
               />
               {serverErrors.codiceSdi && (
-                <p className="text-sm text-destructive">{serverErrors.codiceSdi}</p>
+                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.codiceSdi}</p>
               )}
             </div>
           </div>
@@ -232,7 +240,7 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 onChange={(e) => setIban(e.target.value)}
               />
               {serverErrors.iban && (
-                <p className="text-sm text-destructive">{serverErrors.iban}</p>
+                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.iban}</p>
               )}
             </div>
             <div className="space-y-2">
@@ -241,6 +249,7 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
               </Label>
               <Input
                 id="annoInizioAttivita"
+                data-testid="input-anno-inizio-attivita"
                 type="number"
                 value={annoInizioAttivita}
                 onChange={(e) =>
@@ -249,7 +258,7 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 required
               />
               {serverErrors.annoInizioAttivita && (
-                <p className="text-sm text-destructive">{serverErrors.annoInizioAttivita}</p>
+                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.annoInizioAttivita}</p>
               )}
             </div>
             <div className="space-y-2">
@@ -265,11 +274,11 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 </SelectContent>
               </Select>
               {serverErrors.gestioneInps && (
-                <p className="text-sm text-destructive">{serverErrors.gestioneInps}</p>
+                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.gestioneInps}</p>
               )}
             </div>
           </div>
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isLoading} data-testid="btn-submit-profile">
             {isLoading ? t("common.loading") : t("common.save")}
           </Button>
         </CardContent>
