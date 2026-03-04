@@ -24,7 +24,7 @@ async function fillProfile(page: import("@playwright/test").Page) {
   await saveResponse;
 }
 
-test.describe("Invoice XML/PDF download flow", () => {
+test.describe.serial("Invoice XML/PDF download flow", () => {
   /** ID extracted from the URL after creating the invoice. */
   let invoiceId: string;
 
