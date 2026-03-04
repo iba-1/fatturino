@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { and, eq } from "drizzle-orm";
-import { calcolaImposta, calcolaInps, calcolaAccontoSaldo } from "@fatturino/shared";
-import type { GestioneInps } from "@fatturino/shared";
+import { calcolaImposta, calcolaInps, calcolaAccontoSaldo, generaRigheInps } from "@fatturino/shared";
+import type { GestioneInps, F24SezioneInpsRiga } from "@fatturino/shared";
 import { generateF24Pdf, type F24Deadline } from "../services/f24-pdf.js";
 import { db } from "../db/index.js";
 import { invoices, userProfiles, taxPayments } from "../db/schema.js";
@@ -465,6 +465,7 @@ export async function taxRoutes(app: FastifyInstance) {
 
       // Amount: use override from query param (for simulator) or compute from invoices
       let amount = 0;
+      let inpsRows: F24SezioneInpsRiga[] = [];
       const amountOverride = request.query.amount ? parseFloat(request.query.amount) : null;
       if (amountOverride !== null && !isNaN(amountOverride) && amountOverride >= 0) {
         amount = amountOverride;
@@ -504,6 +505,15 @@ export async function taxRoutes(app: FastifyInstance) {
               : deadline === "secondo_acconto"
                 ? f24.secondoAcconto
                 : f24.saldo;
+
+          // Generate INPS rows for the F24
+          inpsRows = generaRigheInps({
+            gestione: profile.gestioneInps as GestioneInps,
+            totaleDovuto: inpsResult.totaleDovuto,
+            contributoFisso: inpsResult.contributoFisso,
+            contributoEccedenza: inpsResult.contributoEccedenza,
+            anno,
+          });
         } catch {
           return reply.status(400).send({ error: "Unable to compute tax for this year" });
         }
@@ -515,6 +525,7 @@ export async function taxRoutes(app: FastifyInstance) {
         anno,
         deadline,
         amount,
+        inpsRows,
       });
 
       return reply
