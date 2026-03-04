@@ -11,6 +11,11 @@ export function Register() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: session, isPending } = useSession();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   if (isPending) {
     return (
@@ -23,12 +28,6 @@ export function Register() {
   if (session) {
     return <Navigate to="/" replace />;
   }
-
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

@@ -33,6 +33,11 @@ async function request<T>(
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      window.location.href = "/login";
+      return new Promise(() => {}); // Hang the promise — page is redirecting
+    }
+
     const body = await response.json().catch(() => ({}));
     throw new ApiError(
       response.status,
@@ -49,6 +54,11 @@ async function downloadFile(path: string, filename: string): Promise<void> {
   const response = await fetch(url, { credentials: "include" });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      window.location.href = "/login";
+      return new Promise(() => {});
+    }
+
     const body = await response.json().catch(() => ({}));
     throw new ApiError(response.status, body.error || "Download failed", body.details);
   }
