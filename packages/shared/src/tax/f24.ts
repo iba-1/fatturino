@@ -58,7 +58,19 @@ export interface AccontoSaldoResult {
  *   - Secondo acconto: 50% (due November 30)
  *   - Saldo: difference between actual tax and acconti paid
  */
+/** Minimum tax threshold below which no acconti are due (€51.65) */
+export const SOGLIA_MINIMA_ACCONTI = 51.65;
+
 export function calcolaAccontoSaldo(input: AccontoSaldoInput): AccontoSaldoResult {
+  // If tax due is below €51.65, no advance payments are required
+  if (input.impostaDovuta < SOGLIA_MINIMA_ACCONTI) {
+    return {
+      primoAcconto: 0,
+      secondoAcconto: 0,
+      saldo: Math.max(0, Math.round((input.impostaDovuta - input.accontiVersati) * 100) / 100),
+    };
+  }
+
   const primoAcconto = Math.round((input.impostaDovuta * 50) / 100 * 100) / 100;
   const secondoAcconto = Math.round((input.impostaDovuta * 50) / 100 * 100) / 100;
   const saldo = Math.max(

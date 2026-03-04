@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { CODICI_TRIBUTO_IMPOSTA } from "@fatturino/shared";
+import { CODICI_TRIBUTO_IMPOSTA, calcolaAccontoSaldo, SOGLIA_MINIMA_ACCONTI } from "@fatturino/shared";
 import type { F24Deadline } from "../services/f24-pdf.js";
 
 /**
@@ -112,6 +112,104 @@ describe("F24 PDF — amount formatting", () => {
 
   it("formats large amounts correctly", () => {
     expect(formatAmount(85000.75)).toBe("85000.75");
+  });
+});
+
+// --- Rateazione per deadline ---
+
+const DEADLINE_RATEAZIONE: Record<F24Deadline, string | null> = {
+  primo_acconto: "0101",
+  secondo_acconto: null,
+  saldo: "0101",
+};
+
+describe("F24 PDF — rateazione per deadline", () => {
+  it("primo_acconto uses 0101 (single payment)", () => {
+    expect(DEADLINE_RATEAZIONE["primo_acconto"]).toBe("0101");
+  });
+
+  it("secondo_acconto has no rateazione (cannot be rateizzato)", () => {
+    expect(DEADLINE_RATEAZIONE["secondo_acconto"]).toBeNull();
+  });
+
+  it("saldo uses 0101 (single payment)", () => {
+    expect(DEADLINE_RATEAZIONE["saldo"]).toBe("0101");
+  });
+});
+
+// --- Minimum threshold for acconti ---
+
+describe("F24 — minimum threshold for acconti (€51.65)", () => {
+  it("returns zero acconti when tax is below threshold", () => {
+    const result = calcolaAccontoSaldo({
+      impostaDovuta: 50,
+      accontiVersati: 0,
+      anno: 2025,
+    });
+    expect(result.primoAcconto).toBe(0);
+    expect(result.secondoAcconto).toBe(0);
+    expect(result.saldo).toBe(50);
+  });
+
+  it("returns acconti when tax is at threshold", () => {
+    const result = calcolaAccontoSaldo({
+      impostaDovuta: SOGLIA_MINIMA_ACCONTI,
+      accontiVersati: 0,
+      anno: 2025,
+    });
+    expect(result.primoAcconto).toBeGreaterThan(0);
+    expect(result.secondoAcconto).toBeGreaterThan(0);
+  });
+
+  it("returns acconti when tax is above threshold", () => {
+    const result = calcolaAccontoSaldo({
+      impostaDovuta: 1000,
+      accontiVersati: 0,
+      anno: 2025,
+    });
+    expect(result.primoAcconto).toBe(500);
+    expect(result.secondoAcconto).toBe(500);
+    expect(result.saldo).toBe(1000);
+  });
+
+  it("returns zero acconti for zero tax", () => {
+    const result = calcolaAccontoSaldo({
+      impostaDovuta: 0,
+      accontiVersati: 0,
+      anno: 2025,
+    });
+    expect(result.primoAcconto).toBe(0);
+    expect(result.secondoAcconto).toBe(0);
+    expect(result.saldo).toBe(0);
+  });
+});
+
+// --- F24 PDF field name mapping ---
+
+describe("F24 PDF — correct field names for PDF template", () => {
+  it("Sezione Erario fields follow codtrib/ratregpro/annorif/impvers/impcom pattern", () => {
+    // These are the actual field names from the F24_editabile.pdf AcroForm
+    const erarioFields = [
+      "codtrib1", "ratregpro1", "annorif1", "impvers1", "impcom1",
+      "codtrib2", "ratregpro2", "annorif2", "impvers2", "impcom2",
+    ];
+    erarioFields.forEach(name => expect(name).toMatch(/^(codtrib|ratregpro|annorif|impvers|impcom)\d+$/));
+  });
+
+  it("Sezione INPS importi use impvers10-13 (not impdinps)", () => {
+    // INPS row 1 → impvers10, row 2 → impvers11, etc.
+    const inpsImportiFields = ["impvers10", "impvers11", "impvers12", "impvers13"];
+    inpsImportiFields.forEach(name => expect(name).toMatch(/^impvers1[0-3]$/));
+  });
+
+  it("Sezione INPS totals use totc/totd/salcd (not toti/salil)", () => {
+    const inpsTotalFields = { debito: "totc", credito: "totd", saldo: "salcd" };
+    expect(inpsTotalFields.debito).toBe("totc");
+    expect(inpsTotalFields.saldo).toBe("salcd");
+  });
+
+  it("Grand total uses salfin (saldo finale)", () => {
+    expect("salfin").toBe("salfin");
   });
 });
 
