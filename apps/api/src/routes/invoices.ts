@@ -248,6 +248,12 @@ export async function invoiceRoutes(app: FastifyInstance) {
 
     const createdLines = await db.insert(invoiceLines).values(lineValues).returning();
 
+    // Link original to this credit note immediately (prevents duplicate creation)
+    await db
+      .update(invoices)
+      .set({ creditNoteId: created.id, updatedAt: new Date() })
+      .where(eq(invoices.id, original.id));
+
     return reply.status(201).send({ ...created, lines: createdLines });
   });
 
