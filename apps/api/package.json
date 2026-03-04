@@ -12,11 +12,13 @@
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "db:migrate:prod": "node dist/db/migrate.js"
   },
   "dependencies": {
     "@fastify/cors": "^11.0.0",
     "@fastify/rate-limit": "^10.2.0",
+    "@fastify/static": "^9.0.0",
     "@fatturino/fattura-xml": "workspace:*",
     "@fatturino/shared": "workspace:*",
     "better-auth": "^1.2.0",
