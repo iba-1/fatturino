@@ -29,15 +29,12 @@ jobs:
       - name: Build packages
         run: pnpm build
 
-      - name: Upload workspace
+      - name: Upload build outputs
         uses: actions/upload-artifact@v4
         with:
-          name: workspace
+          name: build-outputs
           path: |
-            node_modules
-            apps/*/node_modules
             apps/*/dist
-            packages/*/node_modules
             packages/*/dist
           retention-days: 1
 
@@ -55,10 +52,12 @@ jobs:
           node-version: 20
           cache: pnpm
 
-      - name: Download workspace
+      - run: pnpm install --frozen-lockfile
+
+      - name: Download build outputs
         uses: actions/download-artifact@v4
         with:
-          name: workspace
+          name: build-outputs
 
       - run: pnpm type-check
 
@@ -76,10 +75,12 @@ jobs:
           node-version: 20
           cache: pnpm
 
-      - name: Download workspace
+      - run: pnpm install --frozen-lockfile
+
+      - name: Download build outputs
         uses: actions/download-artifact@v4
         with:
-          name: workspace
+          name: build-outputs
 
       - name: Run unit tests
         run: pnpm --filter @fatturino/web exec vitest run --reporter=verbose --reporter=json --outputFile=vitest-results.json
@@ -121,10 +122,12 @@ jobs:
           node-version: 20
           cache: pnpm
 
-      - name: Download workspace
+      - run: pnpm install --frozen-lockfile
+
+      - name: Download build outputs
         uses: actions/download-artifact@v4
         with:
-          name: workspace
+          name: build-outputs
 
       - name: Get Playwright version
         id: playwright-version
