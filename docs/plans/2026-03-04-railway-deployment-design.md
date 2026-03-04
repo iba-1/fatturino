@@ -1,7 +1,7 @@
 # Railway Deployment Design
 
 **Date:** 2026-03-04
-**Status:** Approved
+**Status:** Implemented (merged PR #15)
 
 ## Summary
 
