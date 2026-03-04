@@ -135,6 +135,15 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t fatturino-ci .
+
   pr-comment:
     name: Comment on PR
     runs-on: ubuntu-latest
