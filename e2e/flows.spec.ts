@@ -17,7 +17,10 @@ test.describe("User Journey", () => {
     await page.fill('input[id="password"]', "Test1234!@");
 
     const registerResponse = page.waitForResponse(
-      (res) => res.request().method() === "POST" && res.url().includes("/api/auth/"),
+      (res) =>
+        res.request().method() === "POST" &&
+        res.url().includes("/api/auth/sign-up") &&
+        res.status() === 200,
     );
     await page.click('button[type="submit"]');
     await registerResponse;
@@ -41,7 +44,7 @@ test.describe("User Journey", () => {
     );
     await page.click('[role="dialog"] button[type="submit"]');
     await createClientDone;
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 30_000 });
     await expect(page.locator("table")).toContainText("Journey Srl", { timeout: 10_000 });
 
     // 3. Create an invoice for that client

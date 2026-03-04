@@ -15,7 +15,10 @@ export async function registerAndLogin(page: Page, prefix = "e2e") {
   await page.fill('input[id="password"]', password);
 
   const registerResponse = page.waitForResponse(
-    (res) => res.request().method() === "POST" && res.url().includes("/api/auth/"),
+    (res) =>
+      res.request().method() === "POST" &&
+      res.url().includes("/api/auth/sign-up") &&
+      res.status() === 200,
   );
   await page.click('button[type="submit"]');
   await registerResponse;

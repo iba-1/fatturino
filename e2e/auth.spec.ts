@@ -12,7 +12,9 @@ test.describe("Authentication", () => {
     await page.fill('input[id="password"]', "Test1234!@");
 
     const registerResponse = page.waitForResponse(
-      (res) => res.request().method() === "POST" && res.url().includes("/api/auth/"),
+      (res) => res.request().method() === "POST" &&
+        res.url().includes("/api/auth/sign-") &&
+        res.status() === 200,
     );
     await page.click('button[type="submit"]');
     await registerResponse;
@@ -32,7 +34,9 @@ test.describe("Authentication", () => {
     await page.fill('input[id="password"]', "Test1234!@");
 
     const firstRegResponse = page.waitForResponse(
-      (res) => res.request().method() === "POST" && res.url().includes("/api/auth/"),
+      (res) => res.request().method() === "POST" &&
+        res.url().includes("/api/auth/sign-") &&
+        res.status() === 200,
     );
     await page.click('button[type="submit"]');
     await firstRegResponse;
@@ -47,7 +51,9 @@ test.describe("Authentication", () => {
     await page.fill('input[id="password"]', "Test1234!@");
 
     const loginResponse = page.waitForResponse(
-      (res) => res.request().method() === "POST" && res.url().includes("/api/auth/"),
+      (res) => res.request().method() === "POST" &&
+        res.url().includes("/api/auth/sign-") &&
+        res.status() === 200,
     );
     await page.click('button[type="submit"]');
     await loginResponse;
