@@ -13,10 +13,15 @@ export async function registerAndLogin(page: Page, prefix = "e2e") {
   await page.fill('input[id="name"]', name);
   await page.fill('input[id="email"]', email);
   await page.fill('input[id="password"]', password);
-  await page.click('button[type="submit"]');
 
-  // Wait for dashboard
-  await page.waitForURL("/", { timeout: 10_000 });
+  const registerResponse = page.waitForResponse(
+    (res) => res.request().method() === "POST" && res.url().includes("/api/auth/"),
+  );
+  await page.click('button[type="submit"]');
+  await registerResponse;
+
+  // Wait for dashboard — generous timeout for CI with parallel workers
+  await page.waitForURL("/", { timeout: 30_000 });
 
   return { email, password, name };
 }

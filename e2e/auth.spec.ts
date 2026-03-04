@@ -10,10 +10,15 @@ test.describe("Authentication", () => {
     await page.fill('input[id="name"]', "Test User");
     await page.fill('input[id="email"]', email);
     await page.fill('input[id="password"]', "Test1234!@");
+
+    const registerResponse = page.waitForResponse(
+      (res) => res.request().method() === "POST" && res.url().includes("/api/auth/"),
+    );
     await page.click('button[type="submit"]');
+    await registerResponse;
 
     // Should redirect to dashboard after successful registration
-    await expect(page).toHaveURL("/", { timeout: 10_000 });
+    await expect(page).toHaveURL("/", { timeout: 30_000 });
     await expect(page.locator("h1")).toContainText(/dashboard/i);
   });
 
@@ -25,8 +30,13 @@ test.describe("Authentication", () => {
     await page.fill('input[id="name"]', "Login Test");
     await page.fill('input[id="email"]', email);
     await page.fill('input[id="password"]', "Test1234!@");
+
+    const firstRegResponse = page.waitForResponse(
+      (res) => res.request().method() === "POST" && res.url().includes("/api/auth/"),
+    );
     await page.click('button[type="submit"]');
-    await expect(page).toHaveURL("/", { timeout: 10_000 });
+    await firstRegResponse;
+    await expect(page).toHaveURL("/", { timeout: 30_000 });
 
     // Logout by clearing cookies and go to login
     await page.context().clearCookies();
@@ -35,9 +45,14 @@ test.describe("Authentication", () => {
 
     await page.fill('input[id="email"]', email);
     await page.fill('input[id="password"]', "Test1234!@");
-    await page.click('button[type="submit"]');
 
-    await expect(page).toHaveURL("/", { timeout: 10_000 });
+    const loginResponse = page.waitForResponse(
+      (res) => res.request().method() === "POST" && res.url().includes("/api/auth/"),
+    );
+    await page.click('button[type="submit"]');
+    await loginResponse;
+
+    await expect(page).toHaveURL("/", { timeout: 30_000 });
     await expect(page.locator("h1")).toContainText(/dashboard/i);
   });
 

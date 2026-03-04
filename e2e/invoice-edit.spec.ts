@@ -16,18 +16,11 @@ test.describe("Invoice Editing", () => {
     await page.fill('input[id="citta"]', "Roma");
     await page.fill('input[id="provincia"]', "RM");
 
-    // Wait for both the POST and the subsequent GET refetch
     const createClientDone = page.waitForResponse(
       (res) => res.request().method() === "POST" && res.url().includes("/api/clients"),
-      { timeout: 10_000 }
-    );
-    const refetchDone = page.waitForResponse(
-      (res) => res.request().method() === "GET" && res.url().includes("/api/clients"),
-      { timeout: 10_000 }
     );
     await page.click('[role="dialog"] button[type="submit"]');
     await createClientDone;
-    await refetchDone;
     await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10_000 });
     await expect(page.locator("table")).toContainText("Test Edit SRL", { timeout: 10_000 });
 

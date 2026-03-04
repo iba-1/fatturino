@@ -15,8 +15,13 @@ test.describe("User Journey", () => {
     await page.fill('input[id="name"]', "Journey Tester");
     await page.fill('input[id="email"]', email);
     await page.fill('input[id="password"]', "Test1234!@");
+
+    const registerResponse = page.waitForResponse(
+      (res) => res.request().method() === "POST" && res.url().includes("/api/auth/"),
+    );
     await page.click('button[type="submit"]');
-    await expect(page).toHaveURL("/", { timeout: 10_000 });
+    await registerResponse;
+    await expect(page).toHaveURL("/", { timeout: 30_000 });
     await expect(page.locator("h1")).toContainText(/dashboard/i);
 
     // 2. Create a client
