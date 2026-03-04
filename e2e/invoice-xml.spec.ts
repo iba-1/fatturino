@@ -45,8 +45,16 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
     await page.fill('input[id="citta"]', "Roma");
     await page.fill('input[id="provincia"]', "RM");
     await page.fill('input[id="codiceSdi"]', "ABCDEFG");
+    const createClientDone = page.waitForResponse(
+      (res) => res.request().method() === "POST" && res.url().includes("/api/clients"),
+    );
+    const refetchClients = page.waitForResponse(
+      (res) => res.request().method() === "GET" && res.url().includes("/api/clients"),
+    );
     await page.click('[role="dialog"] button[type="submit"]');
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5_000 });
+    await createClientDone;
+    await refetchClients;
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10_000 });
     await expect(page.locator("table")).toContainText("XML Test Client Srl");
 
     // --- Create a test invoice ---

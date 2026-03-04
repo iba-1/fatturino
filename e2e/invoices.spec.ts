@@ -15,8 +15,16 @@ test.describe("Invoice CRUD", () => {
     await page.fill('input[id="cap"]', "00100");
     await page.fill('input[id="citta"]', "Roma");
     await page.fill('input[id="provincia"]', "RM");
+    const createClientDone = page.waitForResponse(
+      (res) => res.request().method() === "POST" && res.url().includes("/api/clients"),
+    );
+    const refetchClients = page.waitForResponse(
+      (res) => res.request().method() === "GET" && res.url().includes("/api/clients"),
+    );
     await page.click('[role="dialog"] button[type="submit"]');
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5_000 });
+    await createClientDone;
+    await refetchClients;
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10_000 });
     await expect(page.locator("table")).toContainText("Test Client Srl");
   });
 
@@ -203,7 +211,10 @@ test.describe("Invoice CRUD", () => {
   // --- Delete restriction by status ---
 
   test("should not show delete option for non-draft (inviata) invoices", async ({ page }) => {
+    await registerAndLogin(page, "nodelete");
+
     // Mock the GET /api/invoices to return a non-draft invoice
+    // Set up AFTER login to avoid interfering with dashboard load during registration
     await page.route("**/api/invoices", async (route) => {
       if (route.request().method() === "GET") {
         await route.fulfill({
@@ -212,17 +223,26 @@ test.describe("Invoice CRUD", () => {
           body: JSON.stringify([
             {
               id: "mocked-issued-id",
+              userId: "mocked-user",
+              clientId: "mocked-client",
               numeroFattura: 99,
               anno: 2026,
-              stato: "inviata",
-              clientId: "mocked-client",
-              dataEmissione: new Date().toISOString().slice(0, 10),
-              totaleDocumento: "500.00",
-              imponibile: "500.00",
-              iva: "0.00",
-              bollo: "0.00",
+              dataEmissione: new Date().toISOString(),
+              tipoDocumento: "TD01",
               causale: "",
-              righe: [],
+              imponibile: "500.00",
+              impostaBollo: "0.00",
+              totaleDocumento: "500.00",
+              stato: "inviata",
+              pagata: false,
+              dataPagamento: null,
+              originalInvoiceId: null,
+              creditNoteId: null,
+              sdiIdentifier: null,
+              sdiStatus: null,
+              xmlContent: null,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
             },
           ]),
         });
@@ -231,7 +251,6 @@ test.describe("Invoice CRUD", () => {
       }
     });
 
-    await registerAndLogin(page, "nodelete");
     await page.goto("/invoices");
     await expect(page.locator("table")).toBeVisible({ timeout: 5_000 });
     // The issued invoice row is present

@@ -31,8 +31,16 @@ test.describe("User Journey", () => {
     await page.fill('input[id="cap"]', "00186");
     await page.fill('input[id="citta"]', "Roma");
     await page.fill('input[id="provincia"]', "RM");
+    const createClientDone = page.waitForResponse(
+      (res) => res.request().method() === "POST" && res.url().includes("/api/clients"),
+    );
+    const refetchClients = page.waitForResponse(
+      (res) => res.request().method() === "GET" && res.url().includes("/api/clients"),
+    );
     await page.click('[role="dialog"] button[type="submit"]');
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5_000 });
+    await createClientDone;
+    await refetchClients;
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10_000 });
     await expect(page.locator("table")).toContainText("Journey Srl");
 
     // 3. Create an invoice for that client
