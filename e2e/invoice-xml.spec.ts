@@ -69,8 +69,9 @@ test.describe("Invoice XML/PDF download flow", () => {
 
     await expect(page).toHaveURL("/invoices", { timeout: 10_000 });
 
-    // Navigate to the created invoice detail
-    await page.click('button[aria-label="View"]');
+    // Navigate to the created invoice detail — open dropdown then click View
+    await page.locator("table button").filter({ has: page.locator(".sr-only") }).first().click();
+    await page.locator('[role="menuitem"]').filter({ hasText: /view|visualizza/i }).click();
     await expect(page).toHaveURL(/\/invoices\/.+/);
 
     // Extract the invoice ID from the URL

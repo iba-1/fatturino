@@ -134,8 +134,11 @@ test.describe("Error Handling & Notifications", () => {
     await page.goto("/invoices");
     await expect(page.locator("table")).toBeVisible({ timeout: 5_000 });
 
-    // Click delete button
-    await page.click('button[aria-label="Delete"]');
+    // Open the actions dropdown menu (... button)
+    await page.locator("table button").filter({ has: page.locator(".sr-only") }).first().click();
+
+    // Click Delete in the dropdown
+    await page.locator('[role="menuitem"]').filter({ hasText: /delete|elimina/i }).click();
 
     // Confirm in alert dialog
     await expect(page.locator('[role="alertdialog"]')).toBeVisible();

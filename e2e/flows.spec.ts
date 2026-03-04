@@ -59,8 +59,9 @@ test.describe("User Journey", () => {
     await expect(page).toHaveURL("/invoices", { timeout: 10_000 });
     await expect(page.locator("table")).toContainText("1502.00");
 
-    // 4. View the invoice preview
-    await page.click('button[aria-label="View"]');
+    // 4. View the invoice preview — open dropdown then click View
+    await page.locator("table button").filter({ has: page.locator(".sr-only") }).first().click();
+    await page.locator('[role="menuitem"]').filter({ hasText: /view|visualizza/i }).click();
     await expect(page).toHaveURL(/\/invoices\/.+/);
     await expect(page.locator('[data-testid="invoice-preview"]')).toBeVisible({ timeout: 5_000 });
     await expect(page.locator('[data-testid="invoice-preview"]')).toContainText("Consulenza strategica");

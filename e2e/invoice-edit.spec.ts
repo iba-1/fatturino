@@ -56,7 +56,8 @@ test.describe("Invoice Editing", () => {
     await page.waitForURL("/invoices", { timeout: 10_000 });
 
     // Navigate to invoice detail
-    await page.click('button[aria-label="View"]');
+    await page.locator("table button").filter({ has: page.locator(".sr-only") }).first().click();
+    await page.locator('[role="menuitem"]').filter({ hasText: /view|visualizza/i }).click();
     await page.waitForSelector("h1");
 
     // Should see Edit button (draft invoice)
@@ -114,7 +115,8 @@ test.describe("Invoice Editing", () => {
     await page.waitForURL("/invoices", { timeout: 10_000 });
 
     // Go to detail then click edit
-    await page.click('button[aria-label="View"]');
+    await page.locator("table button").filter({ has: page.locator(".sr-only") }).first().click();
+    await page.locator('[role="menuitem"]').filter({ hasText: /view|visualizza/i }).click();
     await page.waitForSelector("h1");
 
     const editButton = page.getByRole("button").filter({ hasText: /^Edit$|^Modifica$/ });

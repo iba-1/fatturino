@@ -18,14 +18,15 @@ test.describe("Dashboard", () => {
   });
 
   test("should show 4 summary cards", async ({ page }) => {
-    // The grid of summary cards lives inside a grid container with 4 Card children
-    const cards = page.locator(".grid.gap-4 > div");
+    // The bento grid has 4 direct children: HeroRevenueCard + 3 DashboardCards
+    const grid = page.locator(".grid.grid-cols-1.gap-4");
+    await expect(grid).toBeVisible({ timeout: 10_000 });
+    const cards = grid.locator("> div");
     await expect(cards).toHaveCount(4, { timeout: 10_000 });
 
-    // Each card should have a title (h3) and a value (p)
-    for (let i = 0; i < 4; i++) {
-      await expect(cards.nth(i).locator("h3")).toBeVisible();
-      await expect(cards.nth(i).locator("p")).toBeVisible();
+    // Each DashboardCard uses <p> for title and value (not h3)
+    for (let i = 1; i < 4; i++) {
+      await expect(cards.nth(i).locator("p").first()).toBeVisible();
     }
   });
 
@@ -40,9 +41,9 @@ test.describe("Dashboard", () => {
       { timeout: 10_000 },
     );
 
-    // The yellow warning banner should be visible
-    const warning = page.locator(".border-yellow-300, .border-yellow-700");
-    await expect(warning).toBeVisible();
+    // The amber warning banner should be visible
+    const warning = page.locator(".border-amber-200");
+    await expect(warning).toBeVisible({ timeout: 5_000 });
 
     // It should contain a link/button to settings
     const settingsLink = warning.locator("button");
@@ -64,7 +65,7 @@ test.describe("Dashboard", () => {
     await expect(page.locator("h1")).toContainText(/dashboard/i);
 
     // Summary cards should still be rendered (may show zeroes)
-    const cards = page.locator(".grid.gap-4 > div");
+    const cards = page.locator(".grid.grid-cols-1.gap-4 > div");
     await expect(cards).toHaveCount(4, { timeout: 10_000 });
   });
 });
