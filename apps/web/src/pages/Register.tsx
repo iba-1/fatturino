@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { signUp } from "@/lib/auth";
+import { signUp, useSession } from "@/lib/auth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,11 +10,24 @@ import { Label } from "@/components/ui/label";
 export function Register() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { data: session, isPending } = useSession();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  if (isPending) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (session) {
+    return <Navigate to="/" replace />;
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,7 +53,7 @@ export function Register() {
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive-foreground">{error}</div>
+                <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive-foreground" data-testid="auth-error">{error}</div>
               )}
               <div className="space-y-2">
                 <Label htmlFor="name">{t("auth.name")}</Label>

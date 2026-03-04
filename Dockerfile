@@ -73,5 +73,5 @@ ENV HOST=0.0.0.0
 
 EXPOSE 3000
 
-# Run migrations then start server
-CMD ["sh", "-c", "node apps/api/dist/db/migrate.js && node apps/api/dist/server.js"]
+# Start server (Railway runs migrations via preDeployCommand before this)
+CMD ["node", "apps/api/dist/server.js"]

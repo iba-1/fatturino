@@ -22,7 +22,7 @@ test.describe("User Journey", () => {
     // 2. Create a client
     await page.goto("/clients");
     await expect(page.locator('[data-testid="empty-state"]')).toBeVisible({ timeout: 5_000 });
-    await page.click('button:has-text("Nuovo Cliente"), button:has-text("New Client")');
+    await page.click('[data-testid="btn-new-client"]');
     await expect(page.locator('[role="dialog"]')).toBeVisible();
     await page.fill('input[id="ragioneSociale"]', "Journey Srl");
     await page.fill('input[id="codiceFiscale"]', "77700007771");
@@ -40,13 +40,12 @@ test.describe("User Journey", () => {
     await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
     await page.click('[id="clientId"]');
     await page.click('[role="option"]:has-text("Journey Srl")');
-    await page.fill('input[placeholder="Description"]', "Consulenza strategica");
-    const numberInputs = page.locator('form input[type="number"]');
-    await numberInputs.nth(0).fill("3");   // quantity
-    await numberInputs.nth(1).fill("500"); // unit price
+    await page.fill('[data-testid="input-description-0"]', "Consulenza strategica");
+    await page.locator('[data-testid="input-quantity-0"]').fill("3");   // quantity
+    await page.locator('[data-testid="input-unit-price-0"]').fill("500"); // unit price
 
     // Totals: subtotal 1500, bollo 2.00, total 1502.00
-    const totals = page.locator("form .flex.flex-col.items-end");
+    const totals = page.locator('[data-testid="invoice-totals"]');
     await expect(totals).toContainText("1500.00");
     await expect(totals).toContainText("2.00");
     await expect(totals).toContainText("1502.00");
@@ -59,8 +58,9 @@ test.describe("User Journey", () => {
     await expect(page).toHaveURL("/invoices", { timeout: 10_000 });
     await expect(page.locator("table")).toContainText("1502.00");
 
-    // 4. View the invoice preview
-    await page.click('button[aria-label="View"]');
+    // 4. View the invoice preview — open dropdown then click View
+    await page.locator('[data-testid="actions-trigger"]').first().click();
+    await page.locator('[role="menuitem"]').filter({ hasText: /view|visualizza/i }).click();
     await expect(page).toHaveURL(/\/invoices\/.+/);
     await expect(page.locator('[data-testid="invoice-preview"]')).toBeVisible({ timeout: 5_000 });
     await expect(page.locator('[data-testid="invoice-preview"]')).toContainText("Consulenza strategica");

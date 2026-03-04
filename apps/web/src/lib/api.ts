@@ -56,7 +56,7 @@ async function downloadFile(path: string, filename: string): Promise<void> {
   if (!response.ok) {
     if (response.status === 401) {
       window.location.href = "/login";
-      return new Promise(() => {}); // Hang the promise — page is redirecting
+      return new Promise(() => {});
     }
 
     const body = await response.json().catch(() => ({}));

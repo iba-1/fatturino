@@ -126,7 +126,7 @@ export function Invoices() {
     <div>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">{t("invoices.title")}</h1>
-        <Button onClick={() => navigate("/invoices/new")}>
+        <Button onClick={() => navigate("/invoices/new")} data-testid="btn-new-invoice">
           <Plus className="mr-2 h-4 w-4" />
           {t("invoices.new")}
         </Button>
@@ -189,7 +189,7 @@ export function Invoices() {
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" data-testid="actions-trigger">
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">{t("common.actions")}</span>
                         </Button>
@@ -261,6 +261,7 @@ export function Invoices() {
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="btn-confirm-delete"
             >
               {t("common.delete")}
             </AlertDialogAction>

@@ -24,7 +24,14 @@ async function fillProfile(page: import("@playwright/test").Page) {
   await saveResponse;
 }
 
+<<<<<<< worktree-federated-tickling-quilt
 test.describe.serial("Invoice XML/PDF download flow", () => {
+=======
+test.describe("Invoice XML/PDF download flow", () => {
+  // beforeEach creates client + invoice + navigates to detail — needs extra time on CI
+  test.setTimeout(60_000);
+
+>>>>>>> main
   /** ID extracted from the URL after creating the invoice. */
   let invoiceId: string;
 
@@ -33,7 +40,7 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
 
     // --- Create a test client ---
     await page.goto("/clients");
-    await page.click('button:has-text("New Client")');
+    await page.click('[data-testid="btn-new-client"]');
     await page.fill('input[id="ragioneSociale"]', "XML Test Client Srl");
     await page.fill('input[id="codiceFiscale"]', "99999999999");
     await page.fill('input[id="partitaIva"]', "99999999999");
@@ -55,10 +62,9 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
     await page.click('[role="option"]:has-text("XML Test Client Srl")');
 
     // Fill line item
-    await page.fill('input[placeholder="Description"]', "Consulenza XML");
-    const numberInputs = page.locator('form input[type="number"]');
-    await numberInputs.nth(0).fill("10");
-    await numberInputs.nth(1).fill("100");
+    await page.fill('[data-testid="input-description-0"]', "Consulenza XML");
+    await page.locator('[data-testid="input-quantity-0"]').fill("10");
+    await page.locator('[data-testid="input-unit-price-0"]').fill("100");
 
     // Submit
     const createResponse = page.waitForResponse(
@@ -69,8 +75,12 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
 
     await expect(page).toHaveURL("/invoices", { timeout: 10_000 });
 
-    // Navigate to the created invoice detail
-    await page.click('button[aria-label="View"]');
+    // Wait for the table to render the invoice row before opening dropdown
+    await expect(page.locator("table")).toBeVisible({ timeout: 10_000 });
+
+    // Navigate to the created invoice detail — open dropdown then click View
+    await page.locator('[data-testid="actions-trigger"]').first().click();
+    await page.locator('[role="menuitem"]').filter({ hasText: /view|visualizza/i }).click();
     await expect(page).toHaveURL(/\/invoices\/.+/);
 
     // Extract the invoice ID from the URL
@@ -131,7 +141,7 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
     const validateResponse = page.waitForResponse(
       (res) => res.url().includes(`/api/invoices/${invoiceId}/xml/validate`) && res.status() === 200,
     );
-    await page.click('button:has-text("Validate")');
+    await page.click('[data-testid="btn-validate"]');
     await validateResponse;
 
     // Should see validation success message
@@ -150,7 +160,7 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
         !res.url().includes("/validate") &&
         res.request().method() === "GET",
     );
-    await page.click('button:has-text("Download XML")');
+    await page.click('[data-testid="btn-download-xml"]');
     const response = await xmlResponse;
 
     // Verify response content type
@@ -170,7 +180,7 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
       (res) => res.url().includes(`/api/invoices/${invoiceId}/pdf`) &&
         res.request().method() === "GET",
     );
-    await page.click('button:has-text("Download PDF")');
+    await page.click('[data-testid="btn-download-pdf"]');
     const response = await pdfResponse;
 
     // Verify response content type

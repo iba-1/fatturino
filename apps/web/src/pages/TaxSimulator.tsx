@@ -106,6 +106,7 @@ export function TaxSimulator() {
           size="sm"
           onClick={() => navigate("/taxes")}
           className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+          data-testid="btn-back"
         >
           <ArrowLeft className="h-4 w-4" />
           {t("common.back")}
@@ -204,14 +205,14 @@ export function TaxSimulator() {
 
       {/* ATECO error warning */}
       {calcError && (
-        <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+        <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive" data-testid="error-banner">
           {calcError}
         </div>
       )}
 
       {/* Empty state */}
       {!result && !calcError && (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed p-12 text-center">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed p-12 text-center" data-testid="simulator-empty-state">
           <Calculator className="h-10 w-10 text-muted-foreground/40 mb-3" />
           <p className="text-sm text-muted-foreground">
             {t("taxes.simulatorEmptyState")}
@@ -222,7 +223,7 @@ export function TaxSimulator() {
       {/* Results: 3 cards */}
       {result && (
         <>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3" data-testid="simulator-results">
             {/* Imposta Sostitutiva card */}
             <Card className="border-l-4 border-l-emerald-400">
               <CardHeader>
@@ -391,6 +392,7 @@ export function TaxSimulator() {
                 <Button
                   variant="outline"
                   size="sm"
+                  data-testid="btn-download-f24-primo-acconto"
                   onClick={() =>
                     api.download(
                       `/taxes/${annoFiscaleNum}/f24/primo-acconto?amount=${result.accontoSaldo.primoAcconto}`,
@@ -404,6 +406,7 @@ export function TaxSimulator() {
                 <Button
                   variant="outline"
                   size="sm"
+                  data-testid="btn-download-f24-secondo-acconto"
                   onClick={() =>
                     api.download(
                       `/taxes/${annoFiscaleNum}/f24/secondo-acconto?amount=${result.accontoSaldo.secondoAcconto}`,
@@ -417,6 +420,7 @@ export function TaxSimulator() {
                 <Button
                   variant="outline"
                   size="sm"
+                  data-testid="btn-download-f24-saldo"
                   onClick={() =>
                     api.download(
                       `/taxes/${annoFiscaleNum}/f24/saldo?amount=${result.accontoSaldo.saldo}`,

@@ -19,7 +19,7 @@ test.describe("Client CRUD", () => {
     await page.goto("/clients");
 
     // Click "New Client" button
-    await page.click('button:has-text("Nuovo Cliente"), button:has-text("New Client")');
+    await page.click('[data-testid="btn-new-client"]');
 
     // Dialog should open
     await expect(page.locator('[role="dialog"]')).toBeVisible();
@@ -49,7 +49,7 @@ test.describe("Client CRUD", () => {
   test("should create a persona fisica client", async ({ page }) => {
     await page.goto("/clients");
 
-    await page.click('button:has-text("Nuovo Cliente"), button:has-text("New Client")');
+    await page.click('[data-testid="btn-new-client"]');
     await expect(page.locator('[role="dialog"]')).toBeVisible();
 
     // Switch to persona fisica
@@ -77,7 +77,7 @@ test.describe("Client CRUD", () => {
     await page.goto("/clients");
 
     // First create a client
-    await page.click('button:has-text("Nuovo Cliente"), button:has-text("New Client")');
+    await page.click('[data-testid="btn-new-client"]');
     await page.fill('input[id="ragioneSociale"]', "Old Name Srl");
     await page.fill('input[id="codiceFiscale"]', "98765432109");
     await page.fill('input[id="indirizzo"]', "Via Vecchia 1");
@@ -88,7 +88,7 @@ test.describe("Client CRUD", () => {
     await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5_000 });
 
     // Click edit button (pencil icon)
-    await page.click('button[aria-label="Modifica"], button[aria-label="Edit"]');
+    await page.click('[data-testid="btn-edit-client"]');
     await expect(page.locator('[role="dialog"]')).toBeVisible();
 
     // Change name
@@ -103,7 +103,7 @@ test.describe("Client CRUD", () => {
     await page.goto("/clients");
 
     // Create a client first
-    await page.click('button:has-text("Nuovo Cliente"), button:has-text("New Client")');
+    await page.click('[data-testid="btn-new-client"]');
     await page.fill('input[id="ragioneSociale"]', "Delete Me Srl");
     await page.fill('input[id="codiceFiscale"]', "11111111111");
     await page.fill('input[id="indirizzo"]', "Via Delete 1");
@@ -115,7 +115,7 @@ test.describe("Client CRUD", () => {
     await expect(page.locator("table")).toContainText("Delete Me Srl");
 
     // Click delete button
-    await page.click('button[aria-label="Elimina"], button[aria-label="Delete"]');
+    await page.click('[data-testid="btn-delete-client"]');
 
     // Confirm dialog should appear
     await expect(page.locator('[role="alertdialog"]')).toBeVisible();
@@ -125,7 +125,7 @@ test.describe("Client CRUD", () => {
     const deleteResponse = page.waitForResponse(
       (res) => res.request().method() === "DELETE" && res.url().includes("/api/clients/")
     );
-    await page.click('[role="alertdialog"] button:has-text("Elimina"), [role="alertdialog"] button:has-text("Delete")');
+    await page.click('[data-testid="btn-confirm-delete"]');
     await deleteResponse;
 
     // Wait for the refetch of client list
@@ -141,7 +141,7 @@ test.describe("Client CRUD", () => {
   test("should validate required fields", async ({ page }) => {
     await page.goto("/clients");
 
-    await page.click('button:has-text("Nuovo Cliente"), button:has-text("New Client")');
+    await page.click('[data-testid="btn-new-client"]');
     await expect(page.locator('[role="dialog"]')).toBeVisible();
 
     // Submit without filling anything
