@@ -11,6 +11,7 @@ import {
   pgEnum,
   unique,
   date,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 
 // --- Enums ---
@@ -28,6 +29,7 @@ export const statoFatturaEnum = pgEnum("stato_fattura", [
   "accettata",
   "rifiutata",
   "mancata_consegna",
+  "stornata",
 ]);
 
 export const tipoDocumentoEnum = pgEnum("tipo_documento", [
@@ -178,6 +180,8 @@ export const invoices = pgTable("invoices", {
   xmlContent: text("xml_content"),
   pagata: boolean("pagata").notNull().default(false),
   dataPagamento: timestamp("data_pagamento", { withTimezone: true }),
+  originalInvoiceId: uuid("original_invoice_id").references((): AnyPgColumn => invoices.id, { onDelete: "set null" }),
+  creditNoteId: uuid("credit_note_id").references((): AnyPgColumn => invoices.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
