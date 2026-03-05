@@ -29,5 +29,8 @@ export const auth = betterAuth({
       enabled: !!process.env.GITHUB_CLIENT_ID,
     },
   },
-  trustedOrigins: (process.env.CORS_ORIGINS || "http://localhost:5173").split(","),
+  trustedOrigins: [
+    ...(process.env.CORS_ORIGINS || "http://localhost:5173").split(","),
+    ...(process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL] : []),
+  ],
 });
