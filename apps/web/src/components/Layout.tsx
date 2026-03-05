@@ -114,7 +114,7 @@ export function Layout() {
           <span className="ml-3 text-sm font-semibold text-sidebar-foreground">Fatturino</span>
         </header>
 
-        <main className="animate-page-in flex-1 p-6 lg:p-8">
+        <main className="flex-1 p-6 lg:p-8">
           <div className="mx-auto max-w-[1200px]">
             <Outlet />
           </div>
