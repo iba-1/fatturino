@@ -12,6 +12,6 @@ dist/
 pgdata/
 test-results/
 playwright-report/
-docs/
+docs/plans/
 *.test.ts
 *.spec.ts
