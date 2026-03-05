@@ -64,6 +64,9 @@ COPY --from=builder /app/apps/api/src/db/migrations ./apps/api/src/db/migrations
 # Copy built frontend
 COPY --from=builder /app/apps/web/dist ./apps/web/dist
 
+# Copy static assets (PDF templates, etc.)
+COPY --from=builder /app/docs ./docs
+
 # Install Playwright Chromium browser
 RUN npx playwright install chromium
 
