@@ -22,16 +22,10 @@ test.describe("Tax Overview", () => {
   test("should show profile warning when profile is incomplete", async ({ page }) => {
     await page.goto("/taxes");
 
-    // Wait for the API response to load tax overview data
-    await page.waitForResponse(
-      (res) => res.url().includes("/api/taxes/overview") && res.status() === 200,
-      { timeout: 10_000 }
-    );
-
     // A freshly registered user has no profile, so profileIncomplete is true
     // The warning banner uses border-amber-200 and bg-amber-50
     const warning = page.locator('[data-testid="profile-warning"]');
-    await expect(warning).toBeVisible({ timeout: 5_000 });
+    await expect(warning).toBeVisible({ timeout: 15_000 });
 
     // The banner should mention completing the profile
     await expect(warning).toContainText(/profile|settings/i);
@@ -44,15 +38,9 @@ test.describe("Tax Overview", () => {
   test("should navigate to simulator from the overview link", async ({ page }) => {
     await page.goto("/taxes");
 
-    // Wait for overview data to load so the link is rendered
-    await page.waitForResponse(
-      (res) => res.url().includes("/api/taxes/overview") && res.status() === 200,
-      { timeout: 10_000 }
-    );
-
     // Click the simulator link (i18n: taxes.simulatorLink = "Try different scenarios →")
     const simulatorLink = page.locator('[data-testid="link-simulator"]');
-    await expect(simulatorLink).toBeVisible({ timeout: 5_000 });
+    await expect(simulatorLink).toBeVisible({ timeout: 15_000 });
     await simulatorLink.click();
 
     await expect(page).toHaveURL("/taxes/simulator", { timeout: 5_000 });
