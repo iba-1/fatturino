@@ -11,4 +11,10 @@ describe("FullPageLoader", () => {
     const { container } = render(<FullPageLoader />);
     expect(container.querySelector('[role="status"]')).toBeInTheDocument();
   });
+
+  it("announces loading state to screen readers", () => {
+    const { container } = render(<FullPageLoader />);
+    const spinner = container.querySelector('[role="status"]');
+    expect(spinner).toHaveAttribute("aria-label", "Loading");
+  });
 });

@@ -1,6 +1,6 @@
 export function FullPageLoader() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[hsl(var(--sidebar-bg))]">
+    <div className="flex min-h-screen items-center justify-center bg-sidebar-bg">
       <div className="flex flex-col items-center gap-4">
         <span className="text-2xl font-bold tracking-tight text-white">
           Fatturino
