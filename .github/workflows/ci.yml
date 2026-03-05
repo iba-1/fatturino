@@ -166,7 +166,7 @@ jobs:
         run: |
           pnpm exec playwright test \
             e2e/auth.spec.ts e2e/clients.spec.ts e2e/dashboard.spec.ts \
-            e2e/error-handling.spec.ts e2e/settings.spec.ts e2e/taxes.spec.ts \
+            e2e/error-handling.spec.ts e2e/settings.spec.ts \
             --workers=2 --reporter=list,json
         env:
           CI: true
@@ -176,7 +176,7 @@ jobs:
         run: |
           pnpm exec playwright test \
             e2e/flows.spec.ts e2e/invoice-edit.spec.ts \
-            e2e/invoice-xml.spec.ts e2e/invoices.spec.ts \
+            e2e/invoice-xml.spec.ts e2e/invoices.spec.ts e2e/taxes.spec.ts \
             --workers=1 --reporter=list,json
         env:
           CI: true
