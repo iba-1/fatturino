@@ -151,14 +151,15 @@ describe("F24 — minimum threshold for acconti (€51.65)", () => {
     expect(result.saldo).toBe(50);
   });
 
-  it("returns acconti when tax is at threshold", () => {
+  it("returns single acconto (novembre only) when tax is at threshold (€51.65–€257.52 band)", () => {
     const result = calcolaAccontoSaldo({
       impostaDovuta: SOGLIA_MINIMA_ACCONTI,
       accontiVersati: 0,
       anno: 2025,
     });
-    expect(result.primoAcconto).toBeGreaterThan(0);
-    expect(result.secondoAcconto).toBeGreaterThan(0);
+    // Single payment band: primo = 0, secondo = full amount
+    expect(result.primoAcconto).toBe(0);
+    expect(result.secondoAcconto).toBe(SOGLIA_MINIMA_ACCONTI);
   });
 
   it("returns acconti when tax is above threshold", () => {
@@ -167,8 +168,8 @@ describe("F24 — minimum threshold for acconti (€51.65)", () => {
       accontiVersati: 0,
       anno: 2025,
     });
-    expect(result.primoAcconto).toBe(500);
-    expect(result.secondoAcconto).toBe(500);
+    expect(result.primoAcconto).toBe(400);   // 40%
+    expect(result.secondoAcconto).toBe(600); // 60%
     expect(result.saldo).toBe(1000);
   });
 

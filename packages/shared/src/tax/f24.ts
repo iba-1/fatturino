@@ -39,12 +39,14 @@ export interface AccontoSaldoInput {
   accontiVersati: number;
   /** Tax year */
   anno: number;
+  /** First year of activity — no acconti due (no prior year reference) */
+  primoAnno?: boolean;
 }
 
 export interface AccontoSaldoResult {
-  /** First advance payment (50% of total) — due June 30 */
+  /** First advance payment (40% of total) — due June 30 */
   primoAcconto: number;
-  /** Second advance payment (50% of total) — due November 30 */
+  /** Second advance payment (60% of total) — due November 30 */
   secondoAcconto: number;
   /** Balance payment — due June 30 of following year */
   saldo: number;
@@ -53,32 +55,97 @@ export interface AccontoSaldoResult {
 /**
  * Calculate acconto/saldo breakdown for imposta sostitutiva.
  *
- * Acconti are based on prior year's tax:
- *   - Primo acconto: 50% (due June 30)
- *   - Secondo acconto: 50% (due November 30)
- *   - Saldo: difference between actual tax and acconti paid
+ * Acconti are based on prior year's tax (metodo storico):
+ *   - < €52: no acconti
+ *   - €52 – €257.52: single payment (100%) due November 30
+ *   - > €257.52: primo acconto 40% (June 30) + secondo acconto 60% (November 30)
+ *   - First year (primoAnno): no acconti, only saldo
  */
-/** Minimum tax threshold below which no acconti are due (€51.65) */
+/** Minimum tax threshold below which no acconti are due */
 export const SOGLIA_MINIMA_ACCONTI = 51.65;
+/** Threshold above which acconti are split into two payments (40/60) */
+export const SOGLIA_DOPPIO_ACCONTO = 257.52;
 
 export function calcolaAccontoSaldo(input: AccontoSaldoInput): AccontoSaldoResult {
-  // If tax due is below €51.65, no advance payments are required
+  const round2 = (n: number) => Math.round(n * 100) / 100;
+
+  const saldo = Math.max(0, round2(input.impostaDovuta - input.accontiVersati));
+
+  // First year: no acconti (no prior year reference)
+  if (input.primoAnno) {
+    return { primoAcconto: 0, secondoAcconto: 0, saldo };
+  }
+
+  // Below €52: no advance payments required
   if (input.impostaDovuta < SOGLIA_MINIMA_ACCONTI) {
+    return { primoAcconto: 0, secondoAcconto: 0, saldo };
+  }
+
+  // €52 – €257.52: single payment due November 30
+  if (input.impostaDovuta <= SOGLIA_DOPPIO_ACCONTO) {
     return {
       primoAcconto: 0,
-      secondoAcconto: 0,
-      saldo: Math.max(0, Math.round((input.impostaDovuta - input.accontiVersati) * 100) / 100),
+      secondoAcconto: round2(input.impostaDovuta),
+      saldo,
     };
   }
 
-  const primoAcconto = Math.round((input.impostaDovuta * 50) / 100 * 100) / 100;
-  const secondoAcconto = Math.round((input.impostaDovuta * 50) / 100 * 100) / 100;
-  const saldo = Math.max(
-    0,
-    Math.round((input.impostaDovuta - input.accontiVersati) * 100) / 100
-  );
+  // > €257.52: two payments — 40% June + 60% November
+  const primoAcconto = round2(input.impostaDovuta * 40 / 100);
+  const secondoAcconto = round2(input.impostaDovuta * 60 / 100);
 
   return { primoAcconto, secondoAcconto, saldo };
+}
+
+// ---------------------------------------------------------------------------
+// INPS Gestione Separata — acconto calculation
+// ---------------------------------------------------------------------------
+
+export interface AccontiInpsInput {
+  /** Prior year's total INPS contributions */
+  inpsPrecedente: number;
+  /** Actual INPS due for current year (for saldo calculation) */
+  inpsEffettivo?: number;
+  /** First year of activity — no acconti */
+  primoAnno?: boolean;
+}
+
+export interface AccontiInpsResult {
+  /** First advance (40% of prior year) — due June 30 */
+  primoAcconto: number;
+  /** Second advance (40% of prior year) — due November 30 */
+  secondoAcconto: number;
+  /** Total acconti (80% of prior year) */
+  totaleAcconti: number;
+  /** Balance: actual INPS − acconti paid (can be negative = credit) */
+  saldo: number;
+}
+
+/**
+ * Calculate INPS Gestione Separata acconto/saldo breakdown.
+ *
+ * Acconti = 80% of prior year's INPS, split equally:
+ *   - Primo acconto: 40% of prior year (June 30)
+ *   - Secondo acconto: 40% of prior year (November 30)
+ *   - Saldo: actual − 80% already paid (can be negative = credit)
+ */
+export function calcolaAccontiInps(input: AccontiInpsInput): AccontiInpsResult {
+  const round2 = (n: number) => Math.round(n * 100) / 100;
+
+  if (input.primoAnno || input.inpsPrecedente <= 0) {
+    const saldo = input.inpsEffettivo != null ? round2(input.inpsEffettivo) : 0;
+    return { primoAcconto: 0, secondoAcconto: 0, totaleAcconti: 0, saldo };
+  }
+
+  const primoAcconto = round2(input.inpsPrecedente * 40 / 100);
+  const secondoAcconto = round2(input.inpsPrecedente * 40 / 100);
+  const totaleAcconti = round2(primoAcconto + secondoAcconto);
+
+  const saldo = input.inpsEffettivo != null
+    ? round2(input.inpsEffettivo - totaleAcconti)
+    : 0;
+
+  return { primoAcconto, secondoAcconto, totaleAcconti, saldo };
 }
 
 /**
@@ -88,8 +155,8 @@ export function generaRigheErario(
   impostaDovuta: number,
   anno: number
 ): F24SezioneErarioRiga[] {
-  const primoAcconto = Math.round((impostaDovuta * 50) / 100 * 100) / 100;
-  const secondoAcconto = Math.round((impostaDovuta * 50) / 100 * 100) / 100;
+  const primoAcconto = Math.round((impostaDovuta * 40) / 100 * 100) / 100;
+  const secondoAcconto = Math.round((impostaDovuta * 60) / 100 * 100) / 100;
 
   return [
     {

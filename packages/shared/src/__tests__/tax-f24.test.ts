@@ -2,15 +2,15 @@ import { describe, it, expect } from "vitest";
 import { calcolaAccontoSaldo, generaRigheErario } from "../tax/f24.js";
 
 describe("calcolaAccontoSaldo", () => {
-  it("should split tax into 50/50 acconti", () => {
+  it("should split tax into 40/60 acconti", () => {
     const result = calcolaAccontoSaldo({
       impostaDovuta: 1_000,
       accontiVersati: 0,
       anno: 2024,
     });
 
-    expect(result.primoAcconto).toBe(500);
-    expect(result.secondoAcconto).toBe(500);
+    expect(result.primoAcconto).toBe(400);
+    expect(result.secondoAcconto).toBe(600);
     expect(result.saldo).toBe(1_000);
   });
 
@@ -53,8 +53,8 @@ describe("calcolaAccontoSaldo", () => {
       anno: 2024,
     });
 
-    expect(result.primoAcconto).toBe(712.5);
-    expect(result.secondoAcconto).toBe(712.5);
+    expect(result.primoAcconto).toBe(570);   // 40%
+    expect(result.secondoAcconto).toBe(855); // 60%
     expect(result.saldo).toBe(1_425);
   });
 });
@@ -66,11 +66,11 @@ describe("generaRigheErario", () => {
     expect(rows).toHaveLength(3);
 
     expect(rows[0].codiceTributo).toBe("1790"); // Acconto primo
-    expect(rows[0].importoADebito).toBe(500);
+    expect(rows[0].importoADebito).toBe(400);  // 40%
     expect(rows[0].annoDiRiferimento).toBe(2024);
 
     expect(rows[1].codiceTributo).toBe("1791"); // Acconto secondo
-    expect(rows[1].importoADebito).toBe(500);
+    expect(rows[1].importoADebito).toBe(600);  // 60%
 
     expect(rows[2].codiceTributo).toBe("1792"); // Saldo
     expect(rows[2].importoADebito).toBe(1_000);
