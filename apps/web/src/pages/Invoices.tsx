@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useAppNavigate } from "@/hooks/use-app-navigate";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -48,6 +48,7 @@ import {
   CircleOff,
 } from "lucide-react";
 import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function statusVariant(stato: string): "default" | "secondary" | "destructive" | "outline" | "warning" | "success" {
   switch (stato) {
@@ -70,7 +71,7 @@ function statusVariant(stato: string): "default" | "secondary" | "destructive" |
 
 export function Invoices() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const { data: invoices, isLoading, isError } = useInvoices();
   const { data: clients } = useClients();
   const deleteInvoice = useDeleteInvoice();
@@ -134,11 +135,7 @@ export function Invoices() {
 
       <div className="mt-6">
         {isLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-14 rounded-lg bg-secondary animate-skeleton" />
-            ))}
-          </div>
+          <InvoicesSkeleton />
         ) : !invoices || invoices.length === 0 ? (
           <div className="text-center py-16" data-testid="empty-state">
             <FileText className="mx-auto h-12 w-12 text-muted-foreground/50" />
@@ -325,6 +322,23 @@ export function Invoices() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
+  );
+}
+
+function InvoicesSkeleton() {
+  return (
+    <div className="space-y-3">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="flex items-center gap-4 px-1 py-1">
+          <Skeleton className="h-5 w-16" />
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-5 flex-1" />
+          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-6 w-20 rounded-full" />
+          <Skeleton className="h-8 w-8 rounded-full" />
+        </div>
+      ))}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useAppNavigate } from "@/hooks/use-app-navigate";
 import { useTranslation } from "react-i18next";
 import { signUp, useSession } from "@/lib/auth";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,7 +10,7 @@ import { Label } from "@/components/ui/label";
 
 export function Register() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const { data: session, isPending } = useSession();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

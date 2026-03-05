@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useAppNavigate } from "@/hooks/use-app-navigate";
 import { useState } from "react";
 import { InvoicePreview } from "@/components/InvoicePreview";
 import { useInvoice, useValidateInvoice, useSendInvoice, useDeleteInvoice, useMarkSent, useMarkPaid, useCreateCreditNote } from "@/hooks/use-invoices";
@@ -7,13 +8,14 @@ import { useClient } from "@/hooks/use-clients";
 import { useProfile } from "@/hooks/use-profile";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ArrowLeft, FileCheck, FileDown, FileText, AlertTriangle, Pencil, Send, Trash2, CheckCircle, CircleOff } from "lucide-react";
 import { api } from "@/lib/api";
 
 export function InvoiceDetail() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const { id } = useParams<{ id: string }>();
   const { data: invoice, isLoading, isError } = useInvoice(id ?? "");
   const { data: client } = useClient(invoice?.clientId ?? "");
@@ -33,8 +35,8 @@ export function InvoiceDetail() {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="h-8 w-48 rounded-lg bg-secondary animate-skeleton" />
-        <div className="h-64 rounded-xl bg-secondary animate-skeleton" />
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full rounded-xl" />
       </div>
     );
   }

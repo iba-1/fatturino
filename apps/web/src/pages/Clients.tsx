@@ -38,6 +38,7 @@ import {
 } from "@/hooks/use-clients";
 import { parseApiFieldErrors } from "@/lib/api";
 import { Pencil, Trash2, Plus, Users } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function Clients() {
   const { t } = useTranslation();
@@ -103,11 +104,7 @@ export function Clients() {
 
       <div className="mt-6">
         {isLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-14 rounded-lg bg-secondary animate-skeleton" />
-            ))}
-          </div>
+          <ClientsSkeleton />
         ) : !clients || clients.length === 0 ? (
           <div className="text-center py-16" data-testid="empty-state">
             <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
@@ -237,6 +234,23 @@ export function Clients() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
+  );
+}
+
+function ClientsSkeleton() {
+  return (
+    <div className="space-y-3">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="flex items-center gap-4 px-1 py-1">
+          <Skeleton className="h-5 flex-1" />
+          <Skeleton className="h-6 w-20 rounded-full" />
+          <Skeleton className="h-5 w-28" />
+          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-8 w-16" />
+        </div>
+      ))}
     </div>
   );
 }

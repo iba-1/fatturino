@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ProfileForm } from "@/components/ProfileForm";
 import { useProfile, useSaveProfile, type ProfileFormData } from "@/hooks/use-profile";
 import { parseApiFieldErrors } from "@/lib/api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function Settings() {
   const { t } = useTranslation();
@@ -25,7 +26,7 @@ export function Settings() {
         {t("settings.title")}
       </h1>
       {isLoading ? (
-        <p className="text-muted-foreground">{t("common.loading")}</p>
+        <SettingsSkeleton />
       ) : (
         <ProfileForm
           profile={profile}
@@ -34,6 +35,33 @@ export function Settings() {
           serverErrors={serverErrors}
         />
       )}
+    </div>
+  );
+}
+
+function SettingsSkeleton() {
+  return (
+    <div className="max-w-2xl space-y-6">
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-40" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+      <Skeleton className="h-10 w-28" />
     </div>
   );
 }

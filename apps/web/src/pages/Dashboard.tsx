@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useAppNavigate } from "@/hooks/use-app-navigate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useDashboardSummary } from "@/hooks/use-dashboard";
 import { DollarSign, Send, Clock, Wallet, Calculator } from "lucide-react";
@@ -12,7 +13,7 @@ const formatEur = (n: number) =>
 
 export function Dashboard() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const currentYear = new Date().getFullYear();
   const [anno, setAnno] = useState(currentYear);
 
@@ -68,10 +69,10 @@ export function Dashboard() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4" data-testid="summary-cards">
         {isLoading ? (
           <>
-            <div className="h-[240px] rounded-xl bg-secondary animate-skeleton md:col-span-2 lg:row-span-2" />
-            <div className="h-[106px] rounded-xl bg-secondary animate-skeleton" />
-            <div className="h-[106px] rounded-xl bg-secondary animate-skeleton" />
-            <div className="h-[106px] rounded-xl bg-secondary animate-skeleton" />
+            <Skeleton className="h-[240px] rounded-xl md:col-span-2 lg:row-span-2" />
+            <Skeleton className="h-[106px] rounded-xl" />
+            <Skeleton className="h-[106px] rounded-xl" />
+            <Skeleton className="h-[106px] rounded-xl" />
           </>
         ) : (
           <>

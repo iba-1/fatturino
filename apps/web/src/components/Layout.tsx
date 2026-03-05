@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAppNavigate } from "@/hooks/use-app-navigate";
 import {
   LayoutDashboard,
   FileText,
@@ -23,7 +24,7 @@ const navItems = [
 
 export function Layout() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   async function handleLogout() {
@@ -47,6 +48,7 @@ export function Layout() {
             key={path}
             to={path}
             end={path === "/"}
+            viewTransition
             onClick={() => setSidebarOpen(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
@@ -114,7 +116,7 @@ export function Layout() {
           <span className="ml-3 text-sm font-semibold text-sidebar-foreground">Fatturino</span>
         </header>
 
-        <main className="animate-page-in flex-1 p-6 lg:p-8">
+        <main className="flex-1 p-6 lg:p-8">
           <div className="mx-auto max-w-[1200px]">
             <Outlet />
           </div>
