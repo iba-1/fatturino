@@ -7,10 +7,12 @@ export type { CalcoloImpostaInput, CalcoloImpostaResult } from "./imposta.js";
 export { calcolaInps } from "./inps.js";
 export type { CalcoloInpsInput, CalcoloInpsResult, GestioneInps } from "./inps.js";
 
-export { calcolaAccontoSaldo, generaRigheErario, generaRigheInps, SOGLIA_MINIMA_ACCONTI } from "./f24.js";
+export { calcolaAccontoSaldo, calcolaAccontiInps, generaRigheErario, generaRigheInps, SOGLIA_MINIMA_ACCONTI, SOGLIA_DOPPIO_ACCONTO } from "./f24.js";
 export type {
   AccontoSaldoInput,
   AccontoSaldoResult,
+  AccontiInpsInput,
+  AccontiInpsResult,
   GeneraRigheInpsInput,
   F24Data,
   F24SezioneErarioRiga,
