@@ -51,7 +51,7 @@ test.describe("Tax Overview", () => {
     );
 
     // Click the simulator link (i18n: taxes.simulatorLink = "Try different scenarios →")
-    const simulatorLink = page.locator('a[href="/taxes/simulator"]');
+    const simulatorLink = page.locator('[data-testid="link-simulator"]');
     await expect(simulatorLink).toBeVisible({ timeout: 5_000 });
     await simulatorLink.click();
 
@@ -88,19 +88,19 @@ test.describe("Tax Simulator", () => {
     await expect(page.locator("h1")).toContainText(/simulator/i);
 
     // Revenue input (id="fatturato")
-    await expect(page.locator('input[id="fatturato"]')).toBeVisible();
+    await expect(page.locator('[data-testid="input-fatturato"]')).toBeVisible();
 
-    // ATECO code input (id="codiceAteco")
-    await expect(page.locator('input[id="codiceAteco"]')).toBeVisible();
+    // ATECO code input
+    await expect(page.locator('[data-testid="input-codice-ateco"]')).toBeVisible();
 
-    // Gestione INPS select (id="gestione")
-    await expect(page.locator('select[id="gestione"]')).toBeVisible();
+    // Gestione INPS select
+    await expect(page.locator('[data-testid="select-gestione"]')).toBeVisible();
 
-    // Start year input (id="annoInizio")
-    await expect(page.locator('input[id="annoInizio"]')).toBeVisible();
+    // Start year input
+    await expect(page.locator('[data-testid="input-anno-inizio"]')).toBeVisible();
 
-    // Fiscal year input (id="annoFiscale")
-    await expect(page.locator('input[id="annoFiscale"]')).toBeVisible();
+    // Fiscal year input
+    await expect(page.locator('[data-testid="input-anno-fiscale"]')).toBeVisible();
   });
 
   test("should show empty state when no revenue entered", async ({ page }) => {
@@ -119,10 +119,10 @@ test.describe("Tax Simulator", () => {
     await page.goto("/taxes/simulator");
 
     // Fill in annual revenue
-    await page.fill('input[id="fatturato"]', "50000");
+    await page.fill('[data-testid="input-fatturato"]', "50000");
 
     // Fill in a valid ATECO code (62.01.09 = IT consultants, coeff 78%)
-    await page.fill('input[id="codiceAteco"]', "62.01.09");
+    await page.fill('[data-testid="input-codice-ateco"]', "62.01.09");
 
     // Result cards should appear — three Cards for imposta, INPS, net position
     const resultCards = page.locator('[data-testid="simulator-results"]');
@@ -140,8 +140,8 @@ test.describe("Tax Simulator", () => {
   test("should show error for unknown ATECO code", async ({ page }) => {
     await page.goto("/taxes/simulator");
 
-    await page.fill('input[id="fatturato"]', "50000");
-    await page.fill('input[id="codiceAteco"]', "00.00.00");
+    await page.fill('[data-testid="input-fatturato"]', "50000");
+    await page.fill('[data-testid="input-codice-ateco"]', "00.00.00");
 
     // calcError is rendered in a destructive/red banner
     const errorBanner = page.locator('[data-testid="error-banner"]');

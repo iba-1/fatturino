@@ -8,19 +8,19 @@ async function fillProfile(page: import("@playwright/test").Page) {
   await page.goto("/settings");
   await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
 
-  await page.fill('input[id="ragioneSociale"]', "Mario Rossi Freelance");
-  await page.fill('input[id="partitaIva"]', "12345678901");
-  await page.fill('input[id="codiceFiscale"]', "RSSMRA85M01H501Z");
-  await page.fill('input[id="codiceAteco"]', "62.01.00");
-  await page.fill('input[id="indirizzo"]', "Via Roma 10");
-  await page.fill('input[id="cap"]', "00100");
-  await page.fill('input[id="citta"]', "Roma");
-  await page.fill('input[id="provincia"]', "RM");
+  await page.fill('[data-testid="input-ragione-sociale"]', "Mario Rossi Freelance");
+  await page.fill('[data-testid="input-partita-iva"]', "12345678901");
+  await page.fill('[data-testid="input-codice-fiscale"]', "RSSMRA85M01H501Z");
+  await page.fill('[data-testid="input-codice-ateco"]', "62.01.00");
+  await page.fill('[data-testid="input-indirizzo"]', "Via Roma 10");
+  await page.fill('[data-testid="input-cap"]', "00100");
+  await page.fill('[data-testid="input-citta"]', "Roma");
+  await page.fill('[data-testid="input-provincia"]', "RM");
 
   const saveResponse = page.waitForResponse(
     (res) => res.url().includes("/api/profile") && res.status() < 400,
   );
-  await page.click('button[type="submit"]');
+  await page.click('[data-testid="btn-submit-profile"]');
   await saveResponse;
 }
 
@@ -37,18 +37,18 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
     // --- Create a test client ---
     await page.goto("/clients");
     await page.click('[data-testid="btn-new-client"]');
-    await page.fill('input[id="ragioneSociale"]', "XML Test Client Srl");
-    await page.fill('input[id="codiceFiscale"]', "99999999999");
-    await page.fill('input[id="partitaIva"]', "99999999999");
-    await page.fill('input[id="indirizzo"]', "Via Test 1");
-    await page.fill('input[id="cap"]', "00100");
-    await page.fill('input[id="citta"]', "Roma");
-    await page.fill('input[id="provincia"]', "RM");
-    await page.fill('input[id="codiceSdi"]', "ABCDEFG");
+    await page.fill('[data-testid="input-ragione-sociale"]', "XML Test Client Srl");
+    await page.fill('[data-testid="input-codice-fiscale"]', "99999999999");
+    await page.fill('[data-testid="input-partita-iva"]', "99999999999");
+    await page.fill('[data-testid="input-indirizzo"]', "Via Test 1");
+    await page.fill('[data-testid="input-cap"]', "00100");
+    await page.fill('[data-testid="input-citta"]', "Roma");
+    await page.fill('[data-testid="input-provincia"]', "RM");
+    await page.fill('[data-testid="input-codice-sdi"]', "ABCDEFG");
     const createClientDone = page.waitForResponse(
       (res) => res.request().method() === "POST" && res.url().includes("/api/clients"),
     );
-    await page.click('[role="dialog"] button[type="submit"]');
+    await page.click('[data-testid="btn-submit-client"]');
     await createClientDone;
     await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 30_000 });
     await expect(page.locator("table")).toContainText("XML Test Client Srl", { timeout: 30_000 });
@@ -70,7 +70,7 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
     const createResponse = page.waitForResponse(
       (res) => res.request().method() === "POST" && res.url().includes("/api/invoices"),
     );
-    await page.click('button[type="submit"]');
+    await page.click('[data-testid="btn-submit-invoice"]');
     await createResponse;
 
     await expect(page).toHaveURL("/invoices", { timeout: 10_000 });
@@ -106,24 +106,24 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
     await page.goto("/settings");
     await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
 
-    await page.fill('input[id="ragioneSociale"]', "Mario Rossi Freelance");
-    await page.fill('input[id="partitaIva"]', "12345678901");
-    await page.fill('input[id="codiceFiscale"]', "RSSMRA85M01H501Z");
-    await page.fill('input[id="codiceAteco"]', "62.01.00");
-    await page.fill('input[id="indirizzo"]', "Via Roma 10");
-    await page.fill('input[id="cap"]', "00100");
-    await page.fill('input[id="citta"]', "Roma");
-    await page.fill('input[id="provincia"]', "RM");
+    await page.fill('[data-testid="input-ragione-sociale"]', "Mario Rossi Freelance");
+    await page.fill('[data-testid="input-partita-iva"]', "12345678901");
+    await page.fill('[data-testid="input-codice-fiscale"]', "RSSMRA85M01H501Z");
+    await page.fill('[data-testid="input-codice-ateco"]', "62.01.00");
+    await page.fill('[data-testid="input-indirizzo"]', "Via Roma 10");
+    await page.fill('[data-testid="input-cap"]', "00100");
+    await page.fill('[data-testid="input-citta"]', "Roma");
+    await page.fill('[data-testid="input-provincia"]', "RM");
 
     const saveResponse = page.waitForResponse(
       (res) => res.url().includes("/api/profile") && res.status() < 400,
     );
-    await page.click('button[type="submit"]');
+    await page.click('[data-testid="btn-submit-profile"]');
     await saveResponse;
 
     // After save, the form should still be filled (profile persisted)
-    await expect(page.locator('input[id="ragioneSociale"]')).toHaveValue("Mario Rossi Freelance");
-    await expect(page.locator('input[id="partitaIva"]')).toHaveValue("12345678901");
+    await expect(page.locator('[data-testid="input-ragione-sociale"]')).toHaveValue("Mario Rossi Freelance");
+    await expect(page.locator('[data-testid="input-partita-iva"]')).toHaveValue("12345678901");
   });
 
   test("should validate invoice successfully after profile is set", async ({ page }) => {
