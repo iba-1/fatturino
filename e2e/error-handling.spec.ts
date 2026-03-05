@@ -8,22 +8,22 @@ test.describe("Error Handling & Notifications", () => {
     await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
 
     // Fill all required profile fields with valid data
-    await page.fill('input[id="ragioneSociale"]', "Test Business");
-    await page.fill('input[id="partitaIva"]', "12345678901");
-    await page.fill('input[id="codiceFiscale"]', "TSTBSN80A01H501Z");
-    await page.fill('input[id="codiceAteco"]', "62.01.00");
-    await page.fill('input[id="indirizzo"]', "Via Test 1");
-    await page.fill('input[id="cap"]', "00100");
-    await page.fill('input[id="citta"]', "Roma");
-    await page.fill('input[id="provincia"]', "RM");
-    await page.fill('input[id="annoInizioAttivita"]', "2020");
+    await page.fill('[data-testid="input-ragione-sociale"]', "Test Business");
+    await page.fill('[data-testid="input-partita-iva"]', "12345678901");
+    await page.fill('[data-testid="input-codice-fiscale"]', "TSTBSN80A01H501Z");
+    await page.fill('[data-testid="input-codice-ateco"]', "62.01.00");
+    await page.fill('[data-testid="input-indirizzo"]', "Via Test 1");
+    await page.fill('[data-testid="input-cap"]', "00100");
+    await page.fill('[data-testid="input-citta"]', "Roma");
+    await page.fill('[data-testid="input-provincia"]', "RM");
+    await page.fill('[data-testid="input-anno-inizio-attivita"]', "2020");
 
     // Submit the form
-    await page.click('button[type="submit"]');
+    await page.click('[data-testid="btn-submit-profile"]');
 
     // Toast notification should appear on success
     await expect(
-      page.locator('li[data-state="open"]')
+      page.locator('[data-testid="toast"]')
     ).toBeVisible({ timeout: 5_000 });
   });
 
@@ -35,27 +35,27 @@ test.describe("Error Handling & Notifications", () => {
     await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
 
     // Fill required fields but with an INVALID codiceFiscale
-    await page.fill('input[id="ragioneSociale"]', "Test Business");
-    await page.fill('input[id="partitaIva"]', "12345678901");
-    await page.fill('input[id="codiceFiscale"]', "INVALID");
-    await page.fill('input[id="codiceAteco"]', "62.01.00");
-    await page.fill('input[id="indirizzo"]', "Via Test 1");
-    await page.fill('input[id="cap"]', "00100");
-    await page.fill('input[id="citta"]', "Roma");
-    await page.fill('input[id="provincia"]', "RM");
-    await page.fill('input[id="annoInizioAttivita"]', "2020");
+    await page.fill('[data-testid="input-ragione-sociale"]', "Test Business");
+    await page.fill('[data-testid="input-partita-iva"]', "12345678901");
+    await page.fill('[data-testid="input-codice-fiscale"]', "INVALID");
+    await page.fill('[data-testid="input-codice-ateco"]', "62.01.00");
+    await page.fill('[data-testid="input-indirizzo"]', "Via Test 1");
+    await page.fill('[data-testid="input-cap"]', "00100");
+    await page.fill('[data-testid="input-citta"]', "Roma");
+    await page.fill('[data-testid="input-provincia"]', "RM");
+    await page.fill('[data-testid="input-anno-inizio-attivita"]', "2020");
 
     // Submit the form
-    await page.click('button[type="submit"]');
+    await page.click('[data-testid="btn-submit-profile"]');
 
     // Destructive toast should appear
     await expect(
-      page.locator('li[data-state="open"]')
+      page.locator('[data-testid="toast"]')
     ).toBeVisible({ timeout: 5_000 });
 
     // Inline validation error should appear next to the invalid field
     await expect(
-      page.locator("form .text-destructive")
+      page.locator('[data-testid="field-error"]')
     ).toBeVisible({ timeout: 5_000 });
   });
 
@@ -68,20 +68,20 @@ test.describe("Error Handling & Notifications", () => {
     await expect(page.locator('[role="dialog"]')).toBeVisible();
 
     // Fill client form
-    await page.fill('input[id="ragioneSociale"]', "Toast Test Srl");
-    await page.fill('input[id="codiceFiscale"]', "99999999999");
-    await page.fill('input[id="partitaIva"]', "99999999999");
-    await page.fill('input[id="indirizzo"]', "Via Test 1");
-    await page.fill('input[id="cap"]', "00100");
-    await page.fill('input[id="citta"]', "Roma");
-    await page.fill('input[id="provincia"]', "RM");
+    await page.fill('[data-testid="input-ragione-sociale"]', "Toast Test Srl");
+    await page.fill('[data-testid="input-codice-fiscale"]', "99999999999");
+    await page.fill('[data-testid="input-partita-iva"]', "99999999999");
+    await page.fill('[data-testid="input-indirizzo"]', "Via Test 1");
+    await page.fill('[data-testid="input-cap"]', "00100");
+    await page.fill('[data-testid="input-citta"]', "Roma");
+    await page.fill('[data-testid="input-provincia"]', "RM");
 
     // Submit
-    await page.click('[role="dialog"] button[type="submit"]');
+    await page.click('[data-testid="btn-submit-client"]');
 
     // Toast notification should appear on success
     await expect(
-      page.locator('li[data-state="open"]')
+      page.locator('[data-testid="toast"]')
     ).toBeVisible({ timeout: 5_000 });
   });
 
@@ -144,7 +144,7 @@ test.describe("Error Handling & Notifications", () => {
 
     // Toast should appear with error
     await expect(
-      page.locator('li[data-state="open"]')
+      page.locator('[data-testid="toast"]')
     ).toBeVisible({ timeout: 5_000 });
   });
 });
