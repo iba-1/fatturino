@@ -23,6 +23,7 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY packages/ ./packages/
 COPY apps/ ./apps/
+COPY docs/ ./docs/
 
 # Build everything (turbo handles dependency order)
 RUN pnpm build
