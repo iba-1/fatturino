@@ -162,6 +162,20 @@ jobs:
       - name: Push DB schema
         run: pnpm db:push
 
+      - name: Start dev servers
+        run: |
+          pnpm --filter @fatturino/api dev &
+          pnpm --filter @fatturino/web dev &
+          # Wait for both servers to be ready
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000/health > /dev/null 2>&1 && break
+            sleep 1
+          done
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:5173 > /dev/null 2>&1 && break
+            sleep 1
+          done
+
       - name: Run E2E tests (parallel-safe — 2 workers)
         run: |
           pnpm exec playwright test \
