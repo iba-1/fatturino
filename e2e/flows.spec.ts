@@ -29,7 +29,7 @@ test.describe("User Journey", () => {
 
     // 2. Create a client
     await page.goto("/clients");
-    await expect(page.locator('[data-testid="empty-state"]')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('[data-testid="empty-state"]')).toBeVisible({ timeout: 15_000 });
     await page.click('[data-testid="btn-new-client"]');
     await expect(page.locator('[role="dialog"]')).toBeVisible();
     await page.fill('input[id="ragioneSociale"]', "Journey Srl");

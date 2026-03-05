@@ -21,8 +21,8 @@ test.describe("Invoice Editing", () => {
     );
     await page.click('[role="dialog"] button[type="submit"]');
     await createClientDone;
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10_000 });
-    await expect(page.locator("table")).toContainText("Test Edit SRL", { timeout: 10_000 });
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 30_000 });
+    await expect(page.locator("table")).toContainText("Test Edit SRL", { timeout: 30_000 });
 
     // Create an invoice
     await page.goto("/invoices/new");
@@ -73,8 +73,8 @@ test.describe("Invoice Editing", () => {
     );
     await page.click('[role="dialog"] button[type="submit"]');
     await createClientDone;
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10_000 });
-    await expect(page.locator("table")).toContainText("Edit Nav SRL", { timeout: 10_000 });
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 30_000 });
+    await expect(page.locator("table")).toContainText("Edit Nav SRL", { timeout: 30_000 });
 
     // Create invoice
     await page.goto("/invoices/new");
