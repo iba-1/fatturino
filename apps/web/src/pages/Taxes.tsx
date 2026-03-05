@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useAppNavigate } from "@/hooks/use-app-navigate";
 import { Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +34,7 @@ function statusBadgeVariant(status: TaxPaymentStatus["status"]) {
 
 export function Taxes() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const currentYear = new Date().getFullYear();
   const [anno, setAnno] = useState(currentYear);
 
