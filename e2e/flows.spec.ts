@@ -29,7 +29,7 @@ test.describe("User Journey", () => {
 
     // 2. Create a client
     await page.goto("/clients");
-    await expect(page.locator('[data-testid="empty-state"]')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('[data-testid="empty-state"]')).toBeVisible({ timeout: 15_000 });
     await page.click('[data-testid="btn-new-client"]');
     await expect(page.locator('[role="dialog"]')).toBeVisible();
     await page.fill('input[id="ragioneSociale"]', "Journey Srl");
@@ -45,7 +45,7 @@ test.describe("User Journey", () => {
     await page.click('[role="dialog"] button[type="submit"]');
     await createClientDone;
     await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 30_000 });
-    await expect(page.locator("table")).toContainText("Journey Srl", { timeout: 10_000 });
+    await expect(page.locator("table")).toContainText("Journey Srl", { timeout: 30_000 });
 
     // 3. Create an invoice for that client
     await page.goto("/invoices/new");

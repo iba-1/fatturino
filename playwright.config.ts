@@ -25,13 +25,13 @@ export default defineConfig({
     {
       command: "pnpm --filter @fatturino/api dev",
       port: 3000,
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
       timeout: 15_000,
     },
     {
       command: "pnpm --filter @fatturino/web dev",
       port: 5173,
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
       timeout: 15_000,
     },
   ],

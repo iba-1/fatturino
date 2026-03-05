@@ -165,11 +165,59 @@ jobs:
       - name: Push DB schema
         run: pnpm db:push
 
-      - name: Run E2E tests
-        run: pnpm exec playwright test --reporter=list,json
+      - name: Start dev servers
+        run: |
+          pnpm --filter @fatturino/api dev &
+          pnpm --filter @fatturino/web dev &
+          # Wait for both servers to be ready
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000/health > /dev/null 2>&1 && break
+            sleep 1
+          done
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:5173 > /dev/null 2>&1 && break
+            sleep 1
+          done
+
+      - name: Run E2E tests (parallel-safe — 2 workers)
+        run: |
+          pnpm exec playwright test \
+            e2e/auth.spec.ts e2e/clients.spec.ts e2e/dashboard.spec.ts \
+            e2e/error-handling.spec.ts e2e/settings.spec.ts \
+            --workers=2 --reporter=list,json
         env:
           CI: true
-          PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-results.json
+          PLAYWRIGHT_JSON_OUTPUT_NAME: e2e-parallel-results.json
+
+      - name: Run E2E tests (heavy setup — 1 worker)
+        run: |
+          pnpm exec playwright test \
+            e2e/flows.spec.ts e2e/invoice-edit.spec.ts \
+            e2e/invoice-xml.spec.ts e2e/invoices.spec.ts e2e/taxes.spec.ts \
+            --workers=1 --reporter=list,json
+        env:
+          CI: true
+          PLAYWRIGHT_JSON_OUTPUT_NAME: e2e-serial-results.json
+
+      - name: Merge E2E results
+        if: always()
+        run: |
+          node -e "
+            const fs = require('fs');
+            const files = ['e2e-parallel-results.json', 'e2e-serial-results.json'];
+            const merged = { stats: { expected: 0, unexpected: 0, skipped: 0, duration: 0 }, suites: [] };
+            for (const f of files) {
+              try {
+                const d = JSON.parse(fs.readFileSync(f, 'utf8'));
+                merged.stats.expected += d.stats?.expected ?? 0;
+                merged.stats.unexpected += d.stats?.unexpected ?? 0;
+                merged.stats.skipped += d.stats?.skipped ?? 0;
+                merged.stats.duration += d.stats?.duration ?? 0;
+                merged.suites.push(...(d.suites ?? []));
+              } catch {}
+            }
+            fs.writeFileSync('playwright-results.json', JSON.stringify(merged));
+          "
 
       - name: Upload E2E test results
         if: always()
