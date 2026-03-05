@@ -8,6 +8,7 @@ import { useClient } from "@/hooks/use-clients";
 import { useProfile } from "@/hooks/use-profile";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ArrowLeft, FileCheck, FileDown, FileText, AlertTriangle, Pencil, Send, Trash2, CheckCircle, CircleOff } from "lucide-react";
 import { api } from "@/lib/api";
@@ -34,8 +35,8 @@ export function InvoiceDetail() {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="h-8 w-48 rounded-lg bg-secondary animate-skeleton" />
-        <div className="h-64 rounded-xl bg-secondary animate-skeleton" />
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full rounded-xl" />
       </div>
     );
   }
