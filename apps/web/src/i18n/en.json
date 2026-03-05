@@ -20,6 +20,7 @@
   },
   "nav": {
     "dashboard": "Dashboard",
+    "dashboardV2": "Dashboard v2",
     "invoices": "Invoices",
     "clients": "Clients",
     "taxes": "Taxes",

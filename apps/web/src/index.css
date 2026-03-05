@@ -92,3 +92,129 @@
 .animate-skeleton {
   animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
+
+/* ─── Dashboard V2 — Glass Card Styles ─────────────────────── */
+
+.v2-dashboard {
+  /* override the warm cream bg for the dark card aesthetic */
+}
+
+.v2-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .v2-card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .v2-card-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.v2-glass-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  overflow: hidden;
+  min-height: 160px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.v2-glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* LED dot-matrix style numbers */
+.v2-led-value {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.15),
+    0 0 40px rgba(255, 255, 255, 0.05);
+}
+
+.v2-card-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: 0.01em;
+}
+
+.v2-card-unit {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.125rem;
+}
+
+/* ─ Gradient backgrounds ─ */
+
+.v2-grad-emerald {
+  background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%);
+}
+
+.v2-grad-blue {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 60%, #3b82f6 100%);
+}
+
+.v2-grad-amber {
+  background: linear-gradient(135deg, #78350f 0%, #b45309 50%, #f59e0b 100%);
+}
+
+.v2-grad-orange {
+  background: linear-gradient(135deg, #7c2d12 0%, #c2410c 50%, #ea580c 100%);
+}
+
+.v2-grad-teal {
+  background: linear-gradient(135deg, #134e4a 0%, #0f766e 50%, #14b8a6 100%);
+}
+
+.v2-grad-purple {
+  background: linear-gradient(135deg, #3b0764 0%, #7c3aed 60%, #a78bfa 100%);
+}
+
+.v2-grad-rose {
+  background: linear-gradient(135deg, #4c0519 0%, #be123c 50%, #fb7185 100%);
+}
+
+.v2-grad-sage {
+  background: linear-gradient(135deg, #1a2e05 0%, #3f6212 50%, #65a30d 100%);
+}
+
+.v2-grad-cyan {
+  background: linear-gradient(135deg, #164e63 0%, #0891b2 60%, #22d3ee 100%);
+}
+
+.v2-grad-slate {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+}
+
+/* Glass overlay for depth */
+.v2-glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}

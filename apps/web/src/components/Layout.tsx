@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAppNavigate } from "@/hooks/use-app-navigate";
 import {
   LayoutDashboard,
+  Sparkles,
   FileText,
   Users,
   Calculator,
@@ -16,6 +17,7 @@ import { signOut } from "@/lib/auth";
 
 const navItems = [
   { path: "/", key: "nav.dashboard", icon: LayoutDashboard },
+  { path: "/dashboard-v2", key: "nav.dashboardV2", icon: Sparkles },
   { path: "/invoices", key: "nav.invoices", icon: FileText },
   { path: "/clients", key: "nav.clients", icon: Users },
   { path: "/taxes", key: "nav.taxes", icon: Calculator },

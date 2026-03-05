@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
 import { Dashboard } from "@/pages/Dashboard";
+import { DashboardV2 } from "@/pages/DashboardV2";
 import { Invoices } from "@/pages/Invoices";
 import { InvoiceEditor } from "@/pages/InvoiceEditor";
 import { InvoiceDetail } from "@/pages/InvoiceDetail";
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
           { index: true, element: <Dashboard /> },
+          { path: "dashboard-v2", element: <DashboardV2 /> },
           { path: "invoices", element: <Invoices /> },
           { path: "invoices/new", element: <InvoiceEditor /> },
           { path: "invoices/:id", element: <InvoiceDetail /> },
