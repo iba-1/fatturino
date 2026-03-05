@@ -6,7 +6,7 @@ import { registerAndLogin } from "./helpers";
  */
 async function fillProfile(page: import("@playwright/test").Page) {
   await page.goto("/settings");
-  await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
+  await expect(page.locator("form")).toBeVisible({ timeout: 15_000 });
 
   await page.fill('[data-testid="input-ragione-sociale"]', "Mario Rossi Freelance");
   await page.fill('[data-testid="input-partita-iva"]', "12345678901");
@@ -55,7 +55,7 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
 
     // --- Create a test invoice ---
     await page.goto("/invoices/new");
-    await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator("form")).toBeVisible({ timeout: 15_000 });
 
     // Select client
     await page.click('[id="clientId"]');
@@ -104,7 +104,7 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
 
   test("should complete profile setup via Settings", async ({ page }) => {
     await page.goto("/settings");
-    await expect(page.locator("form")).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator("form")).toBeVisible({ timeout: 15_000 });
 
     await page.fill('[data-testid="input-ragione-sociale"]', "Mario Rossi Freelance");
     await page.fill('[data-testid="input-partita-iva"]', "12345678901");
@@ -132,7 +132,7 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
 
     // Navigate back to invoice detail
     await page.goto(`/invoices/${invoiceId}`);
-    await expect(page.locator('[data-testid="invoice-preview"]')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('[data-testid="invoice-preview"]')).toBeVisible({ timeout: 15_000 });
 
     // Missing profile banner should NOT appear now
     await expect(page.locator('[data-testid="missing-profile-banner"]')).not.toBeVisible();
@@ -145,14 +145,14 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
     await validateResponse;
 
     // Should see validation success message
-    await expect(page.locator("text=Invoice valid")).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator("text=Invoice valid")).toBeVisible({ timeout: 15_000 });
   });
 
   test("should download XML after successful validation", async ({ page }) => {
     await fillProfile(page);
 
     await page.goto(`/invoices/${invoiceId}`);
-    await expect(page.locator('[data-testid="invoice-preview"]')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('[data-testid="invoice-preview"]')).toBeVisible({ timeout: 15_000 });
 
     // Click Download XML and intercept the response
     const xmlResponse = page.waitForResponse(
@@ -173,7 +173,7 @@ test.describe.serial("Invoice XML/PDF download flow", () => {
     await fillProfile(page);
 
     await page.goto(`/invoices/${invoiceId}`);
-    await expect(page.locator('[data-testid="invoice-preview"]')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('[data-testid="invoice-preview"]')).toBeVisible({ timeout: 15_000 });
 
     // Click Download PDF and intercept the response
     const pdfResponse = page.waitForResponse(

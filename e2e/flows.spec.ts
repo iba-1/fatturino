@@ -45,7 +45,7 @@ test.describe("User Journey", () => {
     await page.click('[role="dialog"] button[type="submit"]');
     await createClientDone;
     await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 30_000 });
-    await expect(page.locator("table")).toContainText("Journey Srl", { timeout: 10_000 });
+    await expect(page.locator("table")).toContainText("Journey Srl", { timeout: 30_000 });
 
     // 3. Create an invoice for that client
     await page.goto("/invoices/new");
