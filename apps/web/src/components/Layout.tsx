@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAppNavigate } from "@/hooks/use-app-navigate";
 import {
   LayoutDashboard,
   FileText,
@@ -23,7 +24,7 @@ const navItems = [
 
 export function Layout() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   async function handleLogout() {
@@ -47,6 +48,7 @@ export function Layout() {
             key={path}
             to={path}
             end={path === "/"}
+            viewTransition
             onClick={() => setSidebarOpen(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${

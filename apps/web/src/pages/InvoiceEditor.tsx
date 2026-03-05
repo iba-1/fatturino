@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useAppNavigate } from "@/hooks/use-app-navigate";
 import { InvoiceForm } from "@/components/InvoiceForm";
 import { useClients } from "@/hooks/use-clients";
 import { useInvoice, useCreateInvoice, useUpdateInvoice, type CreateInvoiceData } from "@/hooks/use-invoices";
@@ -11,7 +12,7 @@ import { ArrowLeft, Users } from "lucide-react";
 
 export function InvoiceEditor() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const { id } = useParams<{ id: string }>();
   const isEdit = !!id;
 

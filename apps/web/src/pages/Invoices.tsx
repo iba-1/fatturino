@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useAppNavigate } from "@/hooks/use-app-navigate";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -70,7 +70,7 @@ function statusVariant(stato: string): "default" | "secondary" | "destructive" |
 
 export function Invoices() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const { data: invoices, isLoading, isError } = useInvoices();
   const { data: clients } = useClients();
   const deleteInvoice = useDeleteInvoice();

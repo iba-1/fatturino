@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useAppNavigate } from "@/hooks/use-app-navigate";
 import { ArrowLeft, Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +27,7 @@ const GESTIONE_OPTIONS: { value: GestioneInps; labelKey: string }[] = [
 
 export function TaxSimulator() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const currentYear = new Date().getFullYear();
 
   const { data: profile } = useProfile();

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useAppNavigate } from "@/hooks/use-app-navigate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
@@ -12,7 +12,7 @@ const formatEur = (n: number) =>
 
 export function Dashboard() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const currentYear = new Date().getFullYear();
   const [anno, setAnno] = useState(currentYear);
 

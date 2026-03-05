@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useAppNavigate } from "@/hooks/use-app-navigate";
 import { useState } from "react";
 import { InvoicePreview } from "@/components/InvoicePreview";
 import { useInvoice, useValidateInvoice, useSendInvoice, useDeleteInvoice, useMarkSent, useMarkPaid, useCreateCreditNote } from "@/hooks/use-invoices";
@@ -13,7 +14,7 @@ import { api } from "@/lib/api";
 
 export function InvoiceDetail() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const { id } = useParams<{ id: string }>();
   const { data: invoice, isLoading, isError } = useInvoice(id ?? "");
   const { data: client } = useClient(invoice?.clientId ?? "");
