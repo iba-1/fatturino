@@ -25,4 +25,19 @@ describe("buildTrustedOrigins", () => {
     });
     expect(origins).toEqual(["https://a.com", "https://b.com", "https://api.com"]);
   });
+
+  it("strips trailing slashes from origins", () => {
+    const origins = buildTrustedOrigins({
+      CORS_ORIGINS: "https://example.com/",
+      BETTER_AUTH_URL: "https://api.com/",
+    });
+    expect(origins).toEqual(["https://example.com", "https://api.com"]);
+  });
+
+  it("handles space-separated CORS_ORIGINS", () => {
+    const origins = buildTrustedOrigins({
+      CORS_ORIGINS: "http://localhost:5173 https://fatturino.up.railway.app/",
+    });
+    expect(origins).toEqual(["http://localhost:5173", "https://fatturino.up.railway.app"]);
+  });
 });
