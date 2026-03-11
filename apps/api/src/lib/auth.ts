@@ -3,13 +3,20 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "../db/index.js";
 import * as schema from "../db/schema.js";
 
+function parseOrigins(raw: string): string[] {
+  return raw
+    .split(/[,\s]+/)
+    .map((o) => o.replace(/\/+$/, ""))
+    .filter(Boolean);
+}
+
 export function buildTrustedOrigins(env: {
   CORS_ORIGINS?: string;
   BETTER_AUTH_URL?: string;
 }): string[] {
   return [
-    ...(env.CORS_ORIGINS || "http://localhost:5173").split(","),
-    ...(env.BETTER_AUTH_URL ? [env.BETTER_AUTH_URL] : []),
+    ...parseOrigins(env.CORS_ORIGINS || "http://localhost:5173"),
+    ...(env.BETTER_AUTH_URL ? [env.BETTER_AUTH_URL.replace(/\/+$/, "")] : []),
   ];
 }
 
