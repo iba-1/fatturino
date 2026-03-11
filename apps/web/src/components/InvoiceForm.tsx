@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -151,9 +152,19 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
               ))}
             </SelectContent>
           </Select>
-          {(errors.clientId || serverErrors.clientId) && (
-            <p className="text-sm text-destructive">{errors.clientId || serverErrors.clientId}</p>
-          )}
+          <AnimatePresence>
+            {(errors.clientId || serverErrors.clientId) && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {errors.clientId || serverErrors.clientId}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
         <div className="space-y-2">
           <Label htmlFor="dataEmissione">{t("invoices.date")}</Label>
@@ -163,9 +174,19 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
             value={dataEmissione}
             onChange={(e) => setDataEmissione(e.target.value)}
           />
-          {(errors.dataEmissione || serverErrors.dataEmissione) && (
-            <p className="text-sm text-destructive">{errors.dataEmissione || serverErrors.dataEmissione}</p>
-          )}
+          <AnimatePresence>
+            {(errors.dataEmissione || serverErrors.dataEmissione) && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {errors.dataEmissione || serverErrors.dataEmissione}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -182,9 +203,19 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
               <SelectItem value="TD24">TD24 — Fattura differita</SelectItem>
             </SelectContent>
           </Select>
-          {serverErrors.tipoDocumento && (
-            <p className="text-sm text-destructive">{serverErrors.tipoDocumento}</p>
-          )}
+          <AnimatePresence>
+            {serverErrors.tipoDocumento && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {serverErrors.tipoDocumento}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
         <div className="space-y-2">
           <Label htmlFor="causale">Causale</Label>
@@ -194,9 +225,19 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
             onChange={(e) => setCausale(e.target.value)}
             placeholder="Descrizione della prestazione"
           />
-          {serverErrors.causale && (
-            <p className="text-sm text-destructive">{serverErrors.causale}</p>
-          )}
+          <AnimatePresence>
+            {serverErrors.causale && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {serverErrors.causale}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -212,9 +253,19 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
           </Button>
         </div>
 
-        {(errors.lines || serverErrors.lines) && (
-          <p className="text-sm text-destructive mb-2">{errors.lines || serverErrors.lines}</p>
-        )}
+        <AnimatePresence>
+          {(errors.lines || serverErrors.lines) && (
+            <motion.p
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              className="text-sm text-destructive mb-2"
+            >
+              {errors.lines || serverErrors.lines}
+            </motion.p>
+          )}
+        </AnimatePresence>
 
         <div className="space-y-3">
           {lines.map((line, index) => (
@@ -326,8 +377,8 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
         <Button type="button" variant="outline" onClick={onCancel}>
           {t("common.cancel")}
         </Button>
-        <Button type="submit" disabled={isLoading} data-testid="btn-submit-invoice">
-          {isLoading ? t("common.loading") : initialData ? t("common.save") : t("common.create")}
+        <Button type="submit" loading={isLoading} data-testid="btn-submit-invoice">
+          {initialData ? t("common.save") : t("common.create")}
         </Button>
       </div>
     </form>

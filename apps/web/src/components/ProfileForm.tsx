@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -99,9 +100,20 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 onChange={(e) => setRagioneSociale(e.target.value)}
                 required
               />
-              {serverErrors.ragioneSociale && (
-                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.ragioneSociale}</p>
-              )}
+              <AnimatePresence>
+                {serverErrors.ragioneSociale && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-destructive"
+                    data-testid="field-error"
+                  >
+                    {serverErrors.ragioneSociale}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
             <div className="space-y-2">
               <Label htmlFor="partitaIva">{t("settings.vatNumber")}</Label>
@@ -113,9 +125,20 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 maxLength={11}
                 required
               />
-              {serverErrors.partitaIva && (
-                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.partitaIva}</p>
-              )}
+              <AnimatePresence>
+                {serverErrors.partitaIva && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-destructive"
+                    data-testid="field-error"
+                  >
+                    {serverErrors.partitaIva}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -129,9 +152,20 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 maxLength={16}
                 required
               />
-              {serverErrors.codiceFiscale && (
-                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.codiceFiscale}</p>
-              )}
+              <AnimatePresence>
+                {serverErrors.codiceFiscale && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-destructive"
+                    data-testid="field-error"
+                  >
+                    {serverErrors.codiceFiscale}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
             <div className="space-y-2">
               <Label htmlFor="codiceAteco">{t("settings.atecoCode")}</Label>
@@ -142,9 +176,20 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 onChange={(e) => setCodiceAteco(e.target.value)}
                 required
               />
-              {serverErrors.codiceAteco && (
-                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.codiceAteco}</p>
-              )}
+              <AnimatePresence>
+                {serverErrors.codiceAteco && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-destructive"
+                    data-testid="field-error"
+                  >
+                    {serverErrors.codiceAteco}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
           </div>
           <div className="space-y-2">
@@ -156,9 +201,20 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
               onChange={(e) => setIndirizzo(e.target.value)}
               required
             />
-            {serverErrors.indirizzo && (
-              <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.indirizzo}</p>
-            )}
+            <AnimatePresence>
+              {serverErrors.indirizzo && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-sm text-destructive"
+                  data-testid="field-error"
+                >
+                  {serverErrors.indirizzo}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
@@ -171,9 +227,20 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 maxLength={5}
                 required
               />
-              {serverErrors.cap && (
-                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.cap}</p>
-              )}
+              <AnimatePresence>
+                {serverErrors.cap && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-destructive"
+                    data-testid="field-error"
+                  >
+                    {serverErrors.cap}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
             <div className="space-y-2">
               <Label htmlFor="citta">{t("settings.city")}</Label>
@@ -184,9 +251,20 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 onChange={(e) => setCitta(e.target.value)}
                 required
               />
-              {serverErrors.citta && (
-                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.citta}</p>
-              )}
+              <AnimatePresence>
+                {serverErrors.citta && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-destructive"
+                    data-testid="field-error"
+                  >
+                    {serverErrors.citta}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
             <div className="space-y-2">
               <Label htmlFor="provincia">{t("settings.province")}</Label>
@@ -198,9 +276,20 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 maxLength={2}
                 required
               />
-              {serverErrors.provincia && (
-                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.provincia}</p>
-              )}
+              <AnimatePresence>
+                {serverErrors.provincia && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-destructive"
+                    data-testid="field-error"
+                  >
+                    {serverErrors.provincia}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -213,9 +302,20 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 onChange={(e) => setPec(e.target.value)}
                 placeholder="email@pec.it"
               />
-              {serverErrors.pec && (
-                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.pec}</p>
-              )}
+              <AnimatePresence>
+                {serverErrors.pec && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-destructive"
+                    data-testid="field-error"
+                  >
+                    {serverErrors.pec}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
             <div className="space-y-2">
               <Label htmlFor="codiceSdi">{t("settings.sdiCode")}</Label>
@@ -226,9 +326,20 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 maxLength={7}
                 placeholder="0000000"
               />
-              {serverErrors.codiceSdi && (
-                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.codiceSdi}</p>
-              )}
+              <AnimatePresence>
+                {serverErrors.codiceSdi && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-destructive"
+                    data-testid="field-error"
+                  >
+                    {serverErrors.codiceSdi}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -239,9 +350,20 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 value={iban}
                 onChange={(e) => setIban(e.target.value)}
               />
-              {serverErrors.iban && (
-                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.iban}</p>
-              )}
+              <AnimatePresence>
+                {serverErrors.iban && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-destructive"
+                    data-testid="field-error"
+                  >
+                    {serverErrors.iban}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
             <div className="space-y-2">
               <Label htmlFor="annoInizioAttivita">
@@ -257,9 +379,20 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                 }
                 required
               />
-              {serverErrors.annoInizioAttivita && (
-                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.annoInizioAttivita}</p>
-              )}
+              <AnimatePresence>
+                {serverErrors.annoInizioAttivita && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-destructive"
+                    data-testid="field-error"
+                  >
+                    {serverErrors.annoInizioAttivita}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
             <div className="space-y-2">
               <Label htmlFor="gestioneInps">{t("settings.inpsManagement")}</Label>
@@ -273,13 +406,24 @@ export function ProfileForm({ profile, onSubmit, isLoading, serverErrors = {} }:
                   <SelectItem value="commercianti">{t("settings.gestCommercianti")}</SelectItem>
                 </SelectContent>
               </Select>
-              {serverErrors.gestioneInps && (
-                <p className="text-sm text-destructive" data-testid="field-error">{serverErrors.gestioneInps}</p>
-              )}
+              <AnimatePresence>
+                {serverErrors.gestioneInps && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-destructive"
+                    data-testid="field-error"
+                  >
+                    {serverErrors.gestioneInps}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
           </div>
-          <Button type="submit" disabled={isLoading} data-testid="btn-submit-profile">
-            {isLoading ? t("common.loading") : t("common.save")}
+          <Button type="submit" loading={isLoading} data-testid="btn-submit-profile">
+            {t("common.save")}
           </Button>
         </CardContent>
       </Card>

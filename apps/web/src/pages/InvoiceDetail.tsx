@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ArrowLeft, FileCheck, FileDown, FileText, AlertTriangle, Pencil, Send, Trash2, CheckCircle, CircleOff } from "lucide-react";
+import { motion } from "framer-motion";
+import { fadeSlideUp } from "@/lib/motion";
 import { api } from "@/lib/api";
 
 export function InvoiceDetail() {
@@ -114,7 +116,7 @@ export function InvoiceDetail() {
       </div>
 
       {/* Action bar */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <motion.div variants={fadeSlideUp} initial="initial" animate="animate" className="flex flex-wrap gap-2 mb-4">
         {invoice.stato === "bozza" && (
           <Button variant="outline" onClick={() => navigate(`/invoices/${id}/edit`)} data-testid="btn-edit-invoice">
             <Pencil className="h-4 w-4 mr-2" />
@@ -125,17 +127,18 @@ export function InvoiceDetail() {
           <Button
             variant="default"
             onClick={() => setShowSendConfirm(true)}
-            disabled={!hasProfile || sendInvoice.isPending}
+            disabled={!hasProfile}
+            loading={sendInvoice.isPending}
           >
             <Send className="h-4 w-4 mr-2" />
-            {sendInvoice.isPending ? t("common.loading") : t("invoices.send")}
+            {t("invoices.send")}
           </Button>
         )}
         {invoice.stato === "bozza" && (
           <Button
             variant="outline"
             onClick={() => setShowMarkSentConfirm(true)}
-            disabled={markSentMutation.isPending}
+            loading={markSentMutation.isPending}
           >
             <Send className="h-4 w-4 mr-2" />
             {t("invoices.markSent")}
@@ -144,7 +147,7 @@ export function InvoiceDetail() {
         <Button
           variant="outline"
           onClick={() => markPaidMutation.mutate(id!)}
-          disabled={markPaidMutation.isPending}
+          loading={markPaidMutation.isPending}
         >
           {invoice.pagata ? (
             <>
@@ -181,13 +184,13 @@ export function InvoiceDetail() {
                 setShowCreditNoteDialog(true);
               }
             }}
-            disabled={deleteInvoice.isPending}
+            loading={deleteInvoice.isPending}
           >
             <Trash2 className="h-4 w-4 mr-2" />
             {t("common.delete")}
           </Button>
         )}
-      </div>
+      </motion.div>
 
       {/* Missing profile banner */}
       {!hasProfile && (
@@ -226,7 +229,9 @@ export function InvoiceDetail() {
         </div>
       )}
 
-      <InvoicePreview invoice={invoice} client={client} />
+      <motion.div variants={fadeSlideUp} initial="initial" animate="animate">
+        <InvoicePreview invoice={invoice} client={client} />
+      </motion.div>
 
       {/* Send via email confirmation */}
       <AlertDialog open={showSendConfirm} onOpenChange={setShowSendConfirm}>
