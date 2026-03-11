@@ -11,10 +11,11 @@ import { sdiRoutes } from "./routes/sdi.js";
 import { profileRoutes } from "./routes/profile.js";
 import { dashboardRoutes } from "./routes/dashboard.js";
 import { staticPlugin } from "./plugins/static.js";
+import { buildTrustedOrigins } from "./lib/auth.js";
 
 const PORT = parseInt(process.env.PORT || "3000", 10);
 const HOST = process.env.HOST || "0.0.0.0";
-const CORS_ORIGINS = (process.env.CORS_ORIGINS || "http://localhost:5173").split(",");
+const CORS_ORIGINS = buildTrustedOrigins(process.env);
 
 export async function buildApp() {
   const app = Fastify({
