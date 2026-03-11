@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppNavigate } from "@/hooks/use-app-navigate";
+import { motion } from "framer-motion";
+import { staggerContainer, staggerItem, fadeSlideUp } from "@/lib/motion";
 import { ArrowLeft, Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -228,8 +230,15 @@ export function TaxSimulator() {
       {/* Results: 3 cards */}
       {result && (
         <>
-          <div className="grid gap-4 md:grid-cols-3" data-testid="simulator-results">
+          <motion.div
+            className="grid gap-4 md:grid-cols-3"
+            variants={staggerContainer}
+            initial="initial"
+            animate="animate"
+            data-testid="simulator-results"
+          >
             {/* Imposta Sostitutiva card */}
+            <motion.div variants={staggerItem}>
             <Card className="border-l-4 border-l-emerald-400">
               <CardHeader>
                 <CardTitle className="text-base">
@@ -284,8 +293,10 @@ export function TaxSimulator() {
                 </div>
               </CardContent>
             </Card>
+            </motion.div>
 
             {/* INPS Contributions card */}
+            <motion.div variants={staggerItem}>
             <Card className="border-l-4 border-l-blue-400">
               <CardHeader>
                 <CardTitle className="text-base">
@@ -329,8 +340,10 @@ export function TaxSimulator() {
                 </div>
               </CardContent>
             </Card>
+            </motion.div>
 
             {/* Net Position card */}
+            <motion.div variants={staggerItem}>
             <Card className="border-l-4 border-l-amber-400">
               <CardHeader>
                 <CardTitle className="text-base">
@@ -383,7 +396,8 @@ export function TaxSimulator() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* F24 Download buttons */}
           <Card>

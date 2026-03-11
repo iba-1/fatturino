@@ -48,6 +48,8 @@ import {
   CircleOff,
 } from "lucide-react";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { fadeSlideUp } from "@/lib/motion";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function statusVariant(stato: string): "default" | "secondary" | "destructive" | "outline" | "warning" | "success" {
@@ -134,111 +136,134 @@ export function Invoices() {
       </div>
 
       <div className="mt-6">
-        {isLoading ? (
-          <InvoicesSkeleton />
-        ) : !invoices || invoices.length === 0 ? (
-          <div className="text-center py-16" data-testid="empty-state">
-            <FileText className="mx-auto h-12 w-12 text-muted-foreground/50" />
-            <h3 className="mt-4 text-lg font-medium">{t("invoices.title")}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{t("invoices.new")}</p>
-            <Button className="mt-4" onClick={() => navigate("/invoices/new")}>
-              <Plus className="mr-2 h-4 w-4" />
-              {t("invoices.new")}
-            </Button>
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("invoices.number")}</TableHead>
-                <TableHead>{t("invoices.date")}</TableHead>
-                <TableHead>{t("invoices.client")}</TableHead>
-                <TableHead>{t("invoices.amount")}</TableHead>
-                <TableHead>{t("invoices.status")}</TableHead>
-                <TableHead className="text-right">{t("common.actions")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.map((inv) => (
-                <TableRow key={inv.id}>
-                  <TableCell className="font-medium">
-                    {inv.numeroFattura}/{inv.anno}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(inv.dataEmissione).toLocaleDateString("it-IT")}
-                  </TableCell>
-                  <TableCell>{getClientName(inv.clientId)}</TableCell>
-                  <TableCell className="font-mono">
-                    {parseFloat(inv.totaleDocumento).toFixed(2)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1.5">
-                      <Badge variant={statusVariant(inv.stato)}>
-                        {getStatusLabel(inv.stato)}
-                      </Badge>
-                      {inv.pagata && (
-                        <Badge variant="success">
-                          {t("invoices.paid")}
-                        </Badge>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" data-testid="actions-trigger">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">{t("common.actions")}</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => navigate(`/invoices/${inv.id}`)}>
-                          <Eye className="h-4 w-4" />
-                          {t("common.view")}
-                        </DropdownMenuItem>
-                        {inv.stato === "bozza" && (
-                          <DropdownMenuItem onClick={() => navigate(`/invoices/${inv.id}/edit`)}>
-                            <Pencil className="h-4 w-4" />
-                            {t("common.edit")}
-                          </DropdownMenuItem>
-                        )}
-                        {inv.stato === "bozza" && (
-                          <DropdownMenuItem onClick={() => setMarkSentInvoice(inv)}>
-                            <Send className="h-4 w-4" />
-                            {t("invoices.markSent")}
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem onClick={() => markPaid.mutate(inv.id)}>
-                          {inv.pagata ? (
-                            <>
-                              <CircleOff className="h-4 w-4" />
-                              {t("invoices.markUnpaid")}
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle className="h-4 w-4" />
-                              {t("invoices.markPaid")}
-                            </>
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <motion.div
+              key="skeleton"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <InvoicesSkeleton />
+            </motion.div>
+          ) : !invoices || invoices.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="text-center py-16"
+              data-testid="empty-state"
+            >
+              <FileText className="mx-auto h-12 w-12 text-muted-foreground/50" />
+              <h3 className="mt-4 text-lg font-medium">{t("invoices.title")}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{t("invoices.new")}</p>
+              <Button className="mt-4" onClick={() => navigate("/invoices/new")}>
+                <Plus className="mr-2 h-4 w-4" />
+                {t("invoices.new")}
+              </Button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="content"
+              variants={fadeSlideUp}
+              initial="initial"
+              animate="animate"
+            >
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("invoices.number")}</TableHead>
+                    <TableHead>{t("invoices.date")}</TableHead>
+                    <TableHead>{t("invoices.client")}</TableHead>
+                    <TableHead>{t("invoices.amount")}</TableHead>
+                    <TableHead>{t("invoices.status")}</TableHead>
+                    <TableHead className="text-right">{t("common.actions")}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {invoices.map((inv) => (
+                    <TableRow key={inv.id}>
+                      <TableCell className="font-medium">
+                        {inv.numeroFattura}/{inv.anno}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(inv.dataEmissione).toLocaleDateString("it-IT")}
+                      </TableCell>
+                      <TableCell>{getClientName(inv.clientId)}</TableCell>
+                      <TableCell className="font-mono">
+                        {parseFloat(inv.totaleDocumento).toFixed(2)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant={statusVariant(inv.stato)}>
+                            {getStatusLabel(inv.stato)}
+                          </Badge>
+                          {inv.pagata && (
+                            <Badge variant="success">
+                              {t("invoices.paid")}
+                            </Badge>
                           )}
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        {inv.stato !== "stornata" && !inv.creditNoteId && (
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => setDeletingInvoice(inv)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                            {t("common.delete")}
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" data-testid="actions-trigger">
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">{t("common.actions")}</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => navigate(`/invoices/${inv.id}`)}>
+                              <Eye className="h-4 w-4" />
+                              {t("common.view")}
+                            </DropdownMenuItem>
+                            {inv.stato === "bozza" && (
+                              <DropdownMenuItem onClick={() => navigate(`/invoices/${inv.id}/edit`)}>
+                                <Pencil className="h-4 w-4" />
+                                {t("common.edit")}
+                              </DropdownMenuItem>
+                            )}
+                            {inv.stato === "bozza" && (
+                              <DropdownMenuItem onClick={() => setMarkSentInvoice(inv)}>
+                                <Send className="h-4 w-4" />
+                                {t("invoices.markSent")}
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem onClick={() => markPaid.mutate(inv.id)}>
+                              {inv.pagata ? (
+                                <>
+                                  <CircleOff className="h-4 w-4" />
+                                  {t("invoices.markUnpaid")}
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle className="h-4 w-4" />
+                                  {t("invoices.markPaid")}
+                                </>
+                              )}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {inv.stato !== "stornata" && !inv.creditNoteId && (
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => setDeletingInvoice(inv)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                {t("common.delete")}
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Delete Confirmation — draft invoices */}

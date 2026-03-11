@@ -38,6 +38,8 @@ import {
 } from "@/hooks/use-clients";
 import { parseApiFieldErrors } from "@/lib/api";
 import { Pencil, Trash2, Plus, Users } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { fadeSlideUp } from "@/lib/motion";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function Clients() {
@@ -103,73 +105,96 @@ export function Clients() {
       </div>
 
       <div className="mt-6">
-        {isLoading ? (
-          <ClientsSkeleton />
-        ) : !clients || clients.length === 0 ? (
-          <div className="text-center py-16" data-testid="empty-state">
-            <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
-            <h3 className="mt-4 text-lg font-medium">{t("clients.noClients")}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{t("clients.createFirst")}</p>
-            <Button className="mt-4" onClick={() => setFormOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              {t("clients.new")}
-            </Button>
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("clients.businessName")}</TableHead>
-                <TableHead>{t("clients.type")}</TableHead>
-                <TableHead>{t("clients.taxCode")}</TableHead>
-                <TableHead>{t("clients.vatNumber")}</TableHead>
-                <TableHead>{t("clients.city")}</TableHead>
-                <TableHead className="text-right">{t("common.actions")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {clients.map((client) => (
-                <TableRow key={client.id}>
-                  <TableCell className="font-medium">
-                    {getClientDisplayName(client)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">
-                      {client.tipo === "persona_fisica"
-                        ? t("clients.individual")
-                        : t("clients.business")}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{client.codiceFiscale}</TableCell>
-                  <TableCell>{client.partitaIva || "—"}</TableCell>
-                  <TableCell>{client.citta}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setEditingClient(client)}
-                        aria-label={t("common.edit")}
-                        data-testid="btn-edit-client"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setDeletingClient(client)}
-                        aria-label={t("common.delete")}
-                        data-testid="btn-delete-client"
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <motion.div
+              key="skeleton"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <ClientsSkeleton />
+            </motion.div>
+          ) : !clients || clients.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="text-center py-16"
+              data-testid="empty-state"
+            >
+              <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
+              <h3 className="mt-4 text-lg font-medium">{t("clients.noClients")}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{t("clients.createFirst")}</p>
+              <Button className="mt-4" onClick={() => setFormOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                {t("clients.new")}
+              </Button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="content"
+              variants={fadeSlideUp}
+              initial="initial"
+              animate="animate"
+            >
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("clients.businessName")}</TableHead>
+                    <TableHead>{t("clients.type")}</TableHead>
+                    <TableHead>{t("clients.taxCode")}</TableHead>
+                    <TableHead>{t("clients.vatNumber")}</TableHead>
+                    <TableHead>{t("clients.city")}</TableHead>
+                    <TableHead className="text-right">{t("common.actions")}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {clients.map((client) => (
+                    <TableRow key={client.id}>
+                      <TableCell className="font-medium">
+                        {getClientDisplayName(client)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">
+                          {client.tipo === "persona_fisica"
+                            ? t("clients.individual")
+                            : t("clients.business")}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{client.codiceFiscale}</TableCell>
+                      <TableCell>{client.partitaIva || "—"}</TableCell>
+                      <TableCell>{client.citta}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setEditingClient(client)}
+                            aria-label={t("common.edit")}
+                            data-testid="btn-edit-client"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setDeletingClient(client)}
+                            aria-label={t("common.delete")}
+                            data-testid="btn-delete-client"
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Create Dialog */}
