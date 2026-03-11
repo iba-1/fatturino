@@ -24,6 +24,12 @@ export function Toaster() {
             </div>
             {action}
             <ToastClose />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 overflow-hidden rounded-b-xl">
+              <div
+                className="h-full bg-current opacity-20 animate-toast-progress"
+                style={{ animationDuration: "5000ms" }}
+              />
+            </div>
           </Toast>
         );
       })}

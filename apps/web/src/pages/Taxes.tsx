@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useAppNavigate } from "@/hooks/use-app-navigate";
+import { motion } from "framer-motion";
+import { staggerContainer, staggerItem, fadeSlideUp } from "@/lib/motion";
 import { Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -93,8 +95,14 @@ export function Taxes() {
 
           {/* Tax breakdown cards — only if profile is complete */}
           {!data.profileIncomplete && data.tax && data.inps && (
-            <div className="grid gap-4 md:grid-cols-3">
+            <motion.div
+              className="grid gap-4 md:grid-cols-3"
+              variants={staggerContainer}
+              initial="initial"
+              animate="animate"
+            >
               {/* Imposta Sostitutiva card */}
+              <motion.div variants={staggerItem}>
               <Card className="border-l-4 border-l-emerald-400">
                 <CardHeader>
                   <CardTitle className="text-base">{t("dashboard.impostaSostitutiva")}</CardTitle>
@@ -131,8 +139,10 @@ export function Taxes() {
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
 
               {/* INPS Contributions card */}
+              <motion.div variants={staggerItem}>
               <Card className="border-l-4 border-l-blue-400">
                 <CardHeader>
                   <CardTitle className="text-base">{t("dashboard.inpsContributions")}</CardTitle>
@@ -164,8 +174,10 @@ export function Taxes() {
                   </div>
                 </CardContent>
               </Card>
+              </motion.div>
 
               {/* Net Position card */}
+              <motion.div variants={staggerItem}>
               <Card className="border-l-4 border-l-amber-400">
                 <CardHeader>
                   <CardTitle className="text-base">{t("taxes.netPosition")}</CardTitle>
@@ -195,11 +207,13 @@ export function Taxes() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+              </motion.div>
+            </motion.div>
           )}
 
           {/* F24 Payment Schedule */}
           {!data.profileIncomplete && data.payments && data.payments.length > 0 && (
+            <motion.div variants={fadeSlideUp} initial="initial" animate="animate">
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">{t("taxes.paymentSchedule")}</CardTitle>
@@ -216,6 +230,7 @@ export function Taxes() {
                 ))}
               </CardContent>
             </Card>
+            </motion.div>
           )}
 
           {/* Simulator link */}
@@ -349,13 +364,12 @@ function PaymentRow({ payment, anno, recordPayment, t }: PaymentRowProps) {
                 </div>
                 <AlertDialogFooter>
                   <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-                  <button
-                    className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 disabled:opacity-50"
+                  <Button
                     onClick={handleConfirm}
-                    disabled={recordPayment.isPending}
+                    loading={recordPayment.isPending}
                   >
-                    {recordPayment.isPending ? t("common.loading") : t("common.confirm")}
-                  </button>
+                    {t("common.confirm")}
+                  </Button>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

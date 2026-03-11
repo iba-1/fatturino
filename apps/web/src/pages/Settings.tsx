@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import { ProfileForm } from "@/components/ProfileForm";
 import { useProfile, useSaveProfile, type ProfileFormData } from "@/hooks/use-profile";
 import { parseApiFieldErrors } from "@/lib/api";
+import { motion, AnimatePresence } from "framer-motion";
+import { fadeSlideUp } from "@/lib/motion";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function Settings() {
@@ -25,16 +27,32 @@ export function Settings() {
       <h1 className="text-2xl font-semibold tracking-tight mb-6">
         {t("settings.title")}
       </h1>
-      {isLoading ? (
-        <SettingsSkeleton />
-      ) : (
-        <ProfileForm
-          profile={profile}
-          onSubmit={handleSubmit}
-          isLoading={saveProfile.isPending}
-          serverErrors={serverErrors}
-        />
-      )}
+      <AnimatePresence mode="wait">
+        {isLoading ? (
+          <motion.div
+            key="skeleton"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            <SettingsSkeleton />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="content"
+            variants={fadeSlideUp}
+            initial="initial"
+            animate="animate"
+          >
+            <ProfileForm
+              profile={profile}
+              onSubmit={handleSubmit}
+              isLoading={saveProfile.isPending}
+              serverErrors={serverErrors}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

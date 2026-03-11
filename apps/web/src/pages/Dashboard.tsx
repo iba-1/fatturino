@@ -7,6 +7,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useDashboardSummary } from "@/hooks/use-dashboard";
 import { DollarSign, Send, Clock, Wallet, Calculator } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { staggerContainer, staggerItem } from "@/lib/motion";
+import { CountUp } from "@/components/CountUp";
 
 const formatEur = (n: number) =>
   new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
@@ -66,18 +69,32 @@ export function Dashboard() {
       )}
 
       {/* Bento grid: hero + stat cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4" data-testid="summary-cards">
+      <AnimatePresence mode="wait">
         {isLoading ? (
-          <>
+          <motion.div
+            key="skeleton"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
+            data-testid="summary-cards"
+          >
             <Skeleton className="h-[240px] rounded-xl md:col-span-2 lg:row-span-2" />
             <Skeleton className="h-[106px] rounded-xl" />
             <Skeleton className="h-[106px] rounded-xl" />
             <Skeleton className="h-[106px] rounded-xl" />
-          </>
+          </motion.div>
         ) : (
-          <>
+          <motion.div
+            key="content"
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
+            variants={staggerContainer}
+            initial="initial"
+            animate="animate"
+            data-testid="summary-cards"
+          >
             {/* Hero revenue card — 2 cols, 2 rows on desktop */}
-            <div className="md:col-span-2 lg:row-span-2">
+            <motion.div variants={staggerItem} className="md:col-span-2 lg:row-span-2">
               <HeroRevenueCard
                 totalRevenue={data?.totalRevenue ?? 0}
                 chartData={chartData}
@@ -85,33 +102,39 @@ export function Dashboard() {
                 year={anno}
                 t={t}
               />
-            </div>
-            <DashboardCard
-              title={t("dashboard.invoicesSent")}
-              value={String(data?.invoicesSent ?? 0)}
-              icon={Send}
-              iconBg="bg-blue-100"
-              iconColor="text-blue-700"
-            />
-            <DashboardCard
-              title={t("dashboard.pendingInvoices")}
-              value={String(data?.pendingInvoices ?? 0)}
-              icon={Clock}
-              iconBg="bg-amber-100"
-              iconColor="text-amber-700"
-            />
-            <DashboardCard
-              title={t("dashboard.netIncome")}
-              value={data?.tax && data?.inps
-                ? formatEur(data.totalRevenue - data.inps.totaleDovuto - data.tax.impostaDovuta)
-                : "\u2014"}
-              icon={Wallet}
-              iconBg="bg-emerald-100"
-              iconColor="text-emerald-700"
-            />
-          </>
+            </motion.div>
+            <motion.div variants={staggerItem}>
+              <DashboardCard
+                title={t("dashboard.invoicesSent")}
+                value={String(data?.invoicesSent ?? 0)}
+                icon={Send}
+                iconBg="bg-blue-100"
+                iconColor="text-blue-700"
+              />
+            </motion.div>
+            <motion.div variants={staggerItem}>
+              <DashboardCard
+                title={t("dashboard.pendingInvoices")}
+                value={String(data?.pendingInvoices ?? 0)}
+                icon={Clock}
+                iconBg="bg-amber-100"
+                iconColor="text-amber-700"
+              />
+            </motion.div>
+            <motion.div variants={staggerItem}>
+              <DashboardCard
+                title={t("dashboard.netIncome")}
+                value={data?.tax && data?.inps
+                  ? formatEur(data.totalRevenue - data.inps.totaleDovuto - data.tax.impostaDovuta)
+                  : "\u2014"}
+                icon={Wallet}
+                iconBg="bg-emerald-100"
+                iconColor="text-emerald-700"
+              />
+            </motion.div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
 
       {/* Monthly revenue chart */}
       <Card>
@@ -137,95 +160,106 @@ export function Dashboard() {
 
       {/* Tax breakdown */}
       {data && !data.profileIncomplete && (
-        <div className="grid gap-4 md:grid-cols-3">
+        <motion.div
+          className="grid gap-4 md:grid-cols-3"
+          variants={staggerContainer}
+          initial="initial"
+          animate="animate"
+        >
           {/* Imposta Sostitutiva */}
-          <Card className="border-l-4 border-l-emerald-400">
-            <CardHeader>
-              <CardTitle className="text-base">{t("dashboard.impostaSostitutiva")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("taxes.profitabilityCoeff")}</span>
-                <span>{data.tax!.coefficienteRedditivita}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("taxes.grossIncome")}</span>
-                <span>{formatEur(data.tax!.redditoLordo)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("taxes.taxableIncome")}</span>
-                <span>{formatEur(data.tax!.redditoImponibile)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("taxes.taxRate")}</span>
-                <span className="inline-flex items-center gap-1">
-                  {data.tax!.aliquota}%
-                  <span className="rounded bg-muted px-1.5 py-0.5 text-xs">
-                    {data.tax!.isStartup ? t("dashboard.startup") : t("dashboard.ordinary")}
+          <motion.div variants={staggerItem}>
+            <Card className="border-l-4 border-l-emerald-400">
+              <CardHeader>
+                <CardTitle className="text-base">{t("dashboard.impostaSostitutiva")}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t("taxes.profitabilityCoeff")}</span>
+                  <span>{data.tax!.coefficienteRedditivita}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t("taxes.grossIncome")}</span>
+                  <span>{formatEur(data.tax!.redditoLordo)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t("taxes.taxableIncome")}</span>
+                  <span>{formatEur(data.tax!.redditoImponibile)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t("taxes.taxRate")}</span>
+                  <span className="inline-flex items-center gap-1">
+                    {data.tax!.aliquota}%
+                    <span className="rounded bg-muted px-1.5 py-0.5 text-xs">
+                      {data.tax!.isStartup ? t("dashboard.startup") : t("dashboard.ordinary")}
+                    </span>
                   </span>
-                </span>
-              </div>
-              <div className="flex justify-between border-t pt-2 font-medium">
-                <span>{t("taxes.taxDue")}</span>
-                <span>{formatEur(data.tax!.impostaDovuta)}</span>
-              </div>
-            </CardContent>
-          </Card>
+                </div>
+                <div className="flex justify-between border-t pt-2 font-medium">
+                  <span>{t("taxes.taxDue")}</span>
+                  <span>{formatEur(data.tax!.impostaDovuta)}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* INPS */}
-          <Card className="border-l-4 border-l-blue-400">
-            <CardHeader>
-              <CardTitle className="text-base">{t("dashboard.inpsContributions")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("settings.inpsManagement")}</span>
-                <span className="capitalize">{data.inps!.gestione}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("taxes.taxableIncome")}</span>
-                <span>{formatEur(data.inps!.baseImponibile)}</span>
-              </div>
-              {data.inps!.contributoFisso > 0 && (
+          <motion.div variants={staggerItem}>
+            <Card className="border-l-4 border-l-blue-400">
+              <CardHeader>
+                <CardTitle className="text-base">{t("dashboard.inpsContributions")}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t("dashboard.contributoFisso")}</span>
-                  <span>{formatEur(data.inps!.contributoFisso)}</span>
+                  <span className="text-muted-foreground">{t("settings.inpsManagement")}</span>
+                  <span className="capitalize">{data.inps!.gestione}</span>
                 </div>
-              )}
-              {data.inps!.contributoEccedenza > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t("dashboard.eccedenza")}</span>
-                  <span>{formatEur(data.inps!.contributoEccedenza)}</span>
+                  <span className="text-muted-foreground">{t("taxes.taxableIncome")}</span>
+                  <span>{formatEur(data.inps!.baseImponibile)}</span>
                 </div>
-              )}
-              <div className="flex justify-between border-t pt-2 font-medium">
-                <span>{t("taxes.inpsContributions")}</span>
-                <span>{formatEur(data.inps!.totaleDovuto)}</span>
-              </div>
-            </CardContent>
-          </Card>
+                {data.inps!.contributoFisso > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">{t("dashboard.contributoFisso")}</span>
+                    <span>{formatEur(data.inps!.contributoFisso)}</span>
+                  </div>
+                )}
+                {data.inps!.contributoEccedenza > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">{t("dashboard.eccedenza")}</span>
+                    <span>{formatEur(data.inps!.contributoEccedenza)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between border-t pt-2 font-medium">
+                  <span>{t("taxes.inpsContributions")}</span>
+                  <span>{formatEur(data.inps!.totaleDovuto)}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* F24 Schedule */}
-          <Card className="border-l-4 border-l-amber-400">
-            <CardHeader>
-              <CardTitle className="text-base">{t("dashboard.f24Schedule")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("dashboard.primoAcconto")}</span>
-                <span>{formatEur(data.f24!.primoAcconto)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("dashboard.secondoAcconto")}</span>
-                <span>{formatEur(data.f24!.secondoAcconto)}</span>
-              </div>
-              <div className="flex justify-between border-t pt-2 font-medium">
-                <span>{t("dashboard.saldo")}</span>
-                <span>{formatEur(data.f24!.saldo)}</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+          <motion.div variants={staggerItem}>
+            <Card className="border-l-4 border-l-amber-400">
+              <CardHeader>
+                <CardTitle className="text-base">{t("dashboard.f24Schedule")}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t("dashboard.primoAcconto")}</span>
+                  <span>{formatEur(data.f24!.primoAcconto)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t("dashboard.secondoAcconto")}</span>
+                  <span>{formatEur(data.f24!.secondoAcconto)}</span>
+                </div>
+                <div className="flex justify-between border-t pt-2 font-medium">
+                  <span>{t("dashboard.saldo")}</span>
+                  <span>{formatEur(data.f24!.saldo)}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* Recent invoices table */}
@@ -249,7 +283,7 @@ export function Dashboard() {
                 {data.recentInvoices.map((inv) => (
                   <tr
                     key={inv.id}
-                    className="cursor-pointer border-b last:border-0 hover:bg-muted/50"
+                    className="cursor-pointer border-b last:border-0 transition-colors duration-200 hover:bg-muted/50"
                     onClick={() => navigate(`/invoices/${inv.id}`)}
                   >
                     <td className="py-2">{inv.numeroFattura}</td>
@@ -294,7 +328,7 @@ function HeroRevenueCard({
           {t("dashboard.totalRevenue")} {year}
         </p>
         <p className="mt-2 text-4xl font-bold tracking-tight font-mono text-[#064E3B]">
-          {formatEur(totalRevenue)}
+          <CountUp end={totalRevenue} formatter={formatEur} />
         </p>
       </div>
       {chartData.length > 0 && (
@@ -319,7 +353,7 @@ function DashboardCard({
   iconBg: string; iconColor: string;
 }) {
   return (
-    <Card>
+    <Card className="transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>

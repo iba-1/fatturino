@@ -8,6 +8,8 @@ import { useInvoice, useCreateInvoice, useUpdateInvoice, type CreateInvoiceData 
 import { parseApiFieldErrors } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { fadeSlideUp } from "@/lib/motion";
 import { ArrowLeft, Users } from "lucide-react";
 
 export function InvoiceEditor() {
@@ -90,21 +92,23 @@ export function InvoiceEditor() {
         <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <InvoiceForm
-            clients={clients}
-            onSubmit={handleSubmit}
-            onCancel={() => navigate(isEdit ? `/invoices/${id}` : "/invoices")}
-            isLoading={isEdit ? updateInvoice.isPending : createInvoice.isPending}
-            serverErrors={serverErrors}
-            initialData={initialData}
-          />
-        </CardContent>
-      </Card>
+      <motion.div variants={fadeSlideUp} initial="initial" animate="animate">
+        <Card>
+          <CardHeader>
+            <CardTitle>{title}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <InvoiceForm
+              clients={clients}
+              onSubmit={handleSubmit}
+              onCancel={() => navigate(isEdit ? `/invoices/${id}` : "/invoices")}
+              isLoading={isEdit ? updateInvoice.isPending : createInvoice.isPending}
+              serverErrors={serverErrors}
+              initialData={initialData}
+            />
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 }

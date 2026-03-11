@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Outlet, NavLink } from "react-router-dom";
+import { PageTransition } from "@/components/PageTransition";
 import { useTranslation } from "react-i18next";
 import { useAppNavigate } from "@/hooks/use-app-navigate";
 import {
@@ -118,7 +119,9 @@ export function Layout() {
 
         <main className="flex-1 p-6 lg:p-8">
           <div className="mx-auto max-w-[1200px]">
-            <Outlet />
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
           </div>
         </main>
       </div>

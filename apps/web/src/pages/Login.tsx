@@ -63,8 +63,8 @@ export function Login() {
                 <Label htmlFor="password">{t("auth.password")}</Label>
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
               </div>
-              <Button type="submit" disabled={loading} className="w-full">
-                {loading ? t("common.loading") : t("auth.login")}
+              <Button type="submit" loading={loading} className="w-full">
+                {t("auth.login")}
               </Button>
             </form>
           </CardContent>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -110,9 +111,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
             <SelectItem value="persona_fisica">{t("clients.individual")}</SelectItem>
           </SelectContent>
         </Select>
-        {serverErrors.tipo && (
-          <p className="text-sm text-destructive">{serverErrors.tipo}</p>
-        )}
+        <AnimatePresence>
+          {serverErrors.tipo && (
+            <motion.p
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              className="text-sm text-destructive"
+            >
+              {serverErrors.tipo}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
 
       {tipo === "persona_giuridica" && (
@@ -124,9 +135,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
             value={ragioneSociale}
             onChange={(e) => setRagioneSociale(e.target.value)}
           />
-          {(errors.ragioneSociale || serverErrors.ragioneSociale) && (
-            <p className="text-sm text-destructive">{errors.ragioneSociale || serverErrors.ragioneSociale}</p>
-          )}
+          <AnimatePresence>
+            {(errors.ragioneSociale || serverErrors.ragioneSociale) && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {errors.ragioneSociale || serverErrors.ragioneSociale}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
@@ -139,9 +160,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
               value={nome}
               onChange={(e) => setNome(e.target.value)}
             />
-            {serverErrors.nome && (
-              <p className="text-sm text-destructive">{serverErrors.nome}</p>
-            )}
+            <AnimatePresence>
+              {serverErrors.nome && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-sm text-destructive"
+                >
+                  {serverErrors.nome}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
           <div className="space-y-2">
             <Label htmlFor="cognome">{t("clients.lastName")}</Label>
@@ -150,9 +181,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
               value={cognome}
               onChange={(e) => setCognome(e.target.value)}
             />
-            {serverErrors.cognome && (
-              <p className="text-sm text-destructive">{serverErrors.cognome}</p>
-            )}
+            <AnimatePresence>
+              {serverErrors.cognome && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-sm text-destructive"
+                >
+                  {serverErrors.cognome}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       )}
@@ -166,9 +207,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
             value={codiceFiscale}
             onChange={(e) => setCodiceFiscale(e.target.value)}
           />
-          {(errors.codiceFiscale || serverErrors.codiceFiscale) && (
-            <p className="text-sm text-destructive">{errors.codiceFiscale || serverErrors.codiceFiscale}</p>
-          )}
+          <AnimatePresence>
+            {(errors.codiceFiscale || serverErrors.codiceFiscale) && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {errors.codiceFiscale || serverErrors.codiceFiscale}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
         <div className="space-y-2">
           <Label htmlFor="partitaIva">{t("clients.vatNumber")}</Label>
@@ -179,9 +230,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
             onChange={(e) => setPartitaIva(e.target.value)}
             placeholder="12345678901"
           />
-          {(errors.partitaIva || serverErrors.partitaIva) && (
-            <p className="text-sm text-destructive">{errors.partitaIva || serverErrors.partitaIva}</p>
-          )}
+          <AnimatePresence>
+            {(errors.partitaIva || serverErrors.partitaIva) && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {errors.partitaIva || serverErrors.partitaIva}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -193,9 +254,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
           value={indirizzo}
           onChange={(e) => setIndirizzo(e.target.value)}
         />
-        {(errors.indirizzo || serverErrors.indirizzo) && (
-          <p className="text-sm text-destructive">{errors.indirizzo || serverErrors.indirizzo}</p>
-        )}
+        <AnimatePresence>
+          {(errors.indirizzo || serverErrors.indirizzo) && (
+            <motion.p
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              className="text-sm text-destructive"
+            >
+              {errors.indirizzo || serverErrors.indirizzo}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -208,9 +279,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
             onChange={(e) => setCap(e.target.value)}
             placeholder="00100"
           />
-          {(errors.cap || serverErrors.cap) && (
-            <p className="text-sm text-destructive">{errors.cap || serverErrors.cap}</p>
-          )}
+          <AnimatePresence>
+            {(errors.cap || serverErrors.cap) && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {errors.cap || serverErrors.cap}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
         <div className="space-y-2">
           <Label htmlFor="citta">{t("clients.city")}</Label>
@@ -220,9 +301,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
             value={citta}
             onChange={(e) => setCitta(e.target.value)}
           />
-          {(errors.citta || serverErrors.citta) && (
-            <p className="text-sm text-destructive">{errors.citta || serverErrors.citta}</p>
-          )}
+          <AnimatePresence>
+            {(errors.citta || serverErrors.citta) && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {errors.citta || serverErrors.citta}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
         <div className="space-y-2">
           <Label htmlFor="provincia">{t("clients.province")}</Label>
@@ -234,9 +325,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
             placeholder="RM"
             maxLength={2}
           />
-          {(errors.provincia || serverErrors.provincia) && (
-            <p className="text-sm text-destructive">{errors.provincia || serverErrors.provincia}</p>
-          )}
+          <AnimatePresence>
+            {(errors.provincia || serverErrors.provincia) && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {errors.provincia || serverErrors.provincia}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -250,9 +351,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
             onChange={(e) => setPec(e.target.value)}
             placeholder="email@pec.it"
           />
-          {serverErrors.pec && (
-            <p className="text-sm text-destructive">{serverErrors.pec}</p>
-          )}
+          <AnimatePresence>
+            {serverErrors.pec && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {serverErrors.pec}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
         <div className="space-y-2">
           <Label htmlFor="codiceSdi">{t("clients.sdiCode")}</Label>
@@ -264,9 +375,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
             placeholder="0000000"
             maxLength={7}
           />
-          {serverErrors.codiceSdi && (
-            <p className="text-sm text-destructive">{serverErrors.codiceSdi}</p>
-          )}
+          <AnimatePresence>
+            {serverErrors.codiceSdi && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {serverErrors.codiceSdi}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
         <div className="space-y-2">
           <Label htmlFor="email">{t("clients.email")}</Label>
@@ -277,9 +398,19 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
             onChange={(e) => setEmail(e.target.value)}
             placeholder="name@example.com"
           />
-          {serverErrors.email && (
-            <p className="text-sm text-destructive">{serverErrors.email}</p>
-          )}
+          <AnimatePresence>
+            {serverErrors.email && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm text-destructive"
+              >
+                {serverErrors.email}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -287,8 +418,8 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
         <Button type="button" variant="outline" onClick={onCancel}>
           {t("common.cancel")}
         </Button>
-        <Button type="submit" disabled={isLoading} data-testid="btn-submit-client">
-          {isLoading ? t("common.loading") : isEdit ? t("common.save") : t("common.create")}
+        <Button type="submit" loading={isLoading} data-testid="btn-submit-client">
+          {isEdit ? t("common.save") : t("common.create")}
         </Button>
       </div>
     </form>
