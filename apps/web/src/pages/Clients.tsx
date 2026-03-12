@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -76,9 +75,9 @@ export function Clients() {
 
   function handleDelete() {
     if (!deletingClient) return;
-    const id = deletingClient.id;
-    setDeletingClient(undefined);
-    deleteClient.mutate(id);
+    deleteClient.mutate(deletingClient.id, {
+      onSuccess: () => setDeletingClient(undefined),
+    });
   }
 
   function getClientDisplayName(client: Client): string {
@@ -249,13 +248,14 @@ export function Clients() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction
+            <Button
               onClick={handleDelete}
+              loading={deleteClient.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               data-testid="btn-confirm-delete"
             >
               {t("common.delete")}
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

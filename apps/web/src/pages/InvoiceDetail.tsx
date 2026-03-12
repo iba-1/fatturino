@@ -9,7 +9,7 @@ import { useProfile } from "@/hooks/use-profile";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ArrowLeft, FileCheck, FileDown, FileText, AlertTriangle, Pencil, Send, Trash2, CheckCircle, CircleOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeSlideUp } from "@/lib/motion";
@@ -76,15 +76,18 @@ export function InvoiceDetail() {
   };
 
   const handleDelete = () => {
-    setShowDeleteConfirm(false);
     deleteInvoice.mutate(id!, {
-      onSuccess: () => navigate("/invoices"),
+      onSuccess: () => {
+        setShowDeleteConfirm(false);
+        navigate("/invoices");
+      },
     });
   };
 
   const handleMarkSent = () => {
-    setShowMarkSentConfirm(false);
-    markSentMutation.mutate(id!);
+    markSentMutation.mutate(id!, {
+      onSuccess: () => setShowMarkSentConfirm(false),
+    });
   };
 
   const hasProfile = !!profile;
@@ -244,14 +247,16 @@ export function InvoiceDetail() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction
+            <Button
+              loading={sendInvoice.isPending}
               onClick={() => {
-                setShowSendConfirm(false);
-                sendInvoice.mutate(id!);
+                sendInvoice.mutate(id!, {
+                  onSuccess: () => setShowSendConfirm(false),
+                });
               }}
             >
               {t("invoices.send")}
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -267,9 +272,9 @@ export function InvoiceDetail() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleMarkSent}>
+            <Button onClick={handleMarkSent} loading={markSentMutation.isPending}>
               {t("invoices.markSent")}
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -285,12 +290,13 @@ export function InvoiceDetail() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction
+            <Button
               onClick={handleDelete}
+              loading={deleteInvoice.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {t("common.delete")}
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -306,27 +312,33 @@ export function InvoiceDetail() {
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-col sm:flex-row gap-2">
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction
+            <Button
+              loading={createCreditNote.isPending}
               onClick={() => {
-                setShowCreditNoteDialog(false);
                 createCreditNote.mutate(id!, {
-                  onSuccess: (data) => navigate(`/invoices/${data.id}`),
+                  onSuccess: (data) => {
+                    setShowCreditNoteDialog(false);
+                    navigate(`/invoices/${data.id}`);
+                  },
                 });
               }}
             >
               {t("invoices.createCreditNote")}
-            </AlertDialogAction>
-            <AlertDialogAction
+            </Button>
+            <Button
+              loading={deleteInvoice.isPending}
               onClick={() => {
-                setShowCreditNoteDialog(false);
                 deleteInvoice.mutate(id!, {
-                  onSuccess: () => navigate("/invoices"),
+                  onSuccess: () => {
+                    setShowCreditNoteDialog(false);
+                    navigate("/invoices");
+                  },
                 });
               }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {t("invoices.deleteAnyway")}
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

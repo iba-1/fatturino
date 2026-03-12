@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/table";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -105,16 +104,16 @@ export function Invoices() {
 
   function handleDelete() {
     if (!deletingInvoice) return;
-    const id = deletingInvoice.id;
-    setDeletingInvoice(undefined);
-    deleteInvoice.mutate(id);
+    deleteInvoice.mutate(deletingInvoice.id, {
+      onSuccess: () => setDeletingInvoice(undefined),
+    });
   }
 
   function handleMarkSent() {
     if (!markSentInvoice) return;
-    const id = markSentInvoice.id;
-    setMarkSentInvoice(undefined);
-    markSent.mutate(id);
+    markSent.mutate(markSentInvoice.id, {
+      onSuccess: () => setMarkSentInvoice(undefined),
+    });
   }
 
   if (isError) {
@@ -231,7 +230,7 @@ export function Invoices() {
                                 {t("invoices.markSent")}
                               </DropdownMenuItem>
                             )}
-                            <DropdownMenuItem onClick={() => markPaid.mutate(inv.id)}>
+                            <DropdownMenuItem disabled={markPaid.isPending} onClick={() => markPaid.mutate(inv.id)}>
                               {inv.pagata ? (
                                 <>
                                   <CircleOff className="h-4 w-4" />
@@ -280,13 +279,14 @@ export function Invoices() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction
+            <Button
               onClick={handleDelete}
+              loading={deleteInvoice.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               data-testid="btn-confirm-delete"
             >
               {t("common.delete")}
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -305,24 +305,27 @@ export function Invoices() {
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-col sm:flex-row gap-2">
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction
+            <Button
+              loading={createCreditNote.isPending}
               onClick={() => {
                 if (!deletingInvoice) return;
-                const invoiceId = deletingInvoice.id;
-                setDeletingInvoice(undefined);
-                createCreditNote.mutate(invoiceId, {
-                  onSuccess: (data) => navigate(`/invoices/${data.id}`),
+                createCreditNote.mutate(deletingInvoice.id, {
+                  onSuccess: (data) => {
+                    setDeletingInvoice(undefined);
+                    navigate(`/invoices/${data.id}`);
+                  },
                 });
               }}
             >
               {t("invoices.createCreditNote")}
-            </AlertDialogAction>
-            <AlertDialogAction
+            </Button>
+            <Button
               onClick={handleDelete}
+              loading={deleteInvoice.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {t("invoices.deleteAnyway")}
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -341,9 +344,9 @@ export function Invoices() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleMarkSent}>
+            <Button onClick={handleMarkSent} loading={markSent.isPending}>
               {t("invoices.markSent")}
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
