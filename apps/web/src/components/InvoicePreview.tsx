@@ -1,3 +1,4 @@
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -11,7 +12,7 @@ interface InvoicePreviewProps {
   client?: Client;
 }
 
-export function InvoicePreview({ invoice, client }: InvoicePreviewProps) {
+export const InvoicePreview = React.memo(function InvoicePreview({ invoice, client }: InvoicePreviewProps) {
   const { t } = useTranslation();
 
   const subtotal = parseFloat(invoice.imponibile);
@@ -72,7 +73,7 @@ export function InvoicePreview({ invoice, client }: InvoicePreviewProps) {
         <Separator />
 
         {/* Line items */}
-        <div>
+        <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b">
@@ -138,4 +139,4 @@ export function InvoicePreview({ invoice, client }: InvoicePreviewProps) {
       </CardContent>
     </Card>
   );
-}
+});

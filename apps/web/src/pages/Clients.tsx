@@ -124,7 +124,7 @@ export function Clients() {
               data-testid="empty-state"
             >
               <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
-              <h3 className="mt-4 text-lg font-medium">{t("clients.noClients")}</h3>
+              <h2 className="mt-4 text-lg font-medium">{t("clients.noClients")}</h2>
               <p className="mt-1 text-sm text-muted-foreground">{t("clients.createFirst")}</p>
               <Button className="mt-4" onClick={() => setFormOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
@@ -201,7 +201,7 @@ export function Clients() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{t("clients.new")}</DialogTitle>
-            <DialogDescription />
+            <DialogDescription>Fill in the client details below.</DialogDescription>
           </DialogHeader>
           <ClientForm
             onSubmit={handleCreate}
@@ -220,7 +220,7 @@ export function Clients() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{t("common.edit")} — {editingClient && getClientDisplayName(editingClient)}</DialogTitle>
-            <DialogDescription />
+            <DialogDescription>Update client information.</DialogDescription>
           </DialogHeader>
           {editingClient && (
             <ClientForm

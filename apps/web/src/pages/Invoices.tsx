@@ -46,7 +46,7 @@ import {
   CheckCircle,
   CircleOff,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeSlideUp } from "@/lib/motion";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -82,13 +82,16 @@ export function Invoices() {
   const [deletingInvoice, setDeletingInvoice] = useState<Invoice | undefined>();
   const [markSentInvoice, setMarkSentInvoice] = useState<Invoice | undefined>();
 
-  function getClientName(clientId: string): string {
-    const client = clients?.find((c) => c.id === clientId);
-    if (!client) return clientId;
-    return client.ragioneSociale ||
-      [client.nome, client.cognome].filter(Boolean).join(" ") ||
-      client.codiceFiscale;
-  }
+  const clientMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const c of clients ?? []) {
+      const name = c.ragioneSociale ||
+        [c.nome, c.cognome].filter(Boolean).join(" ") ||
+        c.codiceFiscale;
+      map.set(c.id, name);
+    }
+    return map;
+  }, [clients]);
 
   function getStatusLabel(stato: string): string {
     const map: Record<string, string> = {
@@ -155,8 +158,8 @@ export function Invoices() {
               data-testid="empty-state"
             >
               <FileText className="mx-auto h-12 w-12 text-muted-foreground/50" />
-              <h3 className="mt-4 text-lg font-medium">{t("invoices.title")}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{t("invoices.new")}</p>
+              <h2 className="mt-4 text-lg font-medium">{t("invoices.emptyTitle")}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{t("invoices.emptyDescription")}</p>
               <Button className="mt-4" onClick={() => navigate("/invoices/new")}>
                 <Plus className="mr-2 h-4 w-4" />
                 {t("invoices.new")}
@@ -189,7 +192,7 @@ export function Invoices() {
                       <TableCell>
                         {new Date(inv.dataEmissione).toLocaleDateString("it-IT")}
                       </TableCell>
-                      <TableCell>{getClientName(inv.clientId)}</TableCell>
+                      <TableCell>{clientMap.get(inv.clientId) ?? inv.clientId}</TableCell>
                       <TableCell className="font-mono">
                         {parseFloat(inv.totaleDocumento).toFixed(2)}
                       </TableCell>

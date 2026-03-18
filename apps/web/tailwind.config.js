@@ -11,7 +11,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ['"Plus Jakarta Sans"', "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
@@ -48,8 +48,18 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        warning: "hsl(var(--warning))",
-        success: "hsl(var(--success))",
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
         sidebar: {
           bg: "hsl(var(--sidebar-bg))",
           border: "hsl(var(--sidebar-border))",
@@ -66,16 +76,16 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
+          from: { "grid-template-rows": "0fr" },
+          to: { "grid-template-rows": "1fr" },
         },
         "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+          from: { "grid-template-rows": "1fr" },
+          to: { "grid-template-rows": "0fr" },
         },
         "toast-progress": {
-          from: { width: "100%" },
-          to: { width: "0%" },
+          from: { transform: "scaleX(1)" },
+          to: { transform: "scaleX(0)" },
         },
       },
       animation: {

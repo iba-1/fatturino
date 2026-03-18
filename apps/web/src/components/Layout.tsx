@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { PageTransition } from "@/components/PageTransition";
 import { useTranslation } from "react-i18next";
@@ -27,6 +27,15 @@ export function Layout() {
   const { t } = useTranslation();
   const navigate = useAppNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSidebarOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [sidebarOpen]);
 
   async function handleLogout() {
     await signOut();
@@ -80,6 +89,7 @@ export function Layout() {
 
   return (
     <div className="flex min-h-screen bg-background">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-background focus:text-foreground focus:rounded-lg focus:shadow-lg focus:top-2 focus:left-2">Skip to content</a>
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -90,6 +100,7 @@ export function Layout() {
 
       {/* Sidebar */}
       <aside
+        id="mobile-sidebar"
         className={`fixed left-0 top-0 z-50 flex h-screen w-[var(--sidebar-width)] flex-col border-r border-sidebar-border bg-sidebar-bg transition-transform duration-300 lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
@@ -97,7 +108,8 @@ export function Layout() {
         {/* Mobile close button */}
         <button
           onClick={() => setSidebarOpen(false)}
-          className="absolute right-3 top-4 rounded-lg p-1 text-sidebar-muted hover:bg-sidebar-active/50 hover:text-sidebar-foreground lg:hidden cursor-pointer"
+          aria-label="Close menu"
+          className="absolute right-3 top-4 rounded-lg p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-sidebar-muted hover:bg-sidebar-active/50 hover:text-sidebar-foreground lg:hidden cursor-pointer"
         >
           <X className="h-5 w-5" />
         </button>
@@ -110,6 +122,9 @@ export function Layout() {
         <header className="sticky top-0 z-30 flex h-14 items-center bg-sidebar-bg px-4 lg:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={sidebarOpen}
+            aria-controls="mobile-sidebar"
             className="rounded-lg p-2 text-sidebar-muted hover:bg-sidebar-active/50 hover:text-sidebar-foreground cursor-pointer"
           >
             <Menu className="h-5 w-5" />
@@ -117,7 +132,7 @@ export function Layout() {
           <span className="ml-3 text-sm font-semibold text-sidebar-foreground">Fatturino</span>
         </header>
 
-        <main className="flex-1 p-6 lg:p-8">
+        <main id="main-content" className="flex-1 p-6 lg:p-8">
           <div className="mx-auto max-w-[1200px]">
             <PageTransition>
               <Outlet />

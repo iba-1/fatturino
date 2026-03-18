@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useAppNavigate } from "@/hooks/use-app-navigate";
@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { staggerContainer, staggerItem, fadeSlideUp } from "@/lib/motion";
 import { Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,9 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useTaxOverview, useRecordPayment, type TaxPaymentStatus } from "@/hooks/use-taxes";
 import { api } from "@/lib/api";
-
-const formatEur = (n: number) =>
-  new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
+import { formatEur } from "@/lib/format";
 
 const deadlineSlug = (deadline: string) =>
   deadline.replace(/_/g, "-");
@@ -52,22 +52,49 @@ export function Taxes() {
         <h1 className="text-2xl font-semibold tracking-tight">{t("taxes.title")}</h1>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">{t("taxes.year")}:</span>
-          <select
-            className="rounded-lg border border-input bg-card px-3 py-1.5 text-sm transition-colors duration-150"
-            value={anno}
-            onChange={(e) => setAnno(parseInt(e.target.value, 10))}
-            data-testid="select-year"
-          >
-            {yearOptions.map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
+          <Select value={String(anno)} onValueChange={(val) => setAnno(Number(val))}>
+            <SelectTrigger className="w-32" data-testid="select-year">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {yearOptions.map((y) => (
+                <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
       {/* Loading / Error states */}
       {isLoading && (
-        <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
+        <div className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-xl border p-6 space-y-3">
+                <Skeleton className="h-5 w-32" />
+                <div className="space-y-2">
+                  {[1, 2, 3, 4].map((j) => (
+                    <div key={j} className="flex justify-between">
+                      <Skeleton className="h-4 w-28" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                  ))}
+                </div>
+                <Skeleton className="h-px w-full" />
+                <div className="flex justify-between">
+                  <Skeleton className="h-5 w-20" />
+                  <Skeleton className="h-5 w-20" />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="rounded-xl border p-6 space-y-4">
+            <Skeleton className="h-5 w-40" />
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-20 rounded-lg" />
+            ))}
+          </div>
+        </div>
       )}
       {isError && (
         <p className="text-sm text-destructive">{t("common.error")}</p>
@@ -77,14 +104,15 @@ export function Taxes() {
         <>
           {/* Profile warning banner */}
           {data.profileIncomplete && (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm flex items-start gap-3" data-testid="profile-warning">
+            <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm flex items-start gap-3" data-testid="profile-warning">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-warning/40">
-                <Calculator className="h-4 w-4 text-amber-700" />
+                <Calculator className="h-4 w-4 text-warning-foreground" />
               </div>
               <div>
-                <p className="text-amber-900">{t("taxes.profileRequired")}</p>
+                <p className="text-warning-foreground">{t("taxes.profileRequired")}</p>
                 <button
-                  className="mt-1 text-sm font-medium text-amber-800 underline hover:text-amber-900 cursor-pointer"
+                  type="button"
+                  className="mt-1 py-2 text-sm font-medium text-warning-foreground underline hover:text-warning-foreground/80 cursor-pointer"
                   onClick={() => navigate("/settings")}
                 >
                   {t("dashboard.goToSettings")}
@@ -103,7 +131,7 @@ export function Taxes() {
             >
               {/* Imposta Sostitutiva card */}
               <motion.div variants={staggerItem}>
-              <Card className="border-l-4 border-l-emerald-400">
+              <Card className="bg-success/5">
                 <CardHeader>
                   <CardTitle className="text-base">{t("dashboard.impostaSostitutiva")}</CardTitle>
                 </CardHeader>
@@ -135,7 +163,7 @@ export function Taxes() {
                   </div>
                   <div className="flex justify-between border-t pt-2 font-medium">
                     <span>{t("taxes.taxDue")}</span>
-                    <span className="text-emerald-700">{formatEur(data.tax.impostaDovuta)}</span>
+                    <span className="text-success-foreground">{formatEur(data.tax.impostaDovuta)}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -143,7 +171,7 @@ export function Taxes() {
 
               {/* INPS Contributions card */}
               <motion.div variants={staggerItem}>
-              <Card className="border-l-4 border-l-blue-400">
+              <Card className="bg-info/5">
                 <CardHeader>
                   <CardTitle className="text-base">{t("dashboard.inpsContributions")}</CardTitle>
                 </CardHeader>
@@ -170,7 +198,7 @@ export function Taxes() {
                   )}
                   <div className="flex justify-between border-t pt-2 font-medium">
                     <span>{t("taxes.totaleDovuto")}</span>
-                    <span className="text-blue-700">{formatEur(data.inps.totaleDovuto)}</span>
+                    <span className="text-info-foreground">{formatEur(data.inps.totaleDovuto)}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -178,7 +206,7 @@ export function Taxes() {
 
               {/* Net Position card */}
               <motion.div variants={staggerItem}>
-              <Card className="border-l-4 border-l-amber-400">
+              <Card className="bg-warning/5">
                 <CardHeader>
                   <CardTitle className="text-base">{t("taxes.netPosition")}</CardTitle>
                 </CardHeader>
@@ -193,7 +221,7 @@ export function Taxes() {
                   </div>
                   <div className="flex justify-between border-t pt-2 font-medium">
                     <span>{t("taxes.netIncome")}</span>
-                    <span className="text-emerald-700">
+                    <span className="text-success-foreground">
                       {formatEur(data.totalRevenue - data.tax.impostaDovuta - data.inps.totaleDovuto)}
                     </span>
                   </div>
@@ -256,7 +284,7 @@ interface PaymentRowProps {
   t: (key: string) => string;
 }
 
-function PaymentRow({ payment, anno, recordPayment, t }: PaymentRowProps) {
+const PaymentRow = React.memo(function PaymentRow({ payment, anno, recordPayment, t }: PaymentRowProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const today = new Date().toISOString().split("T")[0];
   const [amountPaid, setAmountPaid] = useState(payment.amountDue.toFixed(2));
@@ -378,4 +406,4 @@ function PaymentRow({ payment, anno, recordPayment, t }: PaymentRowProps) {
       </div>
     </div>
   );
-}
+});

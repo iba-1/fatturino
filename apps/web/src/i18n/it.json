@@ -113,7 +113,9 @@
     "deleteAnyway": "Elimina comunque",
     "viewCreditNote": "Vedi Nota di Credito",
     "viewOriginalInvoice": "Vedi Fattura Originale",
-    "creditNoteFor": "Nota di credito per fattura {{number}}"
+    "creditNoteFor": "Nota di credito per fattura {{number}}",
+    "emptyTitle": "Nessuna fattura",
+    "emptyDescription": "Crea la tua prima fattura per iniziare a monitorare il tuo fatturato"
   },
   "clients": {
     "title": "Clienti",
@@ -133,7 +135,9 @@
     "email": "Email",
     "type": "Tipo",
     "individual": "Persona Fisica",
-    "business": "Persona Giuridica"
+    "business": "Persona Giuridica",
+    "noClients": "Nessun cliente",
+    "createFirst": "Aggiungi il tuo primo cliente per iniziare a creare fatture"
   },
   "taxes": {
     "title": "Tasse",

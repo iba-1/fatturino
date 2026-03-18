@@ -7,6 +7,7 @@ import { useClients } from "@/hooks/use-clients";
 import { useInvoice, useCreateInvoice, useUpdateInvoice, type CreateInvoiceData } from "@/hooks/use-invoices";
 import { parseApiFieldErrors } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { fadeSlideUp } from "@/lib/motion";
@@ -43,14 +44,41 @@ export function InvoiceEditor() {
   }
 
   if (clientsLoading || (isEdit && invoiceLoading)) {
-    return <p className="text-muted-foreground">{t("common.loading")}</p>;
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-10 w-10 rounded-md" />
+          <Skeleton className="h-8 w-48" />
+        </div>
+        <div className="rounded-xl border p-6 space-y-6">
+          <Skeleton className="h-6 w-32" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-10 w-full rounded-md" />
+              </div>
+            ))}
+          </div>
+          <div className="space-y-3">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-12 w-full rounded-md" />
+            <Skeleton className="h-12 w-full rounded-md" />
+          </div>
+          <div className="flex justify-end gap-3">
+            <Skeleton className="h-10 w-24 rounded-md" />
+            <Skeleton className="h-10 w-24 rounded-md" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!clients || clients.length === 0) {
     return (
       <div className="text-center py-16">
         <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
-        <h3 className="mt-4 text-lg font-medium">{t("clients.title")}</h3>
+        <h2 className="mt-4 text-lg font-medium">{t("clients.title")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{t("clients.new")}</p>
         <Button className="mt-4" onClick={() => navigate("/clients")}>
           {t("clients.new")}
@@ -86,7 +114,7 @@ export function InvoiceEditor() {
   return (
     <div>
       <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => navigate(isEdit ? `/invoices/${id}` : "/invoices")}>
+        <Button variant="ghost" size="icon" onClick={() => navigate(isEdit ? `/invoices/${id}` : "/invoices")} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>

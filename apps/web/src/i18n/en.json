@@ -113,7 +113,9 @@
     "deleteAnyway": "Delete Anyway",
     "viewCreditNote": "View Credit Note",
     "viewOriginalInvoice": "View Original Invoice",
-    "creditNoteFor": "Credit note for invoice {{number}}"
+    "creditNoteFor": "Credit note for invoice {{number}}",
+    "emptyTitle": "No invoices yet",
+    "emptyDescription": "Create your first invoice to start tracking your revenue"
   },
   "clients": {
     "title": "Clients",
@@ -133,7 +135,9 @@
     "email": "Email",
     "type": "Type",
     "individual": "Individual",
-    "business": "Business"
+    "business": "Business",
+    "noClients": "No clients yet",
+    "createFirst": "Add your first client to start creating invoices for them"
   },
   "taxes": {
     "title": "Taxes",

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppNavigate } from "@/hooks/use-app-navigate";
 import { motion } from "framer-motion";
@@ -17,9 +17,7 @@ import {
 } from "@fatturino/shared";
 import { useProfile } from "@/hooks/use-profile";
 import { api } from "@/lib/api";
-
-const formatEur = (n: number) =>
-  new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
+import { formatEur } from "@/lib/format";
 
 const GESTIONE_OPTIONS: { value: GestioneInps; labelKey: string }[] = [
   { value: "separata", labelKey: "taxes.gestioneSeparata" },
@@ -47,14 +45,16 @@ export function TaxSimulator() {
 
   // Sync profile pre-fill once loaded (only if user hasn't typed yet)
   const [profileApplied, setProfileApplied] = useState(false);
-  if (profile && !profileApplied) {
-    if (!codiceAteco) setCodiceAteco(profile.codiceAteco);
-    if (!annoInizioAttivita || annoInizioAttivita === String(currentYear)) {
-      setAnnoInizioAttivita(String(profile.annoInizioAttivita));
+  useEffect(() => {
+    if (profile && !profileApplied) {
+      if (!codiceAteco) setCodiceAteco(profile.codiceAteco);
+      if (!annoInizioAttivita || annoInizioAttivita === String(currentYear)) {
+        setAnnoInizioAttivita(String(profile.annoInizioAttivita));
+      }
+      setGestione(profile.gestioneInps);
+      setProfileApplied(true);
     }
-    setGestione(profile.gestioneInps);
-    setProfileApplied(true);
-  }
+  }, [profile, profileApplied, codiceAteco, annoInizioAttivita, currentYear]);
 
   const fatturatoNum = parseFloat(fatturato) || 0;
   const annoInizioNum = parseInt(annoInizioAttivita, 10) || currentYear;
@@ -66,12 +66,9 @@ export function TaxSimulator() {
     accontoSaldo: ReturnType<typeof calcolaAccontoSaldo>;
   };
 
-  const [calcError, setCalcError] = useState<string | null>(null);
-
-  const result = useMemo<SimResult | null>(() => {
+  const { result, calcError } = useMemo<{ result: SimResult | null; calcError: string | null }>(() => {
     if (fatturatoNum <= 0 || !codiceAteco.trim()) {
-      setCalcError(null);
-      return null;
+      return { result: null, calcError: null };
     }
     try {
       const inps = calcolaInps({
@@ -91,11 +88,9 @@ export function TaxSimulator() {
         accontiVersati: 0,
         anno: annoFiscaleNum,
       });
-      setCalcError(null);
-      return { inps, tax, accontoSaldo };
+      return { result: { inps, tax, accontoSaldo }, calcError: null };
     } catch (err) {
-      setCalcError(err instanceof Error ? err.message : String(err));
-      return null;
+      return { result: null, calcError: err instanceof Error ? err.message : String(err) };
     }
   }, [fatturatoNum, codiceAteco, gestione, annoInizioNum, annoFiscaleNum]);
 
@@ -239,7 +234,7 @@ export function TaxSimulator() {
           >
             {/* Imposta Sostitutiva card */}
             <motion.div variants={staggerItem}>
-            <Card className="border-l-4 border-l-emerald-400">
+            <Card className="bg-success/5">
               <CardHeader>
                 <CardTitle className="text-base">
                   {t("dashboard.impostaSostitutiva")}
@@ -287,7 +282,7 @@ export function TaxSimulator() {
                 </div>
                 <div className="flex justify-between border-t pt-2 font-medium">
                   <span>{t("taxes.taxDue")}</span>
-                  <span className="text-emerald-700">
+                  <span className="text-success-foreground">
                     {formatEur(result.tax.impostaDovuta)}
                   </span>
                 </div>
@@ -297,7 +292,7 @@ export function TaxSimulator() {
 
             {/* INPS Contributions card */}
             <motion.div variants={staggerItem}>
-            <Card className="border-l-4 border-l-blue-400">
+            <Card className="bg-info/5">
               <CardHeader>
                 <CardTitle className="text-base">
                   {t("dashboard.inpsContributions")}
@@ -334,7 +329,7 @@ export function TaxSimulator() {
                 )}
                 <div className="flex justify-between border-t pt-2 font-medium">
                   <span>{t("taxes.totaleDovuto")}</span>
-                  <span className="text-blue-700">
+                  <span className="text-info-foreground">
                     {formatEur(result.inps.totaleDovuto)}
                   </span>
                 </div>
@@ -344,7 +339,7 @@ export function TaxSimulator() {
 
             {/* Net Position card */}
             <motion.div variants={staggerItem}>
-            <Card className="border-l-4 border-l-amber-400">
+            <Card className="bg-warning/5">
               <CardHeader>
                 <CardTitle className="text-base">
                   {t("taxes.netPosition")}
@@ -370,7 +365,7 @@ export function TaxSimulator() {
                 </div>
                 <div className="flex justify-between border-t pt-2 font-medium">
                   <span>{t("taxes.netIncome")}</span>
-                  <span className="text-emerald-700">
+                  <span className="text-success-foreground">
                     {formatEur(
                       fatturatoNum -
                         result.tax.impostaDovuta -
