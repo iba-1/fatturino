@@ -10,11 +10,11 @@ test.describe("Dashboard", () => {
     // After registerAndLogin we are already on /
     await expect(page.locator("h1")).toContainText(/dashboard/i);
 
-    // Year selector should be visible with the current year
+    // Year selector (shadcn Select / Radix combobox) should be visible with the current year
     const yearSelect = page.locator('[data-testid="select-year"]');
     await expect(yearSelect).toBeVisible();
     const currentYear = new Date().getFullYear().toString();
-    await expect(yearSelect).toHaveValue(currentYear);
+    await expect(yearSelect).toContainText(currentYear);
   });
 
   test("should show 4 summary cards", async ({ page }) => {
@@ -57,9 +57,10 @@ test.describe("Dashboard", () => {
     const currentYear = new Date().getFullYear();
     const previousYear = (currentYear - 1).toString();
 
-    // Change to previous year
-    await yearSelect.selectOption(previousYear);
-    await expect(yearSelect).toHaveValue(previousYear);
+    // Open the shadcn Select dropdown and pick the previous year
+    await yearSelect.click();
+    await page.locator(`[role="option"]:has-text("${previousYear}")`).click();
+    await expect(yearSelect).toContainText(previousYear);
 
     // Dashboard should still be visible and not crash
     await expect(page.locator("h1")).toContainText(/dashboard/i);
