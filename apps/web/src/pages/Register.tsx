@@ -47,14 +47,14 @@ export function Register() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold tracking-tight">Fatturino</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Fatturino</h1>
           <p className="mt-2 text-sm text-muted-foreground">{t("auth.register")}</p>
         </div>
         <Card>
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive-foreground" data-testid="auth-error">{error}</div>
+                <div role="alert" className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive-foreground" data-testid="auth-error">{error}</div>
               )}
               <div className="space-y-2">
                 <Label htmlFor="name">{t("auth.name")}</Label>
@@ -76,7 +76,7 @@ export function Register() {
         </Card>
         <p className="mt-4 text-center text-sm text-muted-foreground">
           {t("auth.hasAccount")}{" "}
-          <Link to="/login" className="text-primary-foreground font-medium hover:underline">{t("auth.login")}</Link>
+          <Link to="/login" className="text-primary-foreground font-medium underline underline-offset-4 hover:text-primary-foreground/80">{t("auth.login")}</Link>
         </p>
       </div>
     </div>

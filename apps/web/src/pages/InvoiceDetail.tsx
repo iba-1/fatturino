@@ -96,8 +96,8 @@ export function InvoiceDetail() {
 
   return (
     <div>
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/invoices")}>
+      <div className="flex flex-wrap items-center gap-4 mb-6">
+        <Button variant="ghost" size="icon" onClick={() => navigate("/invoices")} aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <h1 className="text-2xl font-semibold tracking-tight">
@@ -197,9 +197,9 @@ export function InvoiceDetail() {
 
       {/* Missing profile banner */}
       {!hasProfile && (
-        <div data-testid="missing-profile-banner" className="mb-4 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-yellow-600" />
-          <span className="text-sm text-yellow-800">
+        <div data-testid="missing-profile-banner" className="mb-4 p-4 rounded-xl bg-warning/10 border border-warning/30 flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 text-warning-foreground" />
+          <span className="text-sm text-warning-foreground">
             {t("invoices.missingProfile")}{" "}
             <a href="/settings" className="underline font-medium">{t("invoices.goToSettings")}</a>
           </span>
@@ -208,9 +208,9 @@ export function InvoiceDetail() {
 
       {/* Validation errors */}
       {validation && !validation.valid && (
-        <div className="mb-4 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
-          <h3 className="text-sm font-semibold text-red-800 mb-2">{t("invoices.validationErrors")}</h3>
-          <ul className="text-sm text-red-700 space-y-1">
+        <div role="alert" className="mb-4 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
+          <h2 className="text-sm font-semibold text-destructive-foreground mb-2">{t("invoices.validationErrors")}</h2>
+          <ul className="text-sm text-destructive-foreground space-y-1">
             {validation.errors.map((err, i) => (
               <li key={i}>• {err.message}</li>
             ))}
@@ -220,15 +220,15 @@ export function InvoiceDetail() {
 
       {/* Validation success */}
       {validation?.valid && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-sm text-green-800">{t("invoices.validationSuccess")}</p>
+        <div role="status" className="mb-4 p-4 bg-success/10 border border-success/30 rounded-xl">
+          <p className="text-sm text-success-foreground">{t("invoices.validationSuccess")}</p>
         </div>
       )}
 
       {/* Download error */}
       {downloadError && (
-        <div className="mb-4 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
-          <p className="text-sm text-red-800">{downloadError}</p>
+        <div role="alert" className="mb-4 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
+          <p className="text-sm text-destructive-foreground">{downloadError}</p>
         </div>
       )}
 

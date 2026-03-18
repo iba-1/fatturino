@@ -15,7 +15,7 @@
     --secondary: 30 14% 93%;         /* #F0EDE8 warm muted */
     --secondary-foreground: 25 6% 25%;
     --muted: 30 14% 93%;
-    --muted-foreground: 25 5% 64%;   /* #A8A29E stone-400 */
+    --muted-foreground: 25 5% 45%;   /* darkened for WCAG AA contrast */
     --accent: 156 72% 67%;
     --accent-foreground: 164 88% 16%;
     --destructive: 0 96% 82%;        /* #FCA5A5 pastel salmon */
@@ -34,8 +34,12 @@
     --sidebar-width: 240px;
 
     /* Semantic colors */
-    --warning: 48 96% 77%;           /* #FDE68A pastel amber */
-    --success: 156 72% 80%;          /* #A7F3D0 pastel mint */
+    --info: 199 89% 48%;
+    --info-foreground: 199 89% 15%;
+    --success: 156 72% 67%;
+    --success-foreground: 160 84% 16%;
+    --warning: 45 93% 47%;
+    --warning-foreground: 45 93% 15%;
 
     /* Chart colors */
     --chart-1: 156 72% 67%;
@@ -56,26 +60,7 @@
   }
 }
 
-/* View Transitions API — page navigation animations */
-::view-transition-old(root) {
-  animation: 120ms ease-in both vt-fade-out;
-}
-
-::view-transition-new(root) {
-  animation: 200ms ease-out both vt-fade-in-up;
-}
-
-@keyframes vt-fade-out {
-  to { opacity: 0; transform: translateY(-4px); }
-}
-
-@keyframes vt-fade-in-up {
-  from { opacity: 0; transform: translateY(6px); }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(root),
-  ::view-transition-new(root),
   [class*="transition"],
   [class*="animate-"] {
     animation-duration: 0.01ms !important;

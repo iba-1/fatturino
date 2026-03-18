@@ -46,14 +46,14 @@ export function Login() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold tracking-tight">Fatturino</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Fatturino</h1>
           <p className="mt-2 text-sm text-muted-foreground">{t("auth.login")}</p>
         </div>
         <Card>
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive-foreground" data-testid="auth-error">{error}</div>
+                <div role="alert" className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive-foreground" data-testid="auth-error">{error}</div>
               )}
               <div className="space-y-2">
                 <Label htmlFor="email">{t("auth.email")}</Label>
@@ -71,7 +71,7 @@ export function Login() {
         </Card>
         <p className="mt-4 text-center text-sm text-muted-foreground">
           {t("auth.noAccount")}{" "}
-          <Link to="/register" className="text-primary-foreground font-medium hover:underline">{t("auth.register")}</Link>
+          <Link to="/register" className="text-primary-foreground font-medium underline underline-offset-4 hover:text-primary-foreground/80">{t("auth.register")}</Link>
         </p>
       </div>
     </div>

@@ -1,18 +1,17 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppNavigate } from "@/hooks/use-app-navigate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useDashboardSummary } from "@/hooks/use-dashboard";
-import { DollarSign, Send, Clock, Wallet, Calculator } from "lucide-react";
+import { Send, Clock, Wallet, Calculator } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/motion";
 import { CountUp } from "@/components/CountUp";
-
-const formatEur = (n: number) =>
-  new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
+import { formatEur } from "@/lib/format";
 
 export function Dashboard() {
   const { t } = useTranslation();
@@ -40,28 +39,28 @@ export function Dashboard() {
         <h1 className="text-2xl font-semibold tracking-tight">{t("dashboard.title")}</h1>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">{t("dashboard.year")}:</span>
-          <select
-            className="rounded-lg border border-input bg-card px-3 py-1.5 text-sm transition-colors duration-150"
-            value={anno}
-            onChange={(e) => setAnno(parseInt(e.target.value, 10))}
-            data-testid="select-year"
-          >
-            {yearOptions.map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
+          <Select value={String(anno)} onValueChange={(val) => setAnno(Number(val))}>
+            <SelectTrigger className="w-32" data-testid="select-year">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {yearOptions.map((y) => (
+                <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
       {/* Profile warning */}
       {data?.profileIncomplete && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm flex items-start gap-3" data-testid="profile-warning">
+        <div role="alert" className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm flex items-start gap-3" data-testid="profile-warning">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-warning/40">
-            <Calculator className="h-4 w-4 text-amber-700" />
+            <Calculator className="h-4 w-4 text-warning-foreground" />
           </div>
           <div>
-            <p className="text-amber-900">{t("dashboard.profileWarning")}</p>
-            <button className="mt-1 text-sm font-medium text-amber-800 underline hover:text-amber-900 cursor-pointer" onClick={() => navigate("/settings")}>
+            <p className="text-warning-foreground">{t("dashboard.profileWarning")}</p>
+            <button type="button" className="mt-1 py-2 text-sm font-medium text-warning-foreground underline hover:text-warning-foreground/80 cursor-pointer" onClick={() => navigate("/settings")}>
               {t("dashboard.goToSettings")}
             </button>
           </div>
@@ -108,8 +107,6 @@ export function Dashboard() {
                 title={t("dashboard.invoicesSent")}
                 value={String(data?.invoicesSent ?? 0)}
                 icon={Send}
-                iconBg="bg-blue-100"
-                iconColor="text-blue-700"
               />
             </motion.div>
             <motion.div variants={staggerItem}>
@@ -117,8 +114,6 @@ export function Dashboard() {
                 title={t("dashboard.pendingInvoices")}
                 value={String(data?.pendingInvoices ?? 0)}
                 icon={Clock}
-                iconBg="bg-amber-100"
-                iconColor="text-amber-700"
               />
             </motion.div>
             <motion.div variants={staggerItem}>
@@ -128,8 +123,6 @@ export function Dashboard() {
                   ? formatEur(data.totalRevenue - data.inps.totaleDovuto - data.tax.impostaDovuta)
                   : "\u2014"}
                 icon={Wallet}
-                iconBg="bg-emerald-100"
-                iconColor="text-emerald-700"
               />
             </motion.div>
           </motion.div>
@@ -168,7 +161,7 @@ export function Dashboard() {
         >
           {/* Imposta Sostitutiva */}
           <motion.div variants={staggerItem}>
-            <Card className="border-l-4 border-l-emerald-400">
+            <Card className="bg-success/5">
               <CardHeader>
                 <CardTitle className="text-base">{t("dashboard.impostaSostitutiva")}</CardTitle>
               </CardHeader>
@@ -204,7 +197,7 @@ export function Dashboard() {
 
           {/* INPS */}
           <motion.div variants={staggerItem}>
-            <Card className="border-l-4 border-l-blue-400">
+            <Card className="bg-info/5">
               <CardHeader>
                 <CardTitle className="text-base">{t("dashboard.inpsContributions")}</CardTitle>
               </CardHeader>
@@ -239,7 +232,7 @@ export function Dashboard() {
 
           {/* F24 Schedule */}
           <motion.div variants={staggerItem}>
-            <Card className="border-l-4 border-l-amber-400">
+            <Card className="bg-warning/5">
               <CardHeader>
                 <CardTitle className="text-base">{t("dashboard.f24Schedule")}</CardTitle>
               </CardHeader>
@@ -269,6 +262,7 @@ export function Dashboard() {
             <CardTitle>{t("dashboard.recentInvoices")}</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-muted-foreground">
@@ -285,6 +279,9 @@ export function Dashboard() {
                     key={inv.id}
                     className="cursor-pointer border-b last:border-0 transition-colors duration-200 hover:bg-muted/50"
                     onClick={() => navigate(`/invoices/${inv.id}`)}
+                    tabIndex={0}
+                    role="link"
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/invoices/${inv.id}`); } }}
                   >
                     <td className="py-2">{inv.numeroFattura}</td>
                     <td className="py-2">
@@ -293,7 +290,7 @@ export function Dashboard() {
                     <td className="py-2">{inv.clientName}</td>
                     <td className="py-2 text-right font-mono">{formatEur(inv.totaleDocumento)}</td>
                     <td className="py-2">
-                      <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-medium capitalize text-[#064E3B]">
+                      <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-medium capitalize text-primary-foreground">
                         {inv.stato}
                       </span>
                     </td>
@@ -301,6 +298,7 @@ export function Dashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -308,7 +306,7 @@ export function Dashboard() {
   );
 }
 
-function HeroRevenueCard({
+const HeroRevenueCard = React.memo(function HeroRevenueCard({
   totalRevenue,
   chartData,
   chartConfig,
@@ -322,12 +320,12 @@ function HeroRevenueCard({
   t: (key: string) => string;
 }) {
   return (
-    <div className="flex h-full flex-col justify-between rounded-xl border border-emerald-200/60 bg-gradient-to-br from-emerald-50 via-emerald-100/80 to-teal-50 p-6 shadow-md">
+    <div className="flex h-full flex-col justify-between rounded-xl border bg-card p-6">
       <div>
-        <p className="text-sm font-medium text-emerald-700">
+        <p className="text-sm font-medium text-muted-foreground">
           {t("dashboard.totalRevenue")} {year}
         </p>
-        <p className="mt-2 text-4xl font-bold tracking-tight font-mono text-[#064E3B]">
+        <p className="mt-2 text-3xl font-semibold tracking-tight font-mono">
           <CountUp end={totalRevenue} formatter={formatEur} />
         </p>
       </div>
@@ -343,28 +341,23 @@ function HeroRevenueCard({
       )}
     </div>
   );
-}
+});
 
-function DashboardCard({
-  title, value, icon: Icon, iconBg, iconColor,
+const DashboardCard = React.memo(function DashboardCard({
+  title, value, icon: Icon,
 }: {
   title: string; value: string;
   icon: React.ComponentType<{ className?: string }>;
-  iconBg: string; iconColor: string;
 }) {
   return (
-    <Card className="transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="mt-2 text-3xl font-bold tracking-tight font-mono">{value}</p>
-          </div>
-          <div className={`flex h-12 w-12 items-center justify-center rounded-full ${iconBg}`}>
-            <Icon className={`h-6 w-6 ${iconColor}`} />
-          </div>
+    <Card>
+      <CardContent className="p-5">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Icon className="h-4 w-4" />
+          <p className="text-sm font-medium">{title}</p>
         </div>
+        <p className="mt-2 text-2xl font-semibold tracking-tight font-mono">{value}</p>
       </CardContent>
     </Card>
   );
-}
+});

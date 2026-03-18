@@ -135,7 +135,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Header fields */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="clientId">{t("invoices.client")}</Label>
           <Select value={clientId} onValueChange={setClientId}>
@@ -190,7 +190,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="tipoDocumento">Tipo Documento</Label>
           <Select value={tipoDocumento} onValueChange={setTipoDocumento}>
@@ -267,7 +267,8 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
           )}
         </AnimatePresence>
 
-        <div className="space-y-3">
+        <div className="overflow-x-auto -mx-6 px-6">
+        <div className="min-w-[600px] space-y-3">
           {lines.map((line, index) => (
             <div
               key={index}
@@ -282,6 +283,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
                   value={line.descrizione}
                   onChange={(e) => updateLine(index, "descrizione", e.target.value)}
                   placeholder={t("invoices.description")}
+                  aria-label={`Description for line item ${index + 1}`}
                   data-testid={`input-description-${index}`}
                 />
               </div>
@@ -298,6 +300,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
                   onChange={(e) =>
                     updateLine(index, "quantita", parseFloat(e.target.value) || 0)
                   }
+                  aria-label={`Quantity for line item ${index + 1}`}
                   data-testid={`input-quantity-${index}`}
                 />
               </div>
@@ -314,6 +317,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
                   onChange={(e) =>
                     updateLine(index, "prezzoUnitario", parseFloat(e.target.value) || 0)
                   }
+                  aria-label={`Unit price for line item ${index + 1}`}
                   data-testid={`input-unit-price-${index}`}
                 />
               </div>
@@ -333,6 +337,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
                   onClick={() => removeLine(index)}
                   disabled={lines.length <= 1}
                   className="h-10 w-10"
+                  aria-label={`Remove line item ${index + 1}`}
                   data-testid={`btn-remove-line-${index}`}
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
@@ -340,6 +345,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
               </div>
             </div>
           ))}
+        </div>
         </div>
       </div>
 
@@ -368,7 +374,7 @@ export function InvoiceForm({ clients, onSubmit, onCancel, isLoading, serverErro
       </div>
 
       {/* Forfettario disclaimer */}
-      <div className="rounded-md bg-muted p-3 text-xs text-muted-foreground" data-testid="forfettario-disclaimer">
+      <div className="rounded-lg bg-muted p-3 text-xs text-muted-foreground" data-testid="forfettario-disclaimer">
         {DISCLAIMER_FORFETTARIO}
       </div>
 

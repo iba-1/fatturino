@@ -152,7 +152,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
       )}
 
       {tipo === "persona_fisica" && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="nome">{t("clients.firstName")}</Label>
             <Input
@@ -198,7 +198,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="codiceFiscale">{t("clients.taxCode")}</Label>
           <Input
@@ -269,7 +269,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
         </AnimatePresence>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="cap">{t("clients.zip")}</Label>
           <Input
@@ -341,7 +341,7 @@ export function ClientForm({ client, onSubmit, onCancel, isLoading, serverErrors
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="pec">{t("clients.pec")}</Label>
           <Input
